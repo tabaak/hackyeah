@@ -1,25 +1,17 @@
-import { Archive, ArrowCounterClockwise, Lightning, PencilSimpleLine, UsersThree, Warning } from '@phosphor-icons/react'
+import { Archive, ArrowCounterClockwise, ArrowSquareOut, Lightning, Quotes, UsersThree, Warning } from '@phosphor-icons/react'
 import { useSearchParams } from 'react-router-dom'
 import { CounterPost } from '../components/CounterPost'
-import { PLATFORM_LABEL, type Platform, type Post } from '../lib/mock'
+import { PLATFORM_LABEL, sourceUrl, type Platform, type Post } from '../lib/mock'
 import { useStore } from '../lib/store'
-import { Badge, Button, compact, cx, Dialog, inputCls, PlatformIcon, SeverityBadge, timeAgo, VerdictBadge } from '../lib/ui'
+import { Badge, Button, compact, cx, Dialog, PlatformIcon, SeverityBadge, timeAgo, VerdictBadge } from '../lib/ui'
+
+// Matches the severity segmented control
+const filterCls = 'h-[38px] cursor-pointer rounded-control border border-line bg-surface px-3 text-sm text-fg-2 transition-colors duration-150 hover:text-fg focus:outline-none focus-visible:border-accent'
 
 const SEVERITIES = ['all', 'high', 'medium', 'low'] as const
 const STATUSES = { open: 'Open', responded: 'Responded', dismissed: 'Dismissed', all: 'All' } as const
 
-function PostMeta({ p, company }: { p: Post; company?: string }) {
-  return (
-    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-fg-3">
-      <PlatformIcon p={p.platform} size={14} />
-      <span>{PLATFORM_LABEL[p.platform]} · {p.handle}</span>
-      <span aria-hidden>·</span>
-      <span className="font-medium text-fg-2">{company}</span>
-      <span aria-hidden>·</span>
-      <time dateTime={new Date(p.at).toISOString()} title={new Date(p.at).toLocaleString()}>{timeAgo(p.at)}</time>
-    </div>
-  )
-}
+const actionable = (p: Post) => p.status === 'new' && p.severity !== 'low'
 
 export default function LiveFeed() {
   const { posts, companies, setPostStatus } = useStore()
@@ -62,27 +54,53 @@ export default function LiveFeed() {
           <div className="mb-3 flex items-center gap-2">
             <Warning size={20} weight="fill" className="text-danger" />
             <h2 id="urgent-h" className="text-lg font-semibold">Needs attention</h2>
-            <span className="text-sm text-fg-3">· highest-reach open threats</span>
           </div>
           <div className="grid gap-4 lg:grid-cols-3">
             {urgent.map(p => (
-              <article key={p.id} className="flex flex-col rounded-panel border border-danger/40 bg-surface p-4">
-                <div className="mb-2 flex items-center gap-2">
-                  <SeverityBadge s={p.severity} />
-                  {p.injection && <Badge tone="danger">AI manipulation attempt</Badge>}
+              <article key={p.id} className="flex flex-col overflow-hidden rounded-panel border border-danger/40 bg-surface">
+                <header className="flex items-start gap-3 px-4 pt-4">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-fg-2"><PlatformIcon p={p.platform} size={18} /></span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold">{nameOf(p.companyId)}</p>
+                    <p className="truncate text-xs text-fg-3">{p.handle}</p>
+                  </div>
+                  <time className="shrink-0 text-xs text-fg-3" dateTime={new Date(p.at).toISOString()} title={new Date(p.at).toLocaleString()}>{timeAgo(p.at)}</time>
+                </header>
+
+                {p.injection && (
+                  <div className="px-4 pt-3">
+                    <Badge tone="danger"><Warning size={14} weight="bold" />AI manipulation</Badge>
+                  </div>
+                )}
+
+                <figure className="mx-4 mt-3">
+                  <Quotes size={20} weight="fill" className="text-fg-3/60" aria-hidden />
+                  <blockquote className="mt-1 line-clamp-3 text-[15px] leading-6">{p.text}</blockquote>
+                </figure>
+
+                <div className="mx-4 mb-4 mt-4 rounded-control bg-subtle px-3 py-2.5">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-fg-3">Why flagged</p>
+                  <p className="mt-1 line-clamp-3 text-sm text-fg-2">{p.reason}</p>
                 </div>
-                <PostMeta p={p} company={nameOf(p.companyId)} />
-                <p className="mt-2 line-clamp-3 text-[15px] leading-6">{p.text}</p>
-                <p className="mt-2 line-clamp-2 text-sm text-fg-2">{p.reason}</p>
-                <div className="mt-3 flex flex-wrap gap-3 text-xs text-fg-3">
-                  <span className="flex items-center gap-1"><Lightning size={14} />Reach {compact(p.reach)}</span>
-                  {p.cluster && <span className="flex items-center gap-1"><UsersThree size={14} />{p.cluster.size} posts · {p.cluster.accounts} accounts</span>}
-                </div>
-                <div className="mt-auto flex gap-2 pt-4">
+
+                <dl className="mt-auto grid grid-cols-2 divide-x divide-line border-y border-line">
+                  <div className="px-4 py-3">
+                    <dt className="flex items-center gap-1 text-xs text-fg-3"><Lightning size={14} />Reach</dt>
+                    <dd className="mt-0.5 font-mono text-lg font-semibold">{compact(p.reach)}</dd>
+                  </div>
+                  <div className="px-4 py-3">
+                    <dt className="flex items-center gap-1 text-xs text-fg-3"><UsersThree size={14} />Cluster</dt>
+                    <dd className="mt-0.5 font-mono text-lg font-semibold">
+                      {p.cluster ? <>{p.cluster.size} <span className="font-sans text-xs font-normal text-fg-3">posts · {p.cluster.accounts} accts</span></> : <span className="text-fg-3">—</span>}
+                    </dd>
+                  </div>
+                </dl>
+
+                <div className="flex gap-2 p-4">
                   <Button variant="primary" className="flex-1" onClick={() => set('respond', p.id)}>
-                    <PencilSimpleLine size={16} />Create counter-post
+                    Create counter-post
                   </Button>
-                  <Button variant="ghost" aria-label="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
+                  <Button variant="ghost" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
                 </div>
               </article>
             ))}
@@ -91,7 +109,7 @@ export default function LiveFeed() {
       )}
 
       <section aria-labelledby="feed-h" className="rounded-panel border border-line bg-surface">
-        <div className="flex flex-wrap items-center gap-3 border-b border-line p-4">
+        <div className="flex flex-wrap items-center gap-3 rounded-t-panel border-b border-line bg-surface p-4 lg:sticky lg:top-0 lg:z-10">
           <h2 id="feed-h" className="mr-auto text-lg font-semibold">All mentions <span className="font-mono text-sm font-normal text-fg-3">{list.length}</span></h2>
           <div role="group" aria-label="Severity" className="flex rounded-control border border-line p-0.5">
             {SEVERITIES.map(s => (
@@ -103,15 +121,15 @@ export default function LiveFeed() {
               >{s}</button>
             ))}
           </div>
-          <select aria-label="Company" value={company} onChange={e => set('company', e.target.value)} className={cx(inputCls, 'w-auto')}>
+          <select aria-label="Company" value={company} onChange={e => set('company', e.target.value)} className={filterCls}>
             <option value="all">All companies</option>
             {companies.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
-          <select aria-label="Platform" value={platform} onChange={e => set('platform', e.target.value)} className={cx(inputCls, 'w-auto')}>
+          <select aria-label="Platform" value={platform} onChange={e => set('platform', e.target.value)} className={filterCls}>
             <option value="all">All platforms</option>
             {(Object.keys(PLATFORM_LABEL) as Platform[]).map(p => <option key={p} value={p}>{PLATFORM_LABEL[p]}</option>)}
           </select>
-          <select aria-label="Status" value={status} onChange={e => set('status', e.target.value)} className={cx(inputCls, 'w-auto')}>
+          <select aria-label="Status" value={status} onChange={e => set('status', e.target.value)} className={filterCls}>
             {Object.entries(STATUSES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
           {filtered && <Button variant="ghost" onClick={() => setQ({})}><ArrowCounterClockwise size={16} />Reset</Button>}
@@ -125,25 +143,41 @@ export default function LiveFeed() {
         ) : (
           <ul className="divide-y divide-line">
             {list.map(p => (
-              <li key={p.id} className={cx('grid gap-3 px-4 py-4 sm:grid-cols-[1fr_auto]', p.status !== 'new' && 'opacity-70')}>
-                <div className="min-w-0 space-y-1.5">
-                  <PostMeta p={p} company={nameOf(p.companyId)} />
-                  <p className="text-[15px] leading-6">{p.text}</p>
-                  <div className="flex flex-wrap items-center gap-2 pt-1">
-                    <SeverityBadge s={p.severity} />
-                    <VerdictBadge v={p.verdict} />
-                    {p.cluster && <Badge><UsersThree size={14} />{p.cluster.size} similar</Badge>}
-                    {p.status === 'responded' && <Badge tone="success">Responded</Badge>}
-                    {p.status === 'dismissed' && <Badge><Archive size={14} />Dismissed</Badge>}
-                    <span className="text-xs text-fg-3">Reach {compact(p.reach)}</span>
+              <li key={p.id} className={cx('flex gap-3 p-4', p.status !== 'new' && 'opacity-70')}>
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-2"><PlatformIcon p={p.platform} size={16} /></span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="truncate font-semibold">{nameOf(p.companyId)}</span>
+                    <span className="truncate text-xs text-fg-3">{p.handle}</span>
+                    <span aria-hidden className="text-xs text-fg-3">·</span>
+                    <time className="shrink-0 text-xs text-fg-3" dateTime={new Date(p.at).toISOString()} title={new Date(p.at).toLocaleString()}>{timeAgo(p.at)}</time>
+                  </div>
+                  <p className="mt-1 text-[15px] leading-6">{p.text}</p>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <div className="flex flex-wrap gap-1.5">
+                      <SeverityBadge s={p.severity} />
+                      <VerdictBadge v={p.verdict} />
+                      {p.status === 'responded' && <Badge tone="success">Responded</Badge>}
+                      {p.status === 'dismissed' && <Badge><Archive size={14} />Dismissed</Badge>}
+                    </div>
+                    <div className="flex items-center gap-3 text-xs text-fg-3">
+                      <span className="flex items-center gap-1"><Lightning size={14} /><span className="font-mono text-fg-2">{compact(p.reach)}</span> reach</span>
+                      {p.cluster && <span className="flex items-center gap-1"><UsersThree size={14} /><span className="font-mono text-fg-2">{p.cluster.size}</span> similar</span>}
+                    </div>
                   </div>
                 </div>
-                {p.status === 'new' && p.severity !== 'low' && (
-                  <div className="flex items-start gap-2">
-                    <Button onClick={() => set('respond', p.id)}><PencilSimpleLine size={16} />Counter-post</Button>
-                    <Button variant="ghost" aria-label="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
-                  </div>
-                )}
+                <div className="flex shrink-0 items-center gap-1 self-center">
+                  {actionable(p) && <Button variant="ghost" className="w-9 px-0" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>}
+                  <a
+                    href={sourceUrl(p)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Open source"
+                    title="Open source"
+                    className="inline-flex size-9 items-center justify-center rounded-control text-fg-2 transition-colors duration-150 hover:bg-subtle hover:text-fg"
+                  ><ArrowSquareOut size={16} /></a>
+                  {actionable(p) && <Button className="ml-1" onClick={() => set('respond', p.id)}>Counter-post</Button>}
+                </div>
               </li>
             ))}
           </ul>
