@@ -10,6 +10,20 @@ npm start          # then press i / a / w, or scan the QR code with Expo Go
 npm run typecheck
 ```
 
+## Open in Xcode
+
+The iOS Bundle Identifier is `com.mshupeikin.palladion`, with Apple team `368P9H47N6`.
+
+Generate the native project and install CocoaPods from `mobile/`:
+
+```bash
+npx expo prebuild --platform ios
+```
+
+Open `ios/Palladion.xcworkspace` in Xcode. Select the **Palladion** target → **Signing & Capabilities**, use **Automatically manage signing**, and select the **Yevgen Shupeikin** team. The `expo-notifications` plugin adds **Push Notifications** during prebuild.
+
+For a device build, select your iPhone as the run destination in Xcode. Native `ios/` files are generated locally and ignored by Git; keep the identifier and team in `app.json` so subsequent prebuilds preserve them.
+
 ## Sign-in
 
 Google through Supabase, the same accounts as the web app. The app opens Google in an in-app browser (PKCE). The session is saved on the device and refreshed while the app is open.
@@ -41,12 +55,12 @@ A 401 or 403 from the API (expired token, profile not provisioned) signs the use
 
 **One-time setup:**
 1. **Database:** apply `supabase/migrations/20261003220000_push_tokens.sql` to the Supabase project.
-2. **EAS project id:** run `npx eas-cli login`, then `npx eas-cli init` in `mobile/`. Expo push tokens need this id. Without it, the app logs a warning and skips push.
-3. **iOS delivery:** run `npx eas-cli credentials` to set up an APNs key. This needs a paid Apple Developer account. Android needs FCM credentials the same way.
+2. **EAS project:** `app.json` already links `@magorr/palladion` to project `3154c216-2109-46af-ba4d-135c3347b454`. Sign in with `npx eas-cli login` to manage its credentials. Expo push tokens need this project id.
+3. **iOS delivery:** run `npx eas-cli credentials --platform ios` to set up an APNs key. An existing Apple `.p8` key can be uploaded with its Key ID and Team ID. This needs a paid Apple Developer account. Android needs FCM credentials the same way.
 4. **Rebuild:** `expo-notifications` is native code, so rebuild with `npx expo run:ios` after adding it.
 
 **Testing on the simulator without APNs:**
 ```bash
-xcrun simctl push booted com.palladion.mobile path/to/critical.apns
+xcrun simctl push booted com.mshupeikin.palladion path/to/critical.apns
 ```
 with a payload like `{"aps":{"alert":{"title":"Critical mention","body":"…"},"sound":"default"},"body":{"kind":"critical_mention"}}`.
