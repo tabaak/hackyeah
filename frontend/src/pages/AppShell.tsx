@@ -22,6 +22,7 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
     <>
       <button
         popoverTarget={id}
+        onClick={() => { if (typeof Notification !== 'undefined' && Notification.permission === 'default') void Notification.requestPermission() }}
         aria-label={`Notifications, ${notifications.openCount} open incidents`}
         className="relative flex h-11 w-11 cursor-pointer md:h-9 md:w-9 items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
       >

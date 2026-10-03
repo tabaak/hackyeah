@@ -30,6 +30,17 @@ const fetchPage = (before?: number, signal?: AbortSignal): Promise<Page> =>
     .then(ps => ({ items: ps.filter(knownPlatform), full: ps.length >= PAGE }))
 const fetchNotifications = (signal?: AbortSignal) => api<Notifications>('/notifications', { signal })
 
+// Desktop alert for high-risk mentions that arrived since the last poll (permission is asked from the bell).
+function alertNewCritical(prev: Notifications, next: Notifications) {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return
+  const known = new Set(prev.items.map(n => n.id))
+  for (const n of next.items) {
+    if (n.kind !== 'critical_mention' || n.read || known.has(n.id)) continue
+    const alert = new Notification('High-risk mention', { body: n.title, tag: n.id })
+    alert.onclick = () => { window.focus(); location.assign(`/app/feed?respond=${n.mentionId}`) }
+  }
+}
+
 function uploadDocs(companyId: string, docs: PendingDoc[], token: string) {
   const form = new FormData()
   docs.forEach(({ file, classification }) => { form.append('files', file); form.append('classifications', classification) })
@@ -219,6 +230,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return [...page.items, ...(page.full ? prev.filter(p => p.at < oldest) : [])].map(pending)
       })
       setNewestFull(page.full)
+      alertNewCritical(notifications, ns)
       setNotifications(ns)
     } catch { /* keep what is shown; the next poll retries */ }
   }
