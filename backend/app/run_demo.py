@@ -25,7 +25,7 @@ from app.schemas.companies import CompanyDraft
 from app.schemas.feed import Mention
 from app.schemas.common import Platform
 from app.sources import apify
-from app.sources.serper import MOCK_COMPANY, search_news, search_web
+from app.sources.serper import DEMO_COMPANY, MOCK_COMPANY, search_news, search_web
 
 RESULTS = Path(__file__).resolve().parents[1] / "results"
 _RANK = {"high": 0, "medium": 1, "low": 2}
@@ -33,9 +33,9 @@ _RANK = {"high": 0, "medium": 1, "low": 2}
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--company", default="Bank Pekao")
-    ap.add_argument("--sector", default="Other", help="Banking | Defence | Fintech | Energy | Other")
-    ap.add_argument("--country", default="Global", help="Global = no geo bias (international companies)")
+    ap.add_argument("--company", default="Goldman Sachs")
+    ap.add_argument("--sector", default="Banking", help="Banking | Defence | Fintech | Energy | Other")
+    ap.add_argument("--country", default="United States", help="Global = no geo bias (international companies)")
     ap.add_argument("--local", action="store_true", help="also add local-language risk words for the country")
     ap.add_argument("--days", type=int, default=90)
     ap.add_argument("--threads", action="store_true", help="include Threads (expensive); off by default")
@@ -54,8 +54,12 @@ def main() -> None:
     if provider != "cloud":
         raise SystemExit("cloud LLM not active: set OPENAI_API_KEY and OPENAI_MODEL")
 
-    company = MOCK_COMPANY if args.company == "Bank Pekao" else CompanyDraft(
-        name=args.company, sector=args.sector, country=args.country)
+    if args.company == "Goldman Sachs":
+        company = DEMO_COMPANY
+    elif args.company == "Bank Pekao":
+        company = MOCK_COMPANY
+    else:
+        company = CompanyDraft(name=args.company, sector=args.sector, country=args.country)
     slug = re.sub(r"\W+", "_", args.company.lower()).strip("_")
     cid, now = slug, int(time.time() * 1000)
     out = RESULTS / slug

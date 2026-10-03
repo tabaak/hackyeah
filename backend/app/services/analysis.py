@@ -53,7 +53,7 @@ def _alarm_hits(text: str, topics: list[str]) -> list[str]:
     # Overlapping phrases such as “SEC investigation” and “investigation” describe one signal.
     selected = []
     for start, end, word in sorted(spans, key=lambda s: (-(s[1] - s[0]), s[0])):
-        if not any(start < other_end and end > other_start for other_start, other_end, _ in selected):
+        if not any(start < other_end + 2 and end > other_start - 2 for other_start, other_end, _ in selected):
             selected.append((start, end, word))
     return sorted({word for _, _, word in selected})
 
@@ -100,8 +100,8 @@ def assess(company: dict, text: str, reach: int, evidence: list[dict]) -> Assess
     if not data or data.get("severity") not in SEVERITIES or data.get("verdict") not in VERDICTS:
         return base
     verdict = data["verdict"]
-    if verdict in ("contradicted_by_documents", "supported_by_documents") and not evidence:
-        verdict = "insufficient_evidence"  # the model cannot cite documents that were not retrieved
+    if not evidence and base.verdict == "insufficient_evidence":
+        verdict = "insufficient_evidence"  # no documents means factual claims cannot be verified
     # The model can raise the heuristic score, but must not dismiss a clear high-risk signal
     # or a prompt injection as low severity.
     rank = {"high": 0, "medium": 1, "low": 2}

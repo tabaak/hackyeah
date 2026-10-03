@@ -7,9 +7,9 @@ const split = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
 
 export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt'>
 
-export function CompanyForm({ onSubmit, submitLabel, aside }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string; aside?: ReactNode }) {
-  const [sector, setSector] = useState('Banking')
-  const [topics, setTopics] = useState<string[]>(SECTORS.Banking.slice(0, 3))
+export function CompanyForm({ onSubmit, submitLabel, aside, initial }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string; aside?: ReactNode; initial?: CompanyDraft }) {
+  const [sector, setSector] = useState(initial?.sector ?? 'Banking')
+  const [topics, setTopics] = useState<string[]>(initial?.topics ?? SECTORS.Banking.slice(0, 3))
 
   function pickSector(s: string) {
     setSector(s)
@@ -35,14 +35,14 @@ export function CompanyForm({ onSubmit, submitLabel, aside }: { onSubmit: (c: Co
     <form onSubmit={submit} className="space-y-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Company name">
-          <input name="name" required autoFocus className={cx(inputCls, "w-full")} placeholder="Kestrel Bank" />
+          <input name="name" required autoFocus defaultValue={initial?.name} className={cx(inputCls, "w-full")} placeholder="Kestrel Bank" />
         </Field>
         <Field label="Website" optional hint="Helps tell your company apart from namesakes">
-          <input name="website" type="url" className={cx(inputCls, "w-full")} placeholder="https://kestrel.example" />
+          <input name="website" type="url" defaultValue={initial?.website} className={cx(inputCls, "w-full")} placeholder="https://example.com" />
         </Field>
       </div>
       <Field label="Other names people use" optional hint="Short names, brands, ticker, app name — comma separated">
-        <input name="aliases" className={cx(inputCls, "w-full")} placeholder="Kestrel, KSTL, Kestrel Pay" />
+        <input name="aliases" defaultValue={initial?.aliases.join(', ')} className={cx(inputCls, "w-full")} placeholder="Short names, brands, ticker" />
       </Field>
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Industry">
@@ -51,13 +51,13 @@ export function CompanyForm({ onSubmit, submitLabel, aside }: { onSubmit: (c: Co
           </select>
         </Field>
         <Field label="Main market" hint="Sets languages and regional sources">
-          <select name="country" defaultValue="Poland" className={cx(inputCls, "w-full")}>
+          <select name="country" defaultValue={initial?.country ?? 'Poland'} className={cx(inputCls, "w-full")}>
             {COUNTRIES.map(c => <option key={c}>{c}</option>)}
           </select>
         </Field>
       </div>
       <Field label="Key people" optional hint="Executives often targeted by name — comma separated">
-        <input name="people" className={cx(inputCls, "w-full")} placeholder="Jan Nowak (CEO), Ewa Lis (CFO)" />
+        <input name="people" defaultValue={initial?.people.join(', ')} className={cx(inputCls, "w-full")} placeholder="Key people, separated by commas" />
       </Field>
       <fieldset>
         <legend className="mb-1.5 text-sm font-medium">Risk topics to watch</legend>
@@ -153,7 +153,7 @@ export function DocsUpload({ docs, onChange }: { docs: Doc[]; onChange: (d: Doc[
 
 // Two steps: profile → optional documents. Shared by onboarding and "Track another company".
 // `aside` renders next to Continue on the first step (e.g. sign out during onboarding).
-export function CompanyWizard({ onDone, aside }: { onDone: (c: Company) => void; aside?: ReactNode }) {
+export function CompanyWizard({ onDone, aside, initialCompany }: { onDone: (c: Company) => void; aside?: ReactNode; initialCompany?: CompanyDraft }) {
   const [draft, setDraft] = useState<CompanyDraft | null>(null)
   const [docs, setDocs] = useState<Doc[]>([])
 
@@ -176,7 +176,7 @@ export function CompanyWizard({ onDone, aside }: { onDone: (c: Company) => void;
         })}
       </ol>
       {!draft ? (
-        <CompanyForm submitLabel="Continue" onSubmit={setDraft} aside={aside} />
+        <CompanyForm submitLabel="Continue" onSubmit={setDraft} aside={aside} initial={initialCompany} />
       ) : (
         <div className="space-y-5">
           <p className="text-[15px] leading-6 text-fg-2">
