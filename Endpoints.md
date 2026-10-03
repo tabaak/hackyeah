@@ -67,7 +67,9 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 ```
 { id, name, website, aliases[], sector, country, people[], topics[], documents: Doc[], createdAt }
 ```
-**Doc** — `{ id, name, size /* байти */, classification, status }`
+**Doc** — `{ id, name, size /* байти */, classification, status, summary /* string або null */ }`
+
+`summary` — ШІ-резюме документа (3–5 речень). `null`, поки `status` = `processing`, і для `restricted`, якщо роль не `compliance`.
 
 **Mention (Post)**
 ```
@@ -106,7 +108,7 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 Документи належать компанії.
 
 * `GET /companies/{id}/documents` — документи зі статусом обробки та класифікацією.
-* `POST /companies/{id}/documents` → 202 — завантаження multipart: поля `files` і `classifications`, по одній класифікації на файл, у тому ж порядку; PDF/TXT до 5 МБ, до 8 файлів за раз. Відповідь — `Doc[]` зі статусом `processing`; індексація йде у фоні (секунди), потім `ready` або `failed` — оновіть список через `GET /companies` або `GET /companies/{id}/documents`.
+* `POST /companies/{id}/documents` → 202 — завантаження multipart: поля `files` і `classifications`, по одній класифікації на файл, у тому ж порядку; PDF/TXT до 5 МБ, до 8 файлів за раз. Відповідь — `Doc[]` зі статусом `processing`; індексація та резюме йдуть у фоні (секунди), потім `ready` (з `summary`) або `failed` — оновіть список через `GET /companies` або `GET /companies/{id}/documents`.
   ```ts
   const form = new FormData()
   files.forEach(({ file, classification }) => { form.append('files', file); form.append('classifications', classification) })

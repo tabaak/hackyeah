@@ -6,6 +6,8 @@ import { Button, cx, Field, inputCls } from '../lib/ui'
 const split = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
 
 export type { CompanyDraft } from '../lib/mock'
+// A file chosen in DocsUpload, not uploaded yet
+export type PendingDoc = Pick<Doc, 'id' | 'name' | 'size' | 'classification'> & { file: File }
 
 export function CompanyForm({ onSubmit, submitLabel, aside, initial }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string; aside?: ReactNode; initial?: CompanyDraft }) {
   const [sector, setSector] = useState(initial?.sector ?? 'Banking')
@@ -91,7 +93,7 @@ const MAX_FILES = 8
 const MAX_BYTES = 5 * 1024 * 1024
 const CLASSES: Classification[] = ['public', 'internal', 'confidential', 'restricted']
 
-export function DocsUpload({ docs, onChange }: { docs: Doc[]; onChange: (d: Doc[]) => void }) {
+export function DocsUpload({ docs, onChange }: { docs: PendingDoc[]; onChange: (d: PendingDoc[]) => void }) {
   const [error, setError] = useState('')
   const [drag, setDrag] = useState(false)
 
@@ -101,7 +103,7 @@ export function DocsUpload({ docs, onChange }: { docs: Doc[]; onChange: (d: Doc[
     const tooBig = list.filter(f => f.size > MAX_BYTES)
     const ok = list.filter(f => f.size <= MAX_BYTES).slice(0, MAX_FILES - docs.length)
     setError(tooBig.length ? `${tooBig.map(f => f.name).join(', ')}: larger than 5 MB` : list.length > ok.length ? `Up to ${MAX_FILES} documents` : '')
-    onChange([...docs, ...ok.map(f => ({ id: uid(), name: f.name, size: f.size, classification: 'internal' as const, status: 'processing' as const }))])
+    onChange([...docs, ...ok.map(f => ({ id: uid(), name: f.name, size: f.size, classification: 'internal' as const, file: f }))])
   }
 
   return (
@@ -153,22 +155,22 @@ export function DocsUpload({ docs, onChange }: { docs: Doc[]; onChange: (d: Doc[
 
 // Two steps: profile → optional documents. Shared by onboarding and "Track another company".
 // `aside` renders next to Continue on the first step (e.g. sign out during onboarding).
-export function CompanyWizard({ onDone, aside, initialCompany }: { onDone: (c: CompanyDraft, docs: Doc[]) => Promise<void>; aside?: ReactNode; initialCompany?: CompanyDraft }) {
+export function CompanyWizard({ onDone, aside, initialCompany }: { onDone: (c: CompanyDraft, docs: PendingDoc[]) => Promise<void>; aside?: ReactNode; initialCompany?: CompanyDraft }) {
   const [draft, setDraft] = useState<CompanyDraft | null>(null)
-  const [docs, setDocs] = useState<Doc[]>([])
-  const [pending, setPending] = useState(false)
+  const [docs, setDocs] = useState<PendingDoc[]>([])
+  const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
-  async function finish(d: Doc[]) {
-    if (!draft || pending) return
-    setPending(true)
+  async function finish(d: PendingDoc[]) {
+    if (!draft || busy) return
+    setBusy(true)
     setError('')
     try {
-      await onDone(draft, d.map(x => ({ ...x, status: 'ready' })))
+      await onDone(draft, d)
     } catch (e) {
       setError(e instanceof Error && !(e instanceof TypeError) ? e.message : 'The company could not be saved. Please try again.')
     } finally {
-      setPending(false)
+      setBusy(false)
     }
   }
 
@@ -190,18 +192,18 @@ export function CompanyWizard({ onDone, aside, initialCompany }: { onDone: (c: C
       {!draft ? (
         <CompanyForm submitLabel="Continue" onSubmit={setDraft} aside={aside} initial={initialCompany} />
       ) : (
-        <fieldset disabled={pending} aria-busy={pending} className="motion-page min-w-0 space-y-5">
+        <fieldset disabled={busy} aria-busy={busy} className="motion-page min-w-0 space-y-5">
           <p className="text-[15px] leading-6 text-fg-2">
             Upload documents the agent can use to check claims about <b className="text-fg">{draft.name}</b> — press releases, status reports, ops logs, FAQs. You can skip this and add them later.
           </p>
           <DocsUpload docs={docs} onChange={setDocs} />
           {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-          {pending && <p role="status" className="text-sm text-fg-2">Saving company…</p>}
+          {busy && <p role="status" className="text-sm text-fg-2">Saving company…</p>}
           <div className="flex justify-between gap-3 pt-2">
-            <Button variant="ghost" onClick={() => setDraft(null)}>Back</Button>
+            <Button variant="ghost" disabled={busy} onClick={() => setDraft(null)}>Back</Button>
             <div className="flex gap-3">
-              <Button variant="secondary" onClick={() => finish([])}>Skip for now</Button>
-              <Button variant="primary" disabled={!docs.length} onClick={() => finish(docs)}>Start monitoring</Button>
+              <Button variant="secondary" disabled={busy} onClick={() => finish([])}>Skip for now</Button>
+              <Button variant="primary" disabled={!docs.length || busy} onClick={() => finish(docs)}>{busy ? 'Uploading…' : 'Start monitoring'}</Button>
             </div>
           </div>
         </fieldset>

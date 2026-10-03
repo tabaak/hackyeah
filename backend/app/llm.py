@@ -6,6 +6,9 @@ Two OpenAI-compatible connections:
 
 The server picks the connection from the labels of the *whole* context (documents, history, derived
 text). If the local model is unreachable, closed tasks fail; they are never retried on the cloud.
+
+LLM_FORCE=cloud is a development override: with a cloud key and model it sends *every* label, closed data
+included, to the cloud. Never set it where real internal/confidential/restricted documents are processed.
 """
 from collections.abc import Iterable
 from functools import lru_cache
@@ -26,9 +29,14 @@ class LLMUnavailable(RuntimeError):
 def pick_provider(classifications: Iterable[Classification | str]) -> Provider:
     """Only `public` context (or an explicitly empty list) may go to the cloud; anything else stays local."""
     labels = {Classification(c) for c in classifications}
-    if settings.llm_force == "local" or labels - {Classification.public}:
+    cloud_ready = bool(settings.openai_api_key and settings.openai_model)
+    if settings.llm_force == "local":
         return "local"
-    return "cloud" if settings.openai_api_key and settings.openai_model else "local"
+    if settings.llm_force == "cloud" and cloud_ready:
+        return "cloud"
+    if labels - {Classification.public}:
+        return "local"
+    return "cloud" if cloud_ready else "local"
 
 
 @lru_cache

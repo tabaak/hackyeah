@@ -47,7 +47,7 @@ def list_companies(user: CurrentUser = Depends(get_current_user)):
         get_db().table("companies").select(mappers.COMPANY_SELECT)
         .eq("organization_id", user.organization_id).order("created_at").execute().data
     )
-    return [mappers.company(r) for r in rows]
+    return [mappers.company(r, user.role) for r in rows]
 
 
 @router.post("/companies", response_model=Company, status_code=201)
@@ -57,7 +57,7 @@ def create_company(body: CompanyDraft, background: BackgroundTasks, user: Curren
     if settings.demo_seed:
         background.add_task(demo.seed_company, row)
     background.add_task(news.sync_company, row)  # no-op without SERPER_API_KEY
-    return mappers.company(row)
+    return mappers.company(row, user.role)
 
 
 # Declared before /companies/{company_id} so "meta" is not parsed as an id.
@@ -69,14 +69,14 @@ def companies_meta():
 
 @router.get("/companies/{company_id}", response_model=Company)
 def get_company(company_id: str, user: CurrentUser = Depends(get_current_user)):
-    return mappers.company(load_company(company_id, user, mappers.COMPANY_SELECT))
+    return mappers.company(load_company(company_id, user, mappers.COMPANY_SELECT), user.role)
 
 
 @router.put("/companies/{company_id}", response_model=Company)
 def update_company(company_id: str, body: CompanyDraft, user: CurrentUser = Depends(get_current_user)):
     load_company(company_id, user)
     get_db().table("companies").update(_clean(body)).eq("id", company_id).eq("organization_id", user.organization_id).execute()
-    return mappers.company(load_company(company_id, user, mappers.COMPANY_SELECT))
+    return mappers.company(load_company(company_id, user, mappers.COMPANY_SELECT), user.role)
 
 
 @router.delete("/companies/{company_id}", status_code=204)
@@ -92,7 +92,7 @@ def delete_company(company_id: str, user: CurrentUser = Depends(get_current_user
 def list_company_documents(company_id: str, user: CurrentUser = Depends(get_current_user)):
     load_company(company_id, user)
     rows = get_db().table("documents").select("*").eq("company_id", company_id).order("created_at").execute().data
-    return [mappers.doc(r) for r in rows]
+    return [mappers.doc(r, user.role) for r in rows]
 
 
 @router.post("/companies/{company_id}/documents", response_model=list[Doc], status_code=202)
@@ -124,5 +124,5 @@ async def upload_company_documents(
     for (name, data), cls in zip(payloads, classifications):
         row = await asyncio.to_thread(documents.upload, user.organization_id, company_id, user.id, name, data, cls.value)
         background.add_task(documents.process_document, row["id"], data)
-        created.append(mappers.doc(row))
+        created.append(mappers.doc(row, user.role))
     return created

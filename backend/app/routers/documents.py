@@ -27,7 +27,7 @@ def update_document(document_id: str, body: DocumentUpdate, user: CurrentUser = 
     """Changes the classification (chunks follow via a DB trigger)."""
     load_document(document_id, user)
     row = get_db().table("documents").update({"classification": body.classification.value}).eq("id", document_id).execute().data[0]
-    return mappers.doc(row)
+    return mappers.doc(row, user.role)
 
 
 @router.get("/documents/{document_id}/url", response_model=DocumentUrl)
