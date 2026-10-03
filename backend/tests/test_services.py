@@ -240,3 +240,14 @@ def test_news_helpers():
 
 def test_time_roundtrip():
     assert to_ms(from_ms(1_700_000_000_123)) == 1_700_000_000_123
+
+
+def test_revise_draft_follows_instruction_under_the_same_rules(monkeypatch):
+    seen = {}
+    monkeypatch.setattr(llm, "chat_json", lambda system, user, **k: seen.update(system=system, user=user) or {"draft": " Short. "})
+    company, mention = {"name": "Kestrel"}, {"platform": "x", "text": "Bank is collapsing"}
+    assert responses.revise_draft(company, mention, "Long draft.", "make it shorter", []) == "Short."
+    assert "make it shorter" in seen["user"] and "Long draft." in seen["user"]
+    assert "never add facts" in seen["system"] and "UNTRUSTED DATA" in seen["system"]
+    monkeypatch.setattr(llm, "chat_json", lambda *a, **k: None)
+    assert responses.revise_draft(company, mention, "Long draft.", "shorter", []) is None  # no template overwrite

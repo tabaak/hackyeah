@@ -1,9 +1,9 @@
-import { Check, FileText, ShieldWarning, Warning } from '@phosphor-icons/react'
+import { Sparkle } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
-import { PLATFORM_LABEL, type Classification, type Company, type Post, type Verdict } from '../lib/mock'
+import { VERDICT_LABEL, type Classification, type Post, type Verdict } from '../lib/mock'
 import { useStore } from '../lib/store'
-import { Badge, Button, ClassBadge, compact, inputCls, cx, PlatformIcon, timeAgo, VerdictBadge } from '../lib/ui'
+import { Button, cx, Field, inputCls, PlatformIcon, timeAgo } from '../lib/ui'
 
 // GET /mentions/{id}/response: claim check, evidence, draft, disclosure check and approval state
 type MentionResponse = {
@@ -15,7 +15,16 @@ type MentionResponse = {
   approval: { state: 'none' | 'pending' | 'approved'; by: string | null; at: number | null }
 }
 
-export function CounterPost({ post, company, onDone }: { post: Post; company: Company; onDone: () => void }) {
+// One-click rewrites; the label is what the user sees, the instruction is what the model gets.
+const PRESETS = [
+  ['Shorter', 'Make it shorter and tighter, keep the main point.'],
+  ['More formal', 'Use a more formal, corporate tone.'],
+  ['Warmer', 'Make it warmer and more empathetic to worried readers.'],
+  ['Lead with facts', 'Open with the key verified fact, then the rest.'],
+  ['Simpler', 'Use plain, simple words a general audience understands.'],
+] as const
+
+export function CounterPost({ post, onDone }: { post: Post; onDone: () => void }) {
   const { user, refreshFeed } = useStore()
   const [data, setData] = useState<MentionResponse | null>(null)
   const [text, setText] = useState('')
@@ -24,6 +33,8 @@ export function CounterPost({ post, company, onDone }: { post: Post; company: Co
   const [attempt, setAttempt] = useState(0)
   const [busy, setBusy] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [instruction, setInstruction] = useState('')
+  const [rewriting, setRewriting] = useState(false)
 
   // The first open generates the draft on the server (LLM: can take a few seconds).
   useEffect(() => {
@@ -57,6 +68,22 @@ export function CounterPost({ post, company, onDone }: { post: Post; company: Co
     return r
   }
 
+  // AI rewrite of the current (possibly unsaved) text; the server saves it like a manual edit.
+  async function rewrite(instruction: string) {
+    setRewriting(true)
+    setActionError(null)
+    try {
+      const r = await api<MentionResponse>(`/mentions/${post.id}/response/revise`, { method: 'POST', body: JSON.stringify({ text, instruction }) })
+      setData(r)
+      setText(r.draft)
+      setInstruction(typed => (typed === instruction ? '' : typed))
+    } catch (e) {
+      setActionError((e as Error).message)
+    } finally {
+      setRewriting(false)
+    }
+  }
+
   async function submit() {
     setBusy(true)
     setActionError(null)
@@ -74,85 +101,79 @@ export function CounterPost({ post, company, onDone }: { post: Post; company: Co
     }
   }
 
-  return (
-    <div className="grid gap-5 md:grid-cols-[1fr_1.2fr]">
-      <section className="space-y-4">
-        <div className="rounded-panel border border-line p-3">
-          <div className="mb-2 flex items-center gap-2 text-xs text-fg-3">
-            <PlatformIcon p={post.platform} size={14} />
-            {PLATFORM_LABEL[post.platform]} · {post.handle} · {timeAgo(post.at)}
-          </div>
-          <p className="text-[15px] leading-6">{post.text}</p>
-          <div className="mt-2 text-xs text-fg-3">Reach ≈ {compact(post.reach)}</div>
-        </div>
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Claim check</h3>
-          <VerdictBadge v={claim.verdict} />
-          <p className="text-sm text-fg-2">{claim.reason}</p>
-        </div>
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Evidence used</h3>
-          {data && evidence.length === 0 ? (
-            <p className="rounded-panel bg-warning-bg p-3 text-sm text-warning">
-              No documents uploaded for {company.name}. The draft avoids factual claims — add documents in Companies.
-            </p>
-          ) : (
-            <ul className="space-y-2">
-              {evidence.map(d => (
-                <li key={d.docId} className="flex items-center gap-2 rounded-control border-l-2 border-accent bg-subtle px-3 py-2 text-sm">
-                  <FileText size={16} className="shrink-0 text-fg-3" />
-                  <span className="min-w-0 flex-1 truncate">{d.name}</span>
-                  <ClassBadge c={d.classification} />
-                </li>
-              ))}
-            </ul>
-          )}
-          <p className="text-xs text-fg-3">This assessment is based on the documents provided.</p>
-        </div>
-      </section>
+  const sources = evidence.map(d => d.name).join(', ')
 
-      <section className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Counter-post draft</h3>
-          <Badge>AI draft</Badge>
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid gap-5 md:grid-cols-2">
+        {/* Grid rows stretch: the quote grows so both columns end at the same line */}
+        <section className="flex flex-col gap-2">
+          <h3 className="text-sm font-medium">Original post</h3>
+          <blockquote className="flex-1 border-l-2 border-line pl-3">
+            <div className="mb-1 flex items-center gap-1.5 text-xs text-fg-3">
+              <PlatformIcon p={post.platform} size={14} />
+              {post.handle} · {timeAgo(post.at)}
+            </div>
+            <p className="text-[15px] leading-6 text-fg-2">{post.text}</p>
+          </blockquote>
+          <p className="rounded-panel bg-subtle p-3 text-sm text-fg-2">
+            <span className="font-medium text-fg">{VERDICT_LABEL[claim.verdict]}.</span> {claim.reason}
+          </p>
+        </section>
+
+        <div className="space-y-3">
+          <Field label="Counter-post" hint={sources ? `Based on ${sources}` : undefined}>
+            <textarea
+              value={text}
+              onChange={e => setText(e.target.value)}
+              onBlur={() => { saveDraft().catch((e: Error) => setActionError(e.message)) }}
+              disabled={!data || rewriting}
+              placeholder={loadError ? '' : 'Writing a draft…'}
+              className={cx(inputCls, 'h-auto w-full min-h-[200px] resize-y py-2.5 text-[15px] leading-6')}
+            />
+          </Field>
+          <form onSubmit={e => { e.preventDefault(); rewrite(instruction) }} className="space-y-2">
+            <div className="flex flex-wrap gap-1.5">
+              {PRESETS.map(([label, preset]) => (
+                <Button key={label} type="button" className="h-8 px-2.5" disabled={!data || rewriting} onClick={() => rewrite(preset)}>
+                  {label}
+                </Button>
+              ))}
+            </div>
+            <textarea
+              value={instruction}
+              onChange={e => setInstruction(e.target.value)}
+              // Enter sends, Shift+Enter adds a line
+              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); e.currentTarget.form?.requestSubmit() } }}
+              disabled={!data || rewriting}
+              maxLength={500}
+              rows={3}
+              placeholder="Or describe the change: mention the new hotline, sound less defensive…"
+              aria-label="What should AI change in the counter-post"
+              className={cx(inputCls, 'h-auto w-full resize-y py-2 text-sm leading-5')}
+            />
+            <div className="flex justify-end">
+              <Button type="submit" disabled={!data || rewriting || !instruction.trim()}>
+                <Sparkle size={16} />{rewriting ? 'Rewriting…' : 'Rewrite'}
+              </Button>
+            </div>
+          </form>
         </div>
-        <textarea
-          value={text}
-          onChange={e => setText(e.target.value)}
-          onBlur={() => { saveDraft().catch((e: Error) => setActionError(e.message)) }}
-          disabled={!data}
-          placeholder={loadError ? '' : 'Generating draft…'}
-          aria-label="Counter-post text"
-          className={cx(inputCls, 'h-auto w-full min-h-[240px] resize-y py-2 text-[15px] leading-6')}
-        />
-        <div className="text-right font-mono text-xs text-fg-3">{text.length} chars</div>
-        {data && (
-          <div className={cx('flex gap-2 rounded-panel p-3 text-sm', needsCompliance ? 'bg-warning-bg text-warning' : 'bg-success-bg text-success')}>
-            {needsCompliance ? <ShieldWarning size={18} className="shrink-0" /> : <Check size={18} className="shrink-0" />}
-            <span>
-              {needsCompliance
-                ? 'Disclosure check: relies on a confidential document. Compliance must approve before publishing.'
-                : 'Disclosure check: no confidential details found. Analyst approval is enough.'}
-            </span>
-          </div>
-        )}
-        {(data?.injectionBlocked ?? post.injection) && (
-          <div className="flex gap-2 rounded-panel bg-danger-bg p-3 text-sm text-danger">
-            <Warning size={18} className="shrink-0" />
-            Attempted AI manipulation in this cluster was blocked — the hidden instruction was not followed.
-          </div>
-        )}
-        {(loadError || actionError) && (
-          <p role="alert" className="text-sm text-danger">{loadError ?? actionError}</p>
-        )}
-        <div className="mt-auto flex flex-wrap justify-end gap-2 pt-2">
-          {loadError && <Button onClick={() => setAttempt(n => n + 1)}>Retry</Button>}
-          <Button onClick={copy} disabled={!data}>{copied ? 'Copied' : 'Copy'}</Button>
-          <Button variant="primary" onClick={submit} disabled={!data || busy || approval !== 'none'}>
-            {approval === 'approved' ? 'Approved' : approval === 'pending' ? 'Approval requested' : requestOnly ? 'Request approval' : 'Approve response'}
-          </Button>
-        </div>
-      </section>
+      </div>
+      {needsCompliance && (
+        <p className="text-sm text-warning">Uses a confidential document, so compliance must approve it.</p>
+      )}
+      {(loadError || actionError) && (
+        <p role="alert" className="text-sm text-danger">{loadError ?? actionError}</p>
+      )}
+
+      <div className="flex justify-end gap-2">
+        {loadError && <Button onClick={() => setAttempt(n => n + 1)}>Retry</Button>}
+        <Button onClick={copy} disabled={!data}>{copied ? 'Copied' : 'Copy'}</Button>
+        <Button variant="primary" onClick={submit} disabled={!data || busy || rewriting || approval !== 'none'}>
+          {approval === 'approved' ? 'Approved' : approval === 'pending' ? 'Approval requested' : requestOnly ? 'Request approval' : 'Approve'}
+        </Button>
+      </div>
     </div>
   )
 }

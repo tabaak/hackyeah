@@ -155,6 +155,7 @@ supabase-js сам оновлює токен; беріть його з `getSessi
   Перевірка може уточнити `verdict` / `reason` згадки; перечитайте згадку, якщо показуєте їх у фіді.
 * `POST /mentions/{id}/response/generate` — повторна генерація на основі документів компанії; скидає погодження. Якщо документів немає — чернетка без фактичних тверджень. Без доступного LLM — шаблонна чернетка.
 * `PATCH /mentions/{id}/response/draft` — `{ text }`; збереження відредагованого тексту. Скидає попереднє погодження і заново робить disclosure check.
+* `POST /mentions/{id}/response/revise` — `{ text, instruction }`; AI-переписування поточного тексту за інструкцією (тон, довжина, головна думка) з тими самими правилами (лише факти з документів). Зберігається як ручна правка; без доступного LLM — 503, текст не змінюється.
 * `POST /mentions/{id}/response/approve` — «Approve response»: погодження поточного тексту (фіксується хеш), згадка → `responded`. Якщо `needsCompliance=true`, аналітик отримує 409 — треба `request-approval`; `compliance` може погодити напряму.
 * `POST /mentions/{id}/response/request-approval` — «Request approval»: `approval.state` → `pending`, усі `compliance`-користувачі організації отримують сповіщення. Правка чернетки після запиту його скасовує.
 * `POST /mentions/{id}/response/decision` — рішення compliance `{ approve: boolean, comment?: string }` (тільки роль `compliance`, інакше 403; без активного запиту — 409). Погодження → згадка `responded`; автор запиту отримує сповіщення. Відхилення повертає `approval.state` у `none`.
