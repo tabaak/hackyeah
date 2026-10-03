@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.deps import get_current_user
-from app.routers import analytics, auth, companies, documents, feed, notifications, response, sources
+from app.routers import analytics, auth, companies, documents, feed, notifications, push, response, sources
 from app.services import demo
 
 logging.basicConfig(level=logging.INFO)
@@ -30,7 +30,7 @@ app.add_middleware(
 )
 
 api = APIRouter(prefix="/api/v1")
-for module in (auth, companies, documents, feed, response, analytics, notifications):
+for module in (auth, companies, documents, feed, response, analytics, notifications, push):
     api.include_router(module.router, dependencies=[Depends(get_current_user)])
 # Sources: the Meta webhook authenticates by provider signature, so auth is set per route there.
 api.include_router(sources.router)

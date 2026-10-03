@@ -1,9 +1,10 @@
 from app.db import get_db
+from app.services import push
 
 
 def notify(org_id: str, kind: str, title: str, severity: str, mention_id: str | None, roles: tuple[str, ...] | None = None,
            user_ids: list[str] | None = None) -> None:
-    """Fan out one notification per recipient (read state is per user)."""
+    """Fan out one notification per recipient (read state is per user); critical ones also go to their phones."""
     db = get_db()
     if user_ids is None:
         q = db.table("profiles").select("user_id").eq("organization_id", org_id)
@@ -16,6 +17,7 @@ def notify(org_id: str, kind: str, title: str, severity: str, mention_id: str | 
     ]
     if rows:
         db.table("notifications").insert(rows).execute()
+        push.send(user_ids, kind, title, mention_id)
 
 
 def notify_high_mentions(org_id: str, mentions: list[dict]) -> None:

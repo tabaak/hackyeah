@@ -68,6 +68,9 @@ class Settings:
     # Analyse every item with the LLM (~6 s each). Default: only items with a risk signal; the rest keep the keyword score.
     llm_analyse_all: bool = _env("LLM_ANALYSE_ALL", "false").lower() == "true"
 
+    # Expo push service. Optional: only needed when "enhanced push security" is on for the Expo project.
+    expo_access_token: str = _env("EXPO_ACCESS_TOKEN")
+
     # Demo data: seed sample mentions for every new company, and optionally add one every N seconds.
     demo_seed: bool = _env("DEMO_SEED", "true").lower() == "true"
     demo_live_interval_s: int = _int("DEMO_LIVE_INTERVAL_SECONDS", 0)

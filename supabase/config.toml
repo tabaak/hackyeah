@@ -4,7 +4,8 @@ project_id = "proofgate"
 
 [auth]
 site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173/**"]
+# palladion:// = mobile builds, exp:// = mobile app in Expo Go (development)
+additional_redirect_urls = ["http://localhost:5173/**", "palladion://**", "exp://**"]
 enable_signup = true  # needed so new Google users can sign up; other methods are disabled below
 enable_anonymous_sign_ins = false
 
