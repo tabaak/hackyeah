@@ -65,10 +65,10 @@ class ApprovalState(str, Enum):
 
 class SourceStatus(CamelModel):
     healthy: bool
-    last_sync_at: str | None = None
+    last_sync_at: int | None = None  # Unix ms
     detail: str | None = None
 
 
 class SyncRequested(CamelModel):
     accepted: bool = True
-    job_id: str | None = None
+    added: int = 0  # new mentions stored

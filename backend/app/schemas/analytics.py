@@ -2,12 +2,14 @@ from app.schemas.common import CamelModel, Platform, Verdict
 
 
 class AnalyticsSummary(CamelModel):
+    total: int  # mentions in range
     high: int
     medium: int
     low: int
+    open_high: int  # high severity, status new
     responded: int
     dismissed: int
-    clusters: int
+    clusters: int  # distinct coordinated clusters
     injections_blocked: int
 
 

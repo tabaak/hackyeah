@@ -15,4 +15,4 @@ class DocumentUpdate(CamelModel):
 
 class DocumentUrl(CamelModel):
     url: str
-    expires_at: str
+    expires_at: int  # Unix ms
