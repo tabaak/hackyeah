@@ -14,6 +14,7 @@ const Analytics = lazy(() => import('./pages/Analytics')) // recharts stays out 
 // login → onboarding (first company) → app
 function Gate({ need, children }: { need: 'guest' | 'onboarding' | 'app'; children: ReactNode }) {
   const { user, companies } = useStore()
+  if (user === undefined) return null // restoring session
   const at = !user ? 'guest' : companies.length === 0 ? 'onboarding' : 'app'
   if (at === need) return children
   return <Navigate to={{ guest: '/login', onboarding: '/onboarding', app: '/app/feed' }[at]} replace />

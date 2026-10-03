@@ -141,8 +141,6 @@ export function hourlySeries(companies: Company[]) {
   })
 }
 
-export const DEMO_USER = { name: 'Anna Nowak', email: 'anna.nowak@palladion.app' }
-
 // Social posts for the login reels — static, illustrative
 export const REEL_POSTS: { platform: Platform; handle: string; text: string; threat?: boolean }[] = [
   { platform: 'x', handle: '@mkt_insider', text: 'BREAKING: bank froze all withdrawals. Get your money out now!', threat: true },

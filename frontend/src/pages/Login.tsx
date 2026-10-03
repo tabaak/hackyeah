@@ -1,6 +1,5 @@
 import { Spinner } from '@phosphor-icons/react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import logoFigure from '../assets/logo-figure.png'
 import { REEL_POSTS, PLATFORM_LABEL } from '../lib/mock'
 import { useStore } from '../lib/store'
@@ -21,7 +20,7 @@ function PostCard({ p }: { p: (typeof REEL_POSTS)[number] }) {
         <span className="truncate">{PLATFORM_LABEL[p.platform]} · {p.handle}</span>
         {p.threat && (
           <span className="threat-scan ml-auto flex shrink-0 items-center gap-1 text-[11px] text-danger">
-            <span className="h-1.5 w-1.5 rounded-full bg-danger" /> Threat
+            Threat
           </span>
         )}
       </div>
@@ -69,14 +68,14 @@ function Reel({ offset, dir, speed, tilt, className }: { offset: number; dir: 'u
 const FADE = { maskImage: 'linear-gradient(to bottom, transparent, black 18%, black 82%, transparent)' }
 
 export default function Login() {
-  const { signIn } = useStore()
-  const nav = useNavigate()
+  const { signIn, authError } = useStore()
   const [pending, setPending] = useState(false)
 
+  // Redirects to Google; on return the store picks up the session and Gate routes onward
   async function go() {
     setPending(true)
     await signIn()
-    nav('/', { replace: true })
+    setPending(false)
   }
 
   return (
@@ -106,6 +105,7 @@ export default function Login() {
           {pending ? <Spinner size={20} className="animate-spin" /> : <GoogleIcon />}
           {pending ? 'Signing in…' : 'Continue with Google'}
         </button>
+        {authError && <p role="alert" className="mt-4 text-sm text-danger">{authError}</p>}
       </section>
     </main>
   )
