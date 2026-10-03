@@ -1,7 +1,7 @@
 """8. Sources and ingestion (internal, no UI). All parsers write to the single `mentions` table."""
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
-from app.deps import not_implemented
+from app.deps import get_current_user, not_implemented
 from app.schemas.common import Platform, SourceStatus, SyncRequested
 
 router = APIRouter(prefix="/feed/sources", tags=["sources"])
@@ -14,13 +14,13 @@ async def facebook_webhook(request: Request):
     not_implemented()
 
 
-@router.post("/{platform}/sync", response_model=SyncRequested, status_code=202)
+@router.post("/{platform}/sync", response_model=SyncRequested, status_code=202, dependencies=[Depends(get_current_user)])
 def sync(platform: Platform):
     """Collection run for one platform (facebook, x, news via Serper/RSS, ...)."""
     not_implemented()
 
 
-@router.get("/{platform}/status", response_model=SourceStatus)
+@router.get("/{platform}/status", response_model=SourceStatus, dependencies=[Depends(get_current_user)])
 def status(platform: Platform):
     """Token validity, last sync, rate limits / remaining credits."""
     not_implemented()

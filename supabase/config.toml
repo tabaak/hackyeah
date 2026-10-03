@@ -1,0 +1,27 @@
+# Local Supabase CLI config (`supabase start`). Hosted project: mirror these in the Dashboard.
+# Only the settings ProofGate depends on; everything else uses CLI defaults.
+project_id = "proofgate"
+
+[auth]
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173/**"]
+enable_signup = true  # needed so new Google users can sign up; other methods are disabled below
+enable_anonymous_sign_ins = false
+
+# Google is the only sign-in method.
+[auth.email]
+enable_signup = false
+
+[auth.sms]
+enable_signup = false
+
+[auth.external.google]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+skip_nonce_check = false
+
+# Adds user_role and organization_id claims to the JWT (see migrations/*_init.sql).
+[auth.hook.custom_access_token]
+enabled = true
+uri = "pg-functions://postgres/public/custom_access_token_hook"

@@ -1,5 +1,5 @@
 """5. Counter-post for a mention. Owners: LLM generation and approval flow."""
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.deps import not_implemented, require_compliance
 from app.schemas.response import Decision, DraftUpdate, MentionResponse
@@ -37,7 +37,7 @@ def request_approval(mention_id: str):
     not_implemented()
 
 
-@router.post("/decision", response_model=MentionResponse)
+@router.post("/decision", response_model=MentionResponse, dependencies=[Depends(require_compliance)])
 def decide(mention_id: str, body: Decision):
-    """Compliance decision. Role `compliance` only (see deps.require_compliance)."""
+    """Compliance decision. Role `compliance` only."""
     not_implemented()

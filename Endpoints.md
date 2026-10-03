@@ -3,7 +3,7 @@
 Специфікація узгоджена з фронтендом (`frontend/src`). Типи та enum-значення відповідають `frontend/src/lib/mock.ts`.
 
 * Базовий шлях: `/api/v1`
-* Автентифікація: `Authorization: Bearer <supabase_jwt_token>` (для всіх шляхів, крім `/auth/*`)
+* Автентифікація: `Authorization: Bearer <supabase_jwt_token>` (для всіх шляхів, крім `POST /feed/sources/facebook/webhook`, який перевіряє підпис Meta)
 * Час — Unix ms (`at`, `createdAt`), як у фронтенді.
 
 ## Enum-значення
@@ -36,9 +36,9 @@
 
 ### 1. Автентифікація та користувач
 
-* `POST /auth/login` — обмін Google Sign-in токена (Supabase) на сесію. Кнопка «Continue with Google».
-* `GET /me` — поточний користувач `{ name, email, role }` (`analyst` / `compliance`).
-* `POST /auth/logout` — завершення сесії (кнопка Sign out).
+Вхід — **тільки Google**. Фронтенд викликає Supabase Auth напряму (`supabase.auth.signInWithOAuth({ provider: 'google' })`, вихід — `supabase.auth.signOut()`); окремих `/auth/login` і `/auth/logout` в API немає. Інші способи входу вимкнені в Supabase (`supabase/config.toml`), реєстрацію не через Google блокує тригер у БД, а API відхиляє токени з `app_metadata.provider != "google"` (403).
+
+* `GET /me` — поточний користувач `{ name, email, role }` (`analyst` / `compliance`). Роль і організація беруться з claims `user_role` / `organization_id`, які додає custom access token hook.
 
 ---
 

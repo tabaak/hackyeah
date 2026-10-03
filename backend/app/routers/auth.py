@@ -1,23 +1,12 @@
-"""1. Authentication and user."""
-from fastapi import APIRouter
+"""1. Current user. Sign-in itself is Google OAuth via Supabase Auth in the browser; the API only verifies the JWT."""
+from fastapi import APIRouter, Depends
 
-from app.deps import not_implemented
-from app.schemas.auth import LoginRequest, LoginResponse, Me
+from app.deps import get_current_user
+from app.schemas.auth import CurrentUser, Me
 
 router = APIRouter(tags=["auth"])
 
 
-@router.post("/auth/login", response_model=LoginResponse)
-def login(body: LoginRequest):
-    """Exchanges a Google Sign-in token for a Supabase session."""
-    not_implemented()
-
-
-@router.post("/auth/logout", status_code=204)
-def logout():
-    not_implemented()
-
-
 @router.get("/me", response_model=Me)
-def get_me():
-    not_implemented()
+def get_me(user: CurrentUser = Depends(get_current_user)):
+    return user
