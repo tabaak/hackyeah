@@ -55,6 +55,8 @@ class Settings:
 
     serper_api_key: str = _env("SERPER_API_KEY")
     apify_token: str = _env("APIFY_TOKEN")
+    apify_limit: int = _int("APIFY_LIMIT", 20)  # posts per query and run: bounds Apify cost
+    apify_max_age_days: int = _int("APIFY_MAX_AGE_DAYS", 30)  # search results can be old; skip posts older than this
 
     # Demo data: seed sample mentions for every new company, and optionally add one every N seconds.
     demo_seed: bool = _env("DEMO_SEED", "true").lower() == "true"

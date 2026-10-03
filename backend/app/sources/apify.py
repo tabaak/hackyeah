@@ -24,9 +24,13 @@ from app.schemas.feed import Mention
 APIFY_URL = "https://api.apify.com/v2/acts/{actor}/run-sync-get-dataset-items"
 
 ACTORS = {
-    Platform.x: "apidojo/tweet-scraper",
+    # xquik: $0.00015/post and usable on the free Apify plan. apidojo/tweet-scraper refuses free-plan runs
+    # ("Monthly run limit exceeded per user") and returns only `noResults` rows.
+    Platform.x: "xquik/x-tweet-scraper",
     Platform.facebook: "apify/facebook-search-scraper",  # keyword search; alternative: danek/facebook-search-ppr
-    Platform.threads: "igview-owner/threads-search-scraper",
+    # futurizerush: keyword search, ~$0.08 for a 10-post run on the free plan (igview-owner/threads-search-scraper
+    # costs about 5x more per post).
+    Platform.threads: "futurizerush/meta-threads-scraper",
 }
 
 
@@ -36,7 +40,7 @@ class ApifyError(RuntimeError):
 
 # Each function returns the list of run inputs for one platform (one actor run per input).
 def x_input(company: CompanyDraft, queries: list[str], limit: int) -> list[dict]:
-    return [{"searchTerms": queries, "maxItems": limit, "sort": "Latest"}]
+    return [{"searchTerms": queries, "maxItems": limit, "queryType": "Latest"}]
 
 
 def facebook_input(company: CompanyDraft, queries: list[str], limit: int) -> list[dict]:
@@ -46,8 +50,8 @@ def facebook_input(company: CompanyDraft, queries: list[str], limit: int) -> lis
 
 
 def threads_input(company: CompanyDraft, queries: list[str], limit: int) -> list[dict]:
-    # The actor takes a single `searchQuery`, so one run per query.
-    return [{"searchQuery": q, "sort": "recent", "maxPosts": max(limit, 20)} for q in queries]
+    # One run, first query only: the actor bills per post and per run, and `max_posts` (minimum 10) applies per keyword.
+    return [{"mode": "search", "keywords": queries[:1], "max_posts": max(limit, 10), "search_filter": "recent"}]
 
 
 INPUTS = {Platform.x: x_input, Platform.facebook: facebook_input, Platform.threads: threads_input}
@@ -81,16 +85,19 @@ def _ms(value, now_ms: int) -> int:
 
 
 def to_mention(item: dict, platform: Platform, company_id: str, now_ms: int) -> Mention | None:
-    text = _first(item, "text", "fullText", "full_text", "captionText", "caption.text", "caption", "message", "postText", "previewTitle", "content")
-    url = _first(item, "url", "postUrl", "twitterUrl", "topLevelUrl", "link")
+    if item.get("record_type") not in (None, "post"):  # Threads actor can also emit profile rows
+        return None
+    text = _first(item, "text", "text_content", "fullText", "full_text", "captionText", "caption.text", "caption", "message", "postText", "previewTitle", "content")
+    url = _first(item, "url", "postUrl", "post_url", "twitterUrl", "topLevelUrl", "link")
     if not text:
         return None
     handle = _first(item, "author.userName", "author.username", "user.username", "username", "user.id", "pageName.id") or ""
-    author = _first(item, "author.name", "user.name", "user.fullName", "pageName.name", "username") or handle or platform.value
+    author = _first(item, "author.name", "user.name", "user.fullName", "pageName.name", "display_name", "username") or handle or platform.value
     reach = sum(
         int(_first(item, *keys) or 0)
-        for keys in (("likeCount", "likes", "likesCount"), ("retweetCount", "shares", "sharesCount", "repostCount"),
-                     ("replyCount", "comments", "commentsCount", "directReplyCount"))
+        for keys in (("likeCount", "like_count", "likes", "likesCount"),
+                     ("retweetCount", "shares", "sharesCount", "repostCount", "repost_count"),
+                     ("replyCount", "reply_count", "comments", "commentsCount", "directReplyCount"))
     )
     ident = str(_first(item, "id", "postId", "post_id") or url or text)
     return Mention(

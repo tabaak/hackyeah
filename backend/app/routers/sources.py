@@ -1,12 +1,12 @@
 """8. Sources and ingestion (internal, no UI). All sources write to the single `mentions` table."""
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 
 from app.config import settings
 from app.db import get_db
 from app.deps import get_current_user
 from app.schemas.auth import CurrentUser
 from app.schemas.common import Platform, SourceStatus, SyncRequested
-from app.services import news
+from app.services import news, social
 from app.services.timeutil import to_ms
 
 router = APIRouter(prefix="/feed/sources", tags=["sources"])
@@ -21,8 +21,17 @@ async def facebook_webhook(request: Request):
 
 
 @router.post("/{platform}/sync", response_model=SyncRequested, status_code=202)
-def sync(platform: Platform, user: CurrentUser = Depends(get_current_user)):
-    """Collection run for every company of the caller's organization. Implemented: news (Serper)."""
+def sync(platform: Platform, background: BackgroundTasks, user: CurrentUser = Depends(get_current_user)):
+    """Collection run for every company of the caller's organization.
+    news (Serper) runs inside the request and returns `added`. x / facebook / threads (Apify) take minutes and cost
+    credits, so they run in the background (`added` is 0; watch the feed and `status`); 409 while one is running."""
+    if platform in social.PLATFORMS:
+        if not settings.apify_token:
+            raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "APIFY_TOKEN is not set")
+        if not social.try_start(user.organization_id, platform):
+            raise HTTPException(status.HTTP_409_CONFLICT, f"A {platform.value} sync is already running")
+        background.add_task(social.sync_org, user.organization_id, platform)
+        return SyncRequested(accepted=True, added=0)
     if platform != Platform.news:
         raise HTTPException(status.HTTP_501_NOT_IMPLEMENTED, NOT_CONFIGURED)
     if not settings.serper_api_key:
@@ -44,4 +53,7 @@ def source_status(platform: Platform, user: CurrentUser = Depends(get_current_us
     if platform == Platform.news:
         ok = bool(settings.serper_api_key)
         return SourceStatus(healthy=ok, last_sync_at=last, detail=None if ok else "SERPER_API_KEY is not set")
+    if platform in social.PLATFORMS:
+        ok = bool(settings.apify_token)
+        return SourceStatus(healthy=ok, last_sync_at=last, detail=None if ok else "APIFY_TOKEN is not set")
     return SourceStatus(healthy=False, last_sync_at=last, detail=NOT_CONFIGURED)
