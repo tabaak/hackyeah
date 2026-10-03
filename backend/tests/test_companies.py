@@ -79,6 +79,8 @@ def client(monkeypatch):
     monkeypatch.setattr(routes, "get_db", lambda: db)
     monkeypatch.setattr(settings, "demo_seed", False)
     monkeypatch.setattr(routes.news, "sync_company", lambda _: None)
+    monkeypatch.setattr(routes.logos, "signed_urls", lambda _: {})
+    monkeypatch.setattr(routes.logos, "remove", lambda _: None)
     with TestClient(app) as client:
         yield client, db
 
@@ -149,3 +151,33 @@ def test_demo_seeding_remains_available(client, monkeypatch):
     response = client.post("/api/v1/companies", json=BODY, headers=headers())
     assert response.status_code == 201
     assert seeded == [response.json()["id"]]
+
+
+@pytest.mark.parametrize("website", ["javascript:alert(document.cookie)", "data:text/html,<script>x</script>", "kestrel.example"])
+def test_website_must_be_http_link(client, website):
+    client, db = client
+    assert client.post("/api/v1/companies", json={**BODY, "website": website}, headers=headers()).status_code == 422
+    assert db.rows["companies"] == []
+
+
+def test_company_lists_are_bounded(client):
+    client, _ = client
+    assert client.post("/api/v1/companies", json={**BODY, "aliases": ["a"] * 51}, headers=headers()).status_code == 422
+    assert client.post("/api/v1/companies", json={**BODY, "people": ["x" * 201]}, headers=headers()).status_code == 422
+
+
+@pytest.mark.parametrize("role,old,new,status", [
+    ("analyst", "restricted", "public", 403),
+    ("analyst", "confidential", "internal", 403),
+    ("analyst", "internal", "confidential", 200),
+    ("compliance", "restricted", "public", 200),
+])
+def test_only_compliance_lowers_classification(client, monkeypatch, role, old, new, status):
+    client, db = client
+    from app.routers import documents as doc_routes
+    monkeypatch.setattr(doc_routes, "get_db", lambda: db)
+    db.rows["documents"].append({"id": "d1", "organization_id": "o1", "name": "f.pdf", "size": 1,
+                                 "classification": old, "status": "ready"})
+    response = client.patch("/api/v1/documents/d1", json={"classification": new}, headers=headers(user_role=role))
+    assert response.status_code == status
+    assert db.rows["documents"][0]["classification"] == (new if status == 200 else old)

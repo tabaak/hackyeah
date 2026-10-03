@@ -130,15 +130,25 @@ def test_members_see_only_their_organization(db, two_orgs):
         assert db.column("select company_id from public.mentions") == [two_orgs["company_a"]]
 
 
-def test_members_cannot_write_into_other_orgs(db, two_orgs):
+@pytest.mark.parametrize("query", [
+    "insert into public.companies (organization_id, name, sector, country) values (%(org_a)s, 'Own', 'Banking', 'Poland')",
+    "insert into public.companies (organization_id, name, sector, country) values (%(org_b)s, 'Planted', 'Banking', 'Poland')",
+    "update public.companies set website = 'javascript:alert(1)' where id = %(company_a)s",
+    "delete from public.companies where id = %(company_b)s",
+    "update public.mentions set status = 'dismissed'",
+    "update public.profiles set name = 'Anna N.' where user_id = %(a)s",
+    "update public.notifications set read_at = now()",
+])
+def test_clients_write_only_through_the_api(db, two_orgs, query):
+    """Direct PostgREST writes would bypass the API's validation and role checks."""
     with db.as_user(two_orgs["a"]):
-        assert db.value("insert into public.companies (organization_id, name, sector, country) "
-                        "values (%s, 'Own', 'Banking', 'Poland') returning id", two_orgs["org_a"])
-        error = db.fails("insert into public.companies (organization_id, name, sector, country) "
-                         "values (%s, 'Planted', 'Banking', 'Poland')", two_orgs["org_b"])
-        assert isinstance(error, psycopg.errors.InsufficientPrivilege)
-        assert db.run("update public.companies set name = 'Hijacked' where id = %s", two_orgs["company_b"]) == 0
-        assert db.run("delete from public.companies where id = %s", two_orgs["company_b"]) == 0
+        try:
+            with db.conn.transaction():
+                db.conn.execute(query, two_orgs)
+            error = None
+        except psycopg.Error as e:
+            error = e
+    assert isinstance(error, psycopg.errors.InsufficientPrivilege)
     assert db.value("select name from public.companies where id = %s", two_orgs["company_b"]) == "Aegis Works"
 
 
@@ -223,18 +233,6 @@ def test_responses_and_approvals_take_the_org_of_their_mention(db, two_orgs):
 
 # --- mentions ---------------------------------------------------------------------------------------
 
-def test_members_update_status_of_their_own_mentions_only(db, two_orgs):
-    own, other = db.mention(two_orgs["company_a"]), db.mention(two_orgs["company_b"])
-    with db.as_user(two_orgs["a"]):
-        assert db.run("update public.mentions set status = 'dismissed' where id = %s", own) == 1
-        assert db.run("update public.mentions set status = 'dismissed' where id = %s", other) == 0
-    assert db.value("select status from public.mentions where id = %s", other) == "new"
-
-
-@pytest.mark.xfail(strict=True, reason=(
-    "Policy 'org members update mention status' allows updating every column, so any member can rewrite "
-    "verdict/severity/text straight through Supabase (bypassing the API). Fix: revoke update on public.mentions "
-    "from authenticated; grant update (status) on public.mentions to authenticated."))
 def test_members_cannot_rewrite_ai_verdicts(db, two_orgs):
     mention = db.mention(two_orgs["company_a"])
     with db.as_user(two_orgs["a"]):
@@ -263,11 +261,6 @@ def test_ingestion_is_idempotent(db, two_orgs):
 
 # --- profiles and notifications ---------------------------------------------------------------------
 
-def test_users_can_rename_themselves(db, two_orgs):
-    with db.as_user(two_orgs["a"]):
-        assert db.run("update public.profiles set name = 'Anna N.' where user_id = %s", two_orgs["a"]) == 1
-
-
 @pytest.mark.parametrize("change", ["role = 'compliance'", "organization_id = %(org_b)s"])
 def test_users_cannot_escalate_or_switch_org(db, two_orgs, change):
     with db.as_user(two_orgs["a"]):
@@ -283,20 +276,13 @@ def test_users_cannot_escalate_or_switch_org(db, two_orgs, change):
         [("analyst", two_orgs["org_a"])]
 
 
-def test_users_cannot_edit_other_profiles(db, two_orgs):
-    with db.as_user(two_orgs["a"]):
-        assert db.run("update public.profiles set name = 'x' where user_id = %s", two_orgs["b"]) == 0
-
-
 def test_notifications_are_per_user(db, two_orgs):
     colleague, _ = db.signup("carl@kestrel.example")
     db.invite(colleague, two_orgs["org_a"])
     mine = db.notification(two_orgs["a"], two_orgs["org_a"])
-    theirs = db.notification(colleague, two_orgs["org_a"])
+    db.notification(colleague, two_orgs["org_a"])
     with db.as_user(two_orgs["a"]):
         assert db.column("select id from public.notifications") == [mine]
-        assert db.run("update public.notifications set read_at = now() where id = %s", mine) == 1
-        assert db.run("update public.notifications set read_at = now() where id = %s", theirs) == 0
 
 
 # --- approvals --------------------------------------------------------------------------------------

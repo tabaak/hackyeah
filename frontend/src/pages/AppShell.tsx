@@ -1,9 +1,9 @@
-import { Bell, Broadcast, Buildings, ChartLine, Check, Palette, SignOut } from '@phosphor-icons/react'
+import { Bell, Broadcast, Buildings, ChartLine, Palette, SignOut } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { PLATFORM_LABEL } from '../lib/mock'
 import { THEMES, useStore, type Theme } from '../lib/store'
-import { cx, PlatformIcon, timeAgo } from '../lib/ui'
+import { cx, timeAgo } from '../lib/ui'
 import { LogoMark, PRODUCT_NAME } from './Login'
 
 const TABS = [
@@ -48,7 +48,6 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
                   onClick={() => { document.getElementById(id)?.hidePopover(); nav(`/app/feed?respond=${p.id}`) }}
                 >
                   <div className="mb-1 flex items-center gap-2 text-xs text-fg-3">
-                    <PlatformIcon p={p.platform} size={14} />
                     <span>{PLATFORM_LABEL[p.platform]} · {name(p.companyId)}</span>
                     <span className="ml-auto">{timeAgo(p.at)}</span>
                   </div>
@@ -87,7 +86,7 @@ function ThemeMenu({ id, placement }: { id: string; placement: string }) {
             key={t}
             onClick={() => { setTheme(t); document.getElementById(id)?.hidePopover() }}
             aria-pressed={theme === t}
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-sm motion-control hover:bg-subtle"
+            className={cx('flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-sm motion-control hover:bg-subtle', theme === t && 'bg-selected font-medium')}
           >
             <span
               aria-hidden="true"
@@ -95,7 +94,6 @@ function ThemeMenu({ id, placement }: { id: string; placement: string }) {
               style={{ background: `linear-gradient(135deg, ${THEME_META[t].swatch[0]} 50%, ${THEME_META[t].swatch[1]} 50%)` }}
             />
             {THEME_META[t].label}
-            {theme === t && <Check size={14} className="ml-auto text-accent" />}
           </button>
         ))}
       </div>

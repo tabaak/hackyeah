@@ -1,8 +1,9 @@
-import { FileText, Globe, Plus, Sparkle, UploadSimple } from '@phosphor-icons/react'
+import { FileText, Globe, Sparkle } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CompanyWizard, DocsUpload, type PendingDoc } from '../components/CompanySetup'
-import type { Classification, Company } from '../lib/mock'
+import { CompanyForm, CompanyWizard, DocsUpload, type PendingDoc } from '../components/CompanySetup'
+import CompanyLogo from '../components/CompanyLogo'
+import type { Classification, Company, CompanyDraft } from '../lib/mock'
 import { useStore } from '../lib/store'
 import { Badge, Button, ClassBadge, cx, Dialog, PageActions } from '../lib/ui'
 
@@ -22,12 +23,35 @@ function summarize(c: Company) {
 }
 
 function CompanyCard({ c }: { c: Company }) {
-  const { posts, uploadDocuments } = useStore()
+  const { posts, uploadDocuments, updateCompany } = useStore()
+  const [editing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [editError, setEditError] = useState('')
   const [uploading, setUploading] = useState(false)
   const [docs, setDocs] = useState<PendingDoc[]>([])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const close = () => { setUploading(false); setDocs([]); setError('') }
+
+  function closeEdit() {
+    if (saving) return
+    setEditing(false)
+    setEditError('')
+  }
+
+  async function edit(draft: CompanyDraft) {
+    if (saving) return
+    setSaving(true)
+    setEditError('')
+    try {
+      await updateCompany(c.id, draft)
+      setEditing(false)
+    } catch (e) {
+      setEditError(e instanceof Error ? e.message : 'The company could not be updated. Please try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   async function upload() {
     setBusy(true)
@@ -54,21 +78,21 @@ function CompanyCard({ c }: { c: Company }) {
   const profile = [
     { label: 'Also known as', value: c.aliases.length > 0 && <div className="flex flex-wrap gap-1.5">{c.aliases.map(a => <Badge key={a}>{a}</Badge>)}</div> },
     { label: 'Key people', value: c.people.length > 0 && <span className="text-fg-2">{c.people.join(', ')}</span> },
-    { label: 'Risk topics', value: c.topics.length > 0 && <div className="flex flex-wrap gap-1.5">{c.topics.map(t => <Badge key={t} tone="ready">{t}</Badge>)}</div> },
+    { label: 'Risk topics', value: c.topics.length > 0 && <div className="flex flex-wrap gap-1.5">{c.topics.map(t => <Badge key={t}>{t}</Badge>)}</div> },
   ].filter(x => x.value)
 
   return (
     <article className="overflow-hidden rounded-panel border border-line bg-surface">
       <header className="flex flex-wrap items-center gap-3 p-4">
-        <div className="grid size-10 shrink-0 place-items-center rounded-control bg-selected font-semibold text-accent">{c.name[0]}</div>
+        <CompanyLogo company={c} />
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-base font-semibold">{c.name}</h2>
           <p className="flex flex-wrap items-center gap-x-3 text-xs text-fg-3">
             <span>{c.sector}, {c.country}</span>
-            {c.website && <a href={c.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-accent hover:underline"><Globe size={14} />{c.website.replace(/^https?:\/\//, '').replace(/\/+$/, '')}</a>}
+            {c.website && <a href={c.website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline underline-offset-2"><Globe size={14} />{c.website.replace(/^https?:\/\//, '').replace(/\/+$/, '')}</a>}
           </p>
         </div>
-        <Badge tone="success">Monitoring</Badge>
+        <Button className="h-8" aria-label={`Edit company ${c.name}`} onClick={() => { setEditError(''); setEditing(true) }}>Edit</Button>
       </header>
 
       <dl className="grid grid-cols-2 divide-line border-y border-line sm:grid-cols-4 sm:divide-x">
@@ -102,7 +126,7 @@ function CompanyCard({ c }: { c: Company }) {
               <h3 className="text-sm font-semibold">Documents</h3>
               <p className="text-xs text-fg-3">Evidence the agent checks claims against</p>
             </div>
-            <Button className="h-8" onClick={() => setUploading(true)}><UploadSimple size={16} />Add</Button>
+            <Button className="h-8" onClick={() => setUploading(true)}>Add</Button>
           </div>
           <p className="mt-3 flex gap-2 rounded-control bg-subtle px-3 py-2 text-sm text-fg-2">
             <Sparkle size={16} className="mt-0.5 shrink-0 text-accent" />{summarize(c)}
@@ -129,6 +153,13 @@ function CompanyCard({ c }: { c: Company }) {
         </section>
       </div>
 
+      <Dialog wide open={editing} onClose={closeEdit} title="Edit company">
+        {editError && <p role="alert" className="mb-4 text-sm text-danger">{editError}</p>}
+        <fieldset disabled={saving} aria-busy={saving} className="min-w-0">
+          <CompanyForm initial={c} onSubmit={edit} submitLabel={saving ? 'Saving…' : 'Save changes'} aside={<Button type="button" variant="ghost" onClick={closeEdit}>Cancel</Button>} />
+        </fieldset>
+      </Dialog>
+
       <Dialog open={uploading} onClose={close} title={`Add documents to ${c.name}`}>
         <DocsUpload docs={docs} onChange={setDocs} />
         {error && <p role="alert" className="mt-3 text-sm text-danger">{error}</p>}
@@ -149,11 +180,11 @@ export default function Companies() {
   return (
     <div className="motion-page space-y-4">
       <PageActions>
-        <Button variant="primary" onClick={() => setAdding(true)}><Plus size={16} />Track another company</Button>
+        <Button variant="primary" onClick={() => setAdding(true)}>Track another company</Button>
       </PageActions>
       {companies.map(c => <CompanyCard key={c.id} c={c} />)}
       <Dialog wide open={adding} onClose={() => setAdding(false)} title="Track another company">
-        <CompanyWizard onDone={async (c, docs) => { await addCompany(c, docs); setAdding(false) }} />
+        <CompanyWizard onDone={async (c, docs, logo) => { await addCompany(c, docs, logo); setAdding(false) }} onExit={() => setAdding(false)} />
       </Dialog>
     </div>
   )

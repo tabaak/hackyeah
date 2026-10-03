@@ -1,4 +1,4 @@
-import { Check, Copy, FileText, ShieldWarning, Warning } from '@phosphor-icons/react'
+import { Check, FileText, ShieldWarning, Warning } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { PLATFORM_LABEL, type Company, type Post } from '../lib/mock'
 import { Badge, Button, ClassBadge, compact, inputCls, cx, PlatformIcon, timeAgo, VerdictBadge } from '../lib/ui'
@@ -95,7 +95,7 @@ export function CounterPost({ post, company, onDone }: { post: Post; company: Co
           </div>
         )}
         <div className="mt-auto flex flex-wrap justify-end gap-2 pt-2">
-          <Button onClick={copy}>{copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'Copied' : 'Copy'}</Button>
+          <Button onClick={copy}>{copied ? 'Copied' : 'Copy'}</Button>
           <Button variant="primary" onClick={onDone}>{needsCompliance ? 'Request approval' : 'Approve response'}</Button>
         </div>
       </section>

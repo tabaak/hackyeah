@@ -6,13 +6,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.db import DOCUMENTS_BUCKET, get_db, not_found
 from app.deps import get_current_user
 from app.schemas.auth import CurrentUser
-from app.schemas.common import Role
+from app.schemas.common import Classification, Role
 from app.schemas.documents import Doc, DocumentUpdate, DocumentUrl
 from app.services import documents, mappers
 from app.services.timeutil import now, to_ms
 
 router = APIRouter(tags=["documents"])
 URL_TTL_S = 300
+LEVELS = list(Classification)  # public < internal < confidential < restricted
 
 
 def load_document(document_id: str, user: CurrentUser) -> dict:
@@ -24,8 +25,11 @@ def load_document(document_id: str, user: CurrentUser) -> dict:
 
 @router.patch("/documents/{document_id}", response_model=Doc)
 def update_document(document_id: str, body: DocumentUpdate, user: CurrentUser = Depends(get_current_user)):
-    """Changes the classification (chunks follow via a DB trigger)."""
-    load_document(document_id, user)
+    """Changes the classification (chunks follow via a DB trigger). Lowering it is compliance only:
+    otherwise an analyst could declassify a restricted file to read it or send it to the cloud model."""
+    doc = load_document(document_id, user)
+    if LEVELS.index(body.classification) < LEVELS.index(Classification(doc["classification"])) and user.role != Role.compliance:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Only compliance can lower a document's classification")
     row = get_db().table("documents").update({"classification": body.classification.value}).eq("id", document_id).execute().data[0]
     return mappers.doc(row, user.role)
 

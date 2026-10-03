@@ -20,7 +20,8 @@ export default function Onboarding() {
         <section className="rounded-panel border border-line bg-surface p-6">
           <CompanyWizard
             initialCompany={DEMO_COMPANY_PROFILE}
-            onDone={async (c, docs) => { await addCompany(c, docs); nav('/app/feed', { replace: true }) }}
+            onDone={async (c, docs, logo) => { await addCompany(c, docs, logo); nav('/app/feed', { replace: true }) }}
+            onExit={() => nav('/app/companies', { replace: true })}
             aside={
               <Button type="button" variant="ghost" className="-ml-3" onClick={() => { signOut(); nav('/login', { replace: true }) }}>
                 Sign out

@@ -17,6 +17,7 @@ export interface Doc {
 
 export interface Company {
   id: string
+  logoUrl?: string | null
   name: string
   website: string
   aliases: string[]
@@ -28,7 +29,7 @@ export interface Company {
   createdAt: number
 }
 
-export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt'>
+export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt' | 'logoUrl'>
 
 export const DEMO_COMPANY_PROFILE: CompanyDraft = {
   name: 'Goldman Sachs',

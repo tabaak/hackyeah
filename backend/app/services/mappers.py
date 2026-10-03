@@ -16,11 +16,12 @@ def doc(row: dict, role: Role) -> Doc:
                summary=row.get("summary") if visible else None)
 
 
-def company(row: dict, role: Role) -> Company:
+def company(row: dict, role: Role, logo_url: str | None = None) -> Company:
     docs = sorted(row.get("documents") or [], key=lambda d: d.get("created_at") or "")
     return Company(
         id=row["id"], name=row["name"], website=row["website"], aliases=row["aliases"], sector=row["sector"],
         country=row["country"], people=row["people"], topics=row["topics"],
+        logo_url=logo_url,
         documents=[doc(d, role) for d in docs], created_at=to_ms(row["created_at"]),
     )
 
