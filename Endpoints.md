@@ -74,7 +74,9 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 **Mention (Post)**
 ```
 { id, companyId, platform, author, handle, text, at, severity, verdict, reason,
-  reach, cluster: { size, accounts } | null, injection: boolean, status, url /* string або null: посилання на оригінал */ }
+  reach, cluster: { size, accounts } | null, injection: boolean, status,
+  url /* string або null: посилання на оригінал */, avatarUrl /* string або null: аватар автора */,
+  images /* string[]: картинки допису або мініатюра статті; може бути порожнім */ }
 ```
 `injection` = у тексті виявлено приховану інструкцію для ШІ; її проігноровано.
 
@@ -188,7 +190,7 @@ UI для ролей: аналітик бачить «Approve response», якщ
 
 Адмін/воркери; фронтенд їх не викликає.
 
-* `POST /feed/sources/{platform}/sync` → 202 `{ accepted, added }` — збір для всіх компаній організації. `news` (Google News через Serper, потрібен `SERPER_API_KEY`, інакше 503) виконується в самому запиті, `added` — кількість нових згадок. `x`, `facebook`, `threads` (Apify, потрібен `APIFY_TOKEN`, інакше 503) іде у фоні й коштує кредити Apify: відповідь одразу, `added` = 0, нові згадки зʼявляються в стрічці за хвилини; поки попередній запуск не завершився — 409. Лишає лише пости, де згадано назву компанії чи її аліас (≥ 3 символи). Інші платформи — 501.
+* `POST /feed/sources/{platform}/sync` → 202 `{ accepted, added }` — збір для всіх компаній організації. Усе йде у фоні: відповідь одразу, `added` = 0, нові згадки зʼявляються в стрічці за хвилини; поки попередній запуск тієї ж платформи не завершився — 409. `news` — Google News через Serper (10 статей на сторінку, `SERPER_PAGES` сторінок на запит; потрібен `SERPER_API_KEY`) плюс безкоштовний Google News RSS (до 100 статей, `NEWS_RSS`); без обох — 503. `x`, `facebook`, `threads` — Apify (потрібен `APIFY_TOKEN`, інакше 503), коштує кредити; ліміт постів за запуск — `APIFY_LIMIT_X` / `_FACEBOOK` / `_THREADS`. До LLM потрапляють лише елементи з ознакою ризику (`LLM_ANALYSE_ALL=true` — усі). Лишає лише пости, де згадано назву компанії чи її аліас (≥ 3 символи). Інші платформи — 501.
 * `POST /feed/sources/facebook/webhook` — події Graph API (501, поки немає конектора; автентифікація підписом Meta, не JWT).
 * `GET /feed/sources/{platform}/status` — `{ healthy, lastSyncAt, detail }`: чи налаштований конектор і коли платформа востаннє дала реальну (не демо) згадку.
 

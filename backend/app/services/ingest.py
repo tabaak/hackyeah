@@ -1,7 +1,23 @@
 """Writing mentions: dedup on (company_id, platform, external_id), analysis, notifications."""
+import logging
+
+from postgrest.exceptions import APIError
+
 from app.db import get_db
 from app.services import analysis, retrieval
 from app.services.notifications import notify_high_mentions
+
+
+log = logging.getLogger(__name__)
+MEDIA_COLUMNS = ("avatar_url", "media_urls")  # added by migration 20261003210000_mention_media.sql
+
+
+def _upsert(rows: list[dict]) -> list[dict]:
+    return (
+        get_db().table("mentions")
+        .upsert(rows, on_conflict="company_id,platform,external_id", ignore_duplicates=True)
+        .execute().data
+    )
 
 
 def insert_mentions(company: dict, rows: list[dict]) -> list[dict]:
@@ -11,11 +27,13 @@ def insert_mentions(company: dict, rows: list[dict]) -> list[dict]:
     for r in rows:
         r["company_id"] = company["id"]
         r["organization_id"] = company["organization_id"]
-    inserted = (
-        get_db().table("mentions")
-        .upsert(rows, on_conflict="company_id,platform,external_id", ignore_duplicates=True)
-        .execute().data
-    )
+    try:
+        inserted = _upsert(rows)
+    except APIError as e:
+        if not any(c in str(e) for c in MEDIA_COLUMNS):
+            raise
+        log.warning("mentions has no avatar_url/media_urls columns yet: run the media migration. Saving without them.")
+        inserted = _upsert([{k: v for k, v in r.items() if k not in MEDIA_COLUMNS} for r in rows])
     notify_high_mentions(company["organization_id"], inserted)
     return inserted
 

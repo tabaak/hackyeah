@@ -57,6 +57,8 @@ export interface Post {
   injection: boolean
   status: PostStatus
   url?: string | null // link to the original post or article
+  avatarUrl?: string | null // author's picture: the source's own link, may expire
+  images?: string[] // pictures attached to the post, or the article thumbnail
 }
 
 export const SECTORS: Record<string, string[]> = {

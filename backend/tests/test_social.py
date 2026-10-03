@@ -52,13 +52,13 @@ def test_regex_metacharacters_in_names_are_escaped():
 def test_to_item_has_the_ingest_shape():
     m = apify.to_mention(TWEET, Platform.x, "c1", NOW)
     item = social.to_item(m)
-    assert set(item) == {"platform", "external_id", "url", "author", "handle", "text", "published_at", "reach"}
+    assert set(item) == {"platform", "external_id", "url", "author", "handle", "text", "published_at", "reach", "avatar_url", "media_urls"}
     assert item["platform"] == "x" and item["external_id"] == m.id and item["reach"] == 8
     assert item["published_at"].startswith("2026-10-02T10:00:00")
 
 
 def test_fetch_passes_bounds_and_filters_irrelevant_posts(monkeypatch):
-    monkeypatch.setattr(social.settings, "apify_limit", 7)
+    monkeypatch.setattr(social.settings, "apify_limit_x", 7)
     monkeypatch.setattr(social.settings, "apify_max_age_days", 14)
     seen = {}
     unrelated = apify.to_mention({**TWEET, "id": "2", "text": "Weather is nice today"}, Platform.x, "c1", NOW)

@@ -34,4 +34,5 @@ def mention(row: dict) -> Mention:
         reason=row["reason"], reach=row["reach"],
         cluster=Cluster(size=c["size"], accounts=c["unique_authors"]) if c else None,
         injection=row["injection_suspected"], status=row["status"], url=row.get("url"),
+        avatar_url=row.get("avatar_url"), images=row.get("media_urls") or [],
     )
