@@ -23,7 +23,7 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
       <button
         popoverTarget={id}
         aria-label={`Notifications, ${notifications.openCount} open incidents`}
-        className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
+        className="relative flex h-11 w-11 cursor-pointer md:h-9 md:w-9 items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
       >
         <Bell size={20} />
         {notifications.openCount > 0 && (
@@ -79,7 +79,7 @@ function ThemeMenu({ id, placement }: { id: string; placement: string }) {
       <button
         popoverTarget={id}
         aria-label="Change theme"
-        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
+        className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text md:h-9 md:w-9"
       >
         <Palette size={20} />
       </button>
@@ -168,16 +168,18 @@ export default function AppShell() {
             </button>
           </div>
         </div>
-        <nav className="flex gap-1 overflow-x-auto pb-2" aria-label="Main">
-          {TABS.map(t => (
-            <NavLink key={t.to} to={t.to} className={p => cx(navLink(p), 'h-11 shrink-0 before:hidden')}>
-              <t.icon size={18} />{t.label}
-            </NavLink>
-          ))}
-        </nav>
       </header>
 
-      <main className="p-4 md:p-6">
+      {/* Mobile tab bar: thumb reach, and the sticky header stays one row */}
+      <nav className="fixed inset-x-0 bottom-0 z-20 flex border-t border-sidebar-active bg-sidebar pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Main">
+        {TABS.map(t => (
+          <NavLink key={t.to} to={t.to} className={({ isActive }) => cx('flex h-14 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] motion-control', isActive ? 'text-sidebar-text' : 'text-sidebar-muted')}>
+            {({ isActive }) => <><t.icon size={22} weight={isActive ? 'fill' : 'regular'} />{t.label}</>}
+          </NavLink>
+        ))}
+      </nav>
+
+      <main className="p-4 pb-[calc(5rem+env(safe-area-inset-bottom))] md:p-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <h1 key={pathname} className="motion-page font-display text-2xl font-medium leading-none tracking-tight md:translate-y-px md:text-[28px]">{title}</h1>
           <div ref={setActions} className="flex items-center gap-2 empty:hidden" />

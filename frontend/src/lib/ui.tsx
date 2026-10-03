@@ -110,15 +110,15 @@ export function Dialog({ open, onClose, title, children, wide }: { open: boolean
       ref={ref}
       onClose={onClose}
       onClick={e => e.target === ref.current && onClose()}
-      className={cx('m-auto max-h-[90vh] w-[calc(100%-32px)] rounded-dialog border border-line bg-surface p-0 text-fg shadow-2xl', wide ? 'max-w-3xl' : 'max-w-lg')}
+      className={cx('m-auto max-h-[90dvh] w-[calc(100%-32px)] rounded-dialog max-sm:mb-0 max-sm:w-full max-sm:max-w-none max-sm:rounded-b-none border border-line bg-surface p-0 text-fg shadow-2xl', wide ? 'max-w-3xl' : 'max-w-lg')}
     >
       {open && (
-        <div className="flex max-h-[90vh] flex-col">
-          <div className="flex items-center justify-between border-b border-line px-5 py-4">
+        <div className="flex max-h-[90dvh] flex-col">
+          <div className="flex items-center justify-between border-b border-line px-4 py-3 sm:px-5 sm:py-4">
             <h2 className="text-lg font-semibold">{title}</h2>
             <Button variant="ghost" className="w-9 px-0" onClick={onClose} aria-label="Close"><XIcon size={18} /></Button>
           </div>
-          <div className="overflow-y-auto p-5">{children}</div>
+          <div className="overflow-y-auto p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-5">{children}</div>
         </div>
       )}
     </dialog>
