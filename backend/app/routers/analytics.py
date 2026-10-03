@@ -1,12 +1,12 @@
 """6. Analytics. Common params: company_id (optional, default all), range (24h | 7d | 30d, default 24h)."""
 from collections import Counter
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, Query
 
 from app.db import get_db
 from app.deps import get_current_user
-from app.schemas.analytics import AnalyticsSummary, HourBucket, PlatformReach, VerdictCount
+from app.schemas.analytics import AnalyticsSummary, DayBucket, HourBucket, PlatformReach, VerdictCount
 from app.schemas.auth import CurrentUser
 from app.schemas.common import Platform, Verdict
 from app.services.timeutil import iso, now
@@ -52,6 +52,28 @@ def mentions_by_hour(company_id: str | None = None, user: CurrentUser = Depends(
         if start in buckets:
             buckets[start][r["severity"]] += 1
     return [HourBucket(hour=f"{s.hour:02d}:00", low=c["low"], medium=c["medium"], high=c["high"]) for s, c in buckets.items()]
+
+
+def day_buckets(rows: list[dict], days: int, today: datetime) -> list[DayBucket]:
+    """`days` UTC calendar days ending with `today`, oldest first; rows need severity and published_at."""
+    start = today.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=days - 1)
+    buckets = {(start + timedelta(days=i)).date().isoformat(): Counter() for i in range(days)}
+    for r in rows:
+        day = datetime.fromisoformat(r["published_at"].replace("Z", "+00:00")).astimezone(timezone.utc).date().isoformat()
+        if day in buckets:
+            buckets[day][r["severity"]] += 1
+    return [DayBucket(day=d, low=c["low"], medium=c["medium"], high=c["high"]) for d, c in buckets.items()]
+
+
+@router.get("/mentions-by-day", response_model=list[DayBucket])
+def mentions_by_day(
+    company_id: str | None = None,
+    range: str = Query("7d", pattern="^(7d|30d)$"),
+    user: CurrentUser = Depends(get_current_user),
+):
+    """Last 7 or 30 calendar days (UTC), oldest first, by severity. Daily counterpart of mentions-by-hour."""
+    days = 7 if range == "7d" else 30
+    return day_buckets(_mentions(user, company_id, range, "severity, published_at"), days, now())
 
 
 @router.get("/reach-by-platform", response_model=list[PlatformReach])

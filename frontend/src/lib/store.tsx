@@ -2,11 +2,29 @@ import { createContext, use, useEffect, useRef, useState, type ReactNode } from 
 import type { CompanyDraft, PendingDoc } from '../components/CompanySetup'
 import { api, ApiError, supabase } from './api'
 import { CompanyCreatedError, companyLogoError, uploadCompanyLogo } from './companyLogo'
-import { makePost, seedPosts, type Company, type Doc, type Post, type PostStatus } from './mock'
+import { PLATFORM_LABEL, type Company, type Doc, type Post, type PostStatus, type Severity } from './mock'
 
 export type User = { name: string; email: string; role: 'analyst' | 'compliance' }
 
 const POLL_MS = 3000 // while any document is processing (indexing + AI summary)
+const FEED_POLL_MS = 12_000 // live feed and bell: Endpoints.md recommends polling every 10-15 s
+
+export type AppNotification = {
+  id: string
+  kind: 'critical_mention' | 'approval_requested' | 'approval_decided'
+  mentionId: string | null
+  title: string
+  severity: Severity
+  at: number
+  read: boolean
+}
+type Notifications = { items: AppNotification[]; openCount: number }
+const NO_NOTIFICATIONS: Notifications = { items: [], openCount: 0 }
+
+// The API knows more platforms than the UI has icons and labels for; skip those instead of crashing.
+const knownPlatform = (p: Post) => p.platform in PLATFORM_LABEL
+const fetchPosts = (signal?: AbortSignal) => api<Post[]>('/mentions?limit=200', { signal }).then(ps => ps.filter(knownPlatform))
+const fetchNotifications = (signal?: AbortSignal) => api<Notifications>('/notifications', { signal })
 
 function uploadDocs(companyId: string, docs: PendingDoc[], token: string) {
   const form = new FormData()
@@ -43,6 +61,9 @@ interface Store {
   setCompanyLogo: (companyId: string, file: File | null) => Promise<void>
   posts: Post[]
   setPostStatus: (id: string, s: PostStatus) => void
+  refreshFeed: () => Promise<void>
+  notifications: Notifications
+  markNotificationRead: (id: string) => void
   theme: Theme
   setTheme: (t: Theme) => void
 }
@@ -62,6 +83,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const sessionRevision = useRef(0)
   const [companies, setCompanies] = useState<Company[]>([])
   const [posts, setPosts] = useState<Post[]>([])
+  const [notifications, setNotifications] = useState<Notifications>(NO_NOTIFICATIONS)
+  const pendingStatus = useRef(new Map<string, PostStatus>()) // optimistic changes the server has not confirmed yet
   // Older builds stored 'dark'; anything unknown falls back to graphite
   const [theme, setTheme] = useState<Theme>(() => {
     const t = load<string>('pg.theme', 'graphite')
@@ -91,6 +114,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setUser(null)
         setCompanies([])
         setPosts([])
+        setNotifications(NO_NOTIFICATIONS)
         setSessionError(null)
         return
       }
@@ -109,6 +133,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setUser(undefined)
       setCompanies([])
       setPosts([])
+      setNotifications(NO_NOTIFICATIONS)
       setSessionError(null)
 
       // Defer Supabase calls out of its synchronous auth callback to avoid its session lock.
@@ -116,12 +141,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         Promise.all([
           api<User>('/me', { signal }, session.access_token),
           api<Company[]>('/companies', { signal }, session.access_token),
-        ]).then(([profile, cs]) => {
+          fetchPosts(signal),
+          fetchNotifications(signal),
+        ]).then(([profile, cs, ps, ns]) => {
           if (stopped || revision !== sessionRevision.current) return
           hydrated = id
           pending = null
           setCompanies(cs)
-          setPosts(p => (p.length ? p : cs.flatMap(seedPosts)))
+          setPosts(ps)
+          setNotifications(ns)
           setAuthError(null)
           setUser(profile)
         }).catch((e: unknown) => {
@@ -165,17 +193,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.theme = theme
   }, [theme])
 
-  // Simulated live feed: a new mention every 15 s
+  // Live feed and bell: reload from the API while signed in. Statuses the server has not confirmed yet are kept.
+  const refreshFeed = async () => {
+    const acct = account.current
+    if (!acct) return
+    try {
+      const [ps, ns] = await Promise.all([fetchPosts(), fetchNotifications()])
+      if (account.current !== acct) return // signed out or switched account meanwhile
+      setPosts(ps.map(p => (pendingStatus.current.has(p.id) ? { ...p, status: pendingStatus.current.get(p.id)! } : p)))
+      setNotifications(ns)
+    } catch { /* keep what is shown; the next poll retries */ }
+  }
+  const refreshRef = useRef(refreshFeed)
+  useEffect(() => { refreshRef.current = refreshFeed })
+
   useEffect(() => {
-    if (!user || companies.length === 0) return
-    let i = 0
-    const t = setInterval(() => {
-      const c = companies[i % companies.length]
-      setPosts(p => [makePost(c, (i * 7 + 3) % 10), ...p].slice(0, 200))
-      i++
-    }, 15_000)
+    if (!user) return
+    const t = setInterval(() => { if (!document.hidden) void refreshRef.current() }, FEED_POLL_MS)
     return () => clearInterval(t)
-  }, [user, companies])
+  }, [user])
 
   const value: Store = {
     user,
@@ -199,6 +235,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setUser(null)
       setCompanies([])
       setPosts([])
+      setNotifications(NO_NOTIFICATIONS)
       setSessionError(null)
       setAuthError(null)
     },
@@ -219,7 +256,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ])
       if (owner !== account.current || revision !== sessionRevision.current) throw new Error('Your session changed. Sign in again to reload your companies.')
       setCompanies(cs => [...cs, c])
-      setPosts(p => [...seedPosts(c), ...p].sort((a, b) => b.at - a.at))
+      void refreshFeed() // news for the new company arrive in the background; the poll picks up the rest
       // The company exists now; retrying the wizard would create a duplicate, so point to the card instead.
       if (uploadErrors.length) throw new CompanyCreatedError(uploadErrors.join(' '))
     },
@@ -257,7 +294,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setCompanies(cs => cs.map(c => c.id === companyId ? { ...c, logoUrl } : c))
     },
     posts,
-    setPostStatus: (id, s) => setPosts(p => p.map(x => (x.id === id ? { ...x, status: s } : x))),
+    setPostStatus: (id, s) => {
+      const before = posts.find(p => p.id === id)?.status
+      const apply = (status: PostStatus) => setPosts(p => p.map(x => (x.id === id ? { ...x, status } : x)))
+      pendingStatus.current.set(id, s)
+      apply(s)
+      api<Post>(`/mentions/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status: s }) })
+        .catch(() => { if (before) apply(before) })
+        .finally(() => pendingStatus.current.delete(id))
+    },
+    refreshFeed,
+    notifications,
+    markNotificationRead: id => {
+      setNotifications(n => {
+        const item = n.items.find(x => x.id === id)
+        if (!item || item.read) return n
+        return { items: n.items.map(x => (x.id === id ? { ...x, read: true } : x)), openCount: Math.max(0, n.openCount - 1) }
+      })
+      void api(`/notifications/${id}/read`, { method: 'PATCH' }).catch(() => {})
+    },
     theme,
     setTheme,
   }

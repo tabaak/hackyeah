@@ -74,7 +74,7 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 **Mention (Post)**
 ```
 { id, companyId, platform, author, handle, text, at, severity, verdict, reason,
-  reach, cluster: { size, accounts } | null, injection: boolean, status }
+  reach, cluster: { size, accounts } | null, injection: boolean, status, url /* string або null: посилання на оригінал */ }
 ```
 `injection` = у тексті виявлено приховану інструкцію для ШІ; її проігноровано.
 
@@ -167,6 +167,7 @@ UI для ролей: аналітик бачить «Approve response», якщ
 
 * `GET /analytics/summary` — `{ total, high, medium, low, openHigh, responded, dismissed, clusters, injectionsBlocked }`. Плитки: «Mentions · 24h» = `total`, «High priority · open» = `openHigh`, «Coordinated clusters» = `clusters`, «Responses approved» = `responded`.
 * `GET /analytics/mentions-by-hour` — 24 погодинні бакети від найстаршого `{ hour: "HH:00", low, medium, high }`; `hour` — **UTC**, переведіть у локальний час для підписів.
+* `GET /analytics/mentions-by-day?range=7d|30d` — 7 або 30 календарних днів (UTC), від найстаршого, `{ day: "YYYY-MM-DD", low, medium, high }`. Для графіків 7d/30d.
 * `GET /analytics/reach-by-platform` — `[{ platform, mentions, reach }]` для всіх 7 платформ, за спаданням `reach`.
 * `GET /analytics/claim-verification` — `[{ verdict, count }]` для згадок medium/high, усі 4 verdict.
 

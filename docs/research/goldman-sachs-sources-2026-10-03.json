@@ -1,0 +1,974 @@
+{
+  "company": "Goldman Sachs",
+  "collected_at": "2026-10-03T16:54:11.203179+00:00",
+  "sources": {
+    "serper_google_news": {
+      "status": "ok",
+      "count": 10,
+      "query": "Goldman Sachs",
+      "period": "last month"
+    },
+    "google_news_rss": {
+      "status": "ok",
+      "count": 20,
+      "query": "Goldman Sachs when:30d",
+      "feed_url": "https://news.google.com/rss/search?q=Goldman%20Sachs%20when%3A30d&hl=en-US&gl=US&ceid=US:en"
+    },
+    "apify_x": {
+      "status": "ok_no_results",
+      "count": 0,
+      "raw_count": 10,
+      "no_results_markers": 10,
+      "actor": "apidojo/tweet-scraper",
+      "query": "Goldman Sachs",
+      "requested_limit": 10,
+      "raw_payload_file": "goldman-sachs-apify-x-raw-2026-10-03.json"
+    },
+    "apify_facebook": {
+      "status": "ok",
+      "count": 10,
+      "actor": "apify/facebook-search-scraper",
+      "query": "Goldman Sachs",
+      "requested_limit": 10
+    }
+  },
+  "items": [
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "CNBC",
+      "handle": "cnbc.com",
+      "text": "Goldman adds 4 new names to its favorite stocks list — including a 143% upside defense call. Goldman Sachs has added four new names to its monthly \"European Conviction List\" stock picks list.",
+      "url": "https://www.cnbc.com/2026/10/02/goldman-sachs-conviction-list.html",
+      "at_ms": 1790960051232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "CNBC",
+      "handle": "cnbc.com",
+      "text": "Goldman Sachs CEO succession planning faces one big problem. The Goldman Sachs board has reportedly discussed replacing CEO David Solomon, 64, with president John Waldron, 57, as early as next year.",
+      "url": "https://www.cnbc.com/2026/09/29/goldman-sachs-ceo-succession-planning.html",
+      "at_ms": 1790787251232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "Reuters",
+      "handle": "reuters.com",
+      "text": "Waldron long seen as next Goldman CEO. The question is when. John Waldron has long been seen as ‌successor to Goldman Sachs CEO David Solomon. The question was when the transition would happen.",
+      "url": "https://www.reuters.com/legal/transactional/goldmans-board-has-discussed-plan-name-john-waldron-next-ceo-wsj-reports-2026-09-28/",
+      "at_ms": 1790700851232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "Yahoo Finance",
+      "handle": "finance.yahoo.com",
+      "text": "Goldman Sachs Says a $7.6 Trillion AI Spending Boom Is Coming. Skip the GPUs, Follow the Money Here. Goldman Sachs sees hyperscalers accelerating toward a spending level that dwarfs anything the tech industry has attempted before, and the companies...",
+      "url": "https://finance.yahoo.com/technology/ai/articles/goldman-sachs-says-7-6-111940473.html",
+      "at_ms": 1790441651232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "handle": "goldmansachs.com",
+      "text": "Can AI Investment Drive S&P 500 Earnings Even Higher?. S&P 500 EPS are forecast to grow about 11% in both 2027 (to $415) and 2028 ($460). Earnings are expected to be driven by solid GDP growth and a fading tailwind...",
+      "url": "https://www.goldmansachs.com/insights/articles/can-ai-investment-drive-s-and-p-500-earnings-even-higher",
+      "at_ms": 1790441651232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "handle": "goldmansachs.com",
+      "text": "Why the Bond Market May Be the Stock Market's Biggest Risk. Rising bond yields may pose the biggest risk to gains in the S&P 500, says Tony Pasquariello, global head of hedge fund coverage in Goldman Sachs FICC and...",
+      "url": "https://www.goldmansachs.com/insights/the-markets/why-the-bond-market-may-be-the-stock-markets-biggest-risk",
+      "at_ms": 1790441651232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "Reuters",
+      "handle": "reuters.com",
+      "text": "Goldman Sachs sees slightly softer fixed income, currencies, commodities business, higher costs. Goldman Sachs sees slightly softer fixed income, currencies, commodities business, higher costs ... NEW YORK, Sept 16 (Reuters) - The chief of Goldman ​Sachs (GS.",
+      "url": "https://www.reuters.com/business/finance/goldman-ceo-says-fixed-income-currencies-commodities-business-slightly-softer-q3-2026-09-16/",
+      "at_ms": 1789836851232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "Reuters",
+      "handle": "reuters.com",
+      "text": "Goldman Sachs asset arm raises $11.7 billion in private equity funds. Goldman Sachs asset arm raises $11.7 billion in private equity funds ... The Goldman Sachs Group, Inc. Follow. NEW YORK, Sept 15 (Reuters) - Goldman Sachs' (GS.",
+      "url": "https://www.reuters.com/legal/transactional/goldman-sachs-asset-arm-raises-117-billion-private-equity-funds-2026-09-15/",
+      "at_ms": 1789836851232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "handle": "goldmansachs.com",
+      "text": "Why Global Bond Yields Are Expected to Stay Elevated. Why Global Bond Yields Are Expected to Stay Elevated ... Energy-driven inflation worries may decline over the next six months, and greater clarity on AI-...",
+      "url": "https://www.goldmansachs.com/insights/articles/why-global-bond-yields-are-expected-to-stay-elevated",
+      "at_ms": 1789232051232,
+      "reach": 0
+    },
+    {
+      "source": "Serper / Google News",
+      "platform": "news",
+      "author": "CNBC",
+      "handle": "cnbc.com",
+      "text": "Conversations from Goldman Sachs' Communacopia: AI blowback, broadband and Disney's free tier. Conversations from Goldman Sachs' Communacopia: AI blowback, broadband and Disney's free tier ... The public opposition to artificial intelligence and data...",
+      "url": "https://www.cnbc.com/2026/09/09/goldman-sachs-communcacopia-technology-conference-ai.html",
+      "at_ms": 1789232051232,
+      "reach": 0
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "text": "Why Global Bond Yields Are Expected to Stay Elevated - Goldman Sachs. <a href=\"https://news.google.com/rss/articles/CBMioAFBVV95cUxNS25GWl9WZ1p1S3VJekwtZWRyT0ZCa09sdXVxaUJaMXZURjd0U2xZbndjSmtaRC1Kc2IzMVZmb2l2aDNGTVZOTEhsYWljX2xySF9oTUozTWdmdld4UEpSR0t3Z2J1MmFqZDYwRzlqWmt0akZ3Yk5hTFFXa290d2ZPMjRhazZrYXk1MTlaZkk0clhXLVdGcHRSSjdrQjEzbi1i?oc=5\" target=\"_blank\">Why Global Bond Yields Are Expected to Stay Elevated</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Goldman Sachs</font>",
+      "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNS25GWl9WZ1p1S3VJekwtZWRyT0ZCa09sdXVxaUJaMXZURjd0U2xZbndjSmtaRC1Kc2IzMVZmb2l2aDNGTVZOTEhsYWljX2xySF9oTUozTWdmdld4UEpSR0t3Z2J1MmFqZDYwRzlqWmt0akZ3Yk5hTFFXa290d2ZPMjRhazZrYXk1MTlaZkk0clhXLVdGcHRSSjdrQjEzbi1i?oc=5",
+      "published": "Wed, 09 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "CNBC",
+      "text": "Goldman adds 4 new names to its favorite stocks list — including a 143% upside defense call - CNBC. <a href=\"https://news.google.com/rss/articles/CBMidEFVX3lxTFBjT1I3MmtXY1ZsRExUT1A1TDhub25zLUwzek1fb054eTNKdEp1N1FCMExWRUZ3MWpGOXZOcFpCZlJCeF8wR2pCNnVjbEVWMnl5dFVJMGtkZ0NHcVdlcHNXNEYyOWtCd2VHTWF5ODFETDR0TEst?oc=5\" target=\"_blank\">Goldman adds 4 new names to its favorite stocks list — including a 143% upside defense call</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">CNBC</font>",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBjT1I3MmtXY1ZsRExUT1A1TDhub25zLUwzek1fb054eTNKdEp1N1FCMExWRUZ3MWpGOXZOcFpCZlJCeF8wR2pCNnVjbEVWMnl5dFVJMGtkZ0NHcVdlcHNXNEYyOWtCd2VHTWF5ODFETDR0TEst?oc=5",
+      "published": "Fri, 02 Oct 2026 10:25:18 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Yahoo Finance",
+      "text": "Goldman Sachs in talks to acquire Palmer Square, Bloomberg says - Yahoo Finance. <a href=\"https://news.google.com/rss/articles/CBMioAFBVV95cUxQaWhrMGIxUUIzS1NIX3N3eVRzQjVmVExweVptM0JpR190MUlNSDJmVnFTX3VzRmx2b25QMS14M085ODc3dy16Rm94dlY1RzI3bklES2oxSUkxa3REX3UzVGs1RTVFZ3RfWmFGSVpCOUJGalpKOHRrbms0WkpNblJ1YTUtV1B0ckF6WWdseTB1S1BIeFk4cXVmNTBfV0tRenZt?oc=5\" target=\"_blank\">Goldman Sachs in talks to acquire Palmer Square, Bloomberg says</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Yahoo Finance</font>",
+      "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQaWhrMGIxUUIzS1NIX3N3eVRzQjVmVExweVptM0JpR190MUlNSDJmVnFTX3VzRmx2b25QMS14M085ODc3dy16Rm94dlY1RzI3bklES2oxSUkxa3REX3UzVGs1RTVFZ3RfWmFGSVpCOUJGalpKOHRrbms0WkpNblJ1YTUtV1B0ckF6WWdseTB1S1BIeFk4cXVmNTBfV0tRenZt?oc=5",
+      "published": "Tue, 22 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Reuters",
+      "text": "Goldman Sachs asset arm raises $11.7 billion in private equity funds - Reuters. <a href=\"https://news.google.com/rss/articles/CBMiuwFBVV95cUxOUkx3aUVwQjV0SUt2RWE4N09seFJ1NUJPQTk5UFpFTFI0YmxOTEdlQjdBaXpkekF4RWNici1sekd5bEFhb1dxc05ZQ1ROblR0Vm1kVGFzSjEyWHV3OEotTmNfSW4xUXE5NjBfZVdHUV9VN2ZCU0dZTVNYUUlpdGFHMTI3bDVFYWhwNGVWRkhkVzY1cFpMSkxhdkhQYWRfVjlBV1hfbUoyMm50V29hek1XVW55SUNaMFR1VTJv?oc=5\" target=\"_blank\">Goldman Sachs asset arm raises $11.7 billion in private equity funds</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Reuters</font>",
+      "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOUkx3aUVwQjV0SUt2RWE4N09seFJ1NUJPQTk5UFpFTFI0YmxOTEdlQjdBaXpkekF4RWNici1sekd5bEFhb1dxc05ZQ1ROblR0Vm1kVGFzSjEyWHV3OEotTmNfSW4xUXE5NjBfZVdHUV9VN2ZCU0dZTVNYUUlpdGFHMTI3bDVFYWhwNGVWRkhkVzY1cFpMSkxhdkhQYWRfVjlBV1hfbUoyMm50V29hek1XVW55SUNaMFR1VTJv?oc=5",
+      "published": "Tue, 15 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Fortune",
+      "text": "Goldman Sachs: 8 in 10 Gen Z and millennials have extra jobs as retirement fears mount - Fortune. <a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxPSWVyclFXWHhDY1dPYXpQc3BXVDNLRkg1MFRhLTFMcFR4d3FuWG9OX1M2Sk0tYnA5SS1NVGRpMFFMMjFqQ1I1Q2x1MjlzLW9LMW5ucTV6R09PQ21WQ0pwRWZueE1nMl8xOUVSQkpTeFE5OUNkNVpXLXFfTHBBTkZ5YTFkVUp0eE9pTDlzMUJ5SQ?oc=5\" target=\"_blank\">Goldman Sachs: 8 in 10 Gen Z and millennials have extra jobs as retirement fears mount</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Fortune</font>",
+      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPSWVyclFXWHhDY1dPYXpQc3BXVDNLRkg1MFRhLTFMcFR4d3FuWG9OX1M2Sk0tYnA5SS1NVGRpMFFMMjFqQ1I1Q2x1MjlzLW9LMW5ucTV6R09PQ21WQ0pwRWZueE1nMl8xOUVSQkpTeFE5OUNkNVpXLXFfTHBBTkZ5YTFkVUp0eE9pTDlzMUJ5SQ?oc=5",
+      "published": "Thu, 01 Oct 2026 16:42:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "text": "Can AI Investment Drive S&P 500 Earnings Even Higher? - Goldman Sachs. <a href=\"https://news.google.com/rss/articles/CBMipgFBVV95cUxPemRqUVUwRkM4NkE3ajl3bVRncjNRY2s0b0dDWkhTLV9XcDhZQ1ljNXNNTV9OaVZjcS1Cek5rWUgybTlBYThmS015WmpyTHBWQnp5OE5JT0Fmd2RiR0FWTmlNRXQ2LUtjb0dnOHVFM2FwRkpJbS0xSmFzZHRwNjFLdko5OWl4TmlqSXRaaGNSeU5lQXd6aDBDT2Y0eEZFUUloZzN0NVVn?oc=5\" target=\"_blank\">Can AI Investment Drive S&P 500 Earnings Even Higher?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Goldman Sachs</font>",
+      "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPemRqUVUwRkM4NkE3ajl3bVRncjNRY2s0b0dDWkhTLV9XcDhZQ1ljNXNNTV9OaVZjcS1Cek5rWUgybTlBYThmS015WmpyTHBWQnp5OE5JT0Fmd2RiR0FWTmlNRXQ2LUtjb0dnOHVFM2FwRkpJbS0xSmFzZHRwNjFLdko5OWl4TmlqSXRaaGNSeU5lQXd6aDBDT2Y0eEZFUUloZzN0NVVn?oc=5",
+      "published": "Wed, 23 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "CNBC",
+      "text": "Goldman Sachs CEO succession planning faces one big problem - CNBC. <a href=\"https://news.google.com/rss/articles/CBMif0FVX3lxTFBFUUY5ZkY5Y0V5Z3VHSnUxOXQ5V1dPSGdaWW5KWVoxdjl3WnVoX0V0ZkNlclJiYVYyRVo2YWpMdHpJVUJYb1lTZUZsUXpkLTJLczVSYUt4VWhrM0pNTjM2d2pWWlZkcnRyUUJRQlUySy1DemtfM0NVRXpMWEFwY2PSAYQBQVVfeXFMT3hWVzRhS0NKdzZIclBKbWlPbVBjU1JNMDRqdTl3RGJGU05FY0VsaExMRW16dkRQMWZFVDR0YTVSWmRyOTdzTS1WdDZ1SHYtTXpWeUhlZU5ONTAxcG5DdDFwdk1ZNDJCdEJ5bzhXWnVQMVQ1YXkydW5Ec1B4UWJBczF2ajRX?oc=5\" target=\"_blank\">Goldman Sachs CEO succession planning faces one big problem</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">CNBC</font>",
+      "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBFUUY5ZkY5Y0V5Z3VHSnUxOXQ5V1dPSGdaWW5KWVoxdjl3WnVoX0V0ZkNlclJiYVYyRVo2YWpMdHpJVUJYb1lTZUZsUXpkLTJLczVSYUt4VWhrM0pNTjM2d2pWWlZkcnRyUUJRQlUySy1DemtfM0NVRXpMWEFwY2PSAYQBQVVfeXFMT3hWVzRhS0NKdzZIclBKbWlPbVBjU1JNMDRqdTl3RGJGU05FY0VsaExMRW16dkRQMWZFVDR0YTVSWmRyOTdzTS1WdDZ1SHYtTXpWeUhlZU5ONTAxcG5DdDFwdk1ZNDJCdEJ5bzhXWnVQMVQ1YXkydW5Ec1B4UWJBczF2ajRX?oc=5",
+      "published": "Tue, 29 Sep 2026 20:50:10 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Yahoo Finance",
+      "text": "Goldman Sachs Says a $7.6 Trillion AI Spending Boom Is Coming. Skip the GPUs, Follow the Money Here - Yahoo Finance. <a href=\"https://news.google.com/rss/articles/CBMijwFBVV95cUxOVXIzRnFTN01wV3R4a19LVG1jYTJtZ29YZGhkYnEyNFJxRXJmaWI0aHllTG8yWnZoOXBMRTJDWnFwOVJWQ0x0VmpsbV9qaFJVRXp0b2VhSXkwNDR4WFR5WGtPaG83S2FRS0ZfWFRQdzIwaWE2b1JVM2RXQ3JvdVFpRnlIbjVuVzBHY0hrRFF4SQ?oc=5\" target=\"_blank\">Goldman Sachs Says a $7.6 Trillion AI Spending Boom Is Coming. Skip the GPUs, Follow the Money Here</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Yahoo Finance</font>",
+      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOVXIzRnFTN01wV3R4a19LVG1jYTJtZ29YZGhkYnEyNFJxRXJmaWI0aHllTG8yWnZoOXBMRTJDWnFwOVJWQ0x0VmpsbV9qaFJVRXp0b2VhSXkwNDR4WFR5WGtPaG83S2FRS0ZfWFRQdzIwaWE2b1JVM2RXQ3JvdVFpRnlIbjVuVzBHY0hrRFF4SQ?oc=5",
+      "published": "Sat, 26 Sep 2026 11:19:40 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Reuters",
+      "text": "Waldron long seen as next Goldman CEO. The question is when - Reuters. <a href=\"https://news.google.com/rss/articles/CBMixwFBVV95cUxPZU9ydmUxdEpxTEppVlRYakhUaUxHOEVFZGtJNlc3M1ZKdlQzVHltUFJKV0hlVDN3UmVJRmg5Q0paYzJhS0hpM2M2VXk2bGp6cmZKSzQ0ZVdaMlVhX1cwbnJaRkxFa2ZhZDdfekRyLVNlVlVHWDBvQkQyMWxWQ0FtMjJETjNNby1mNWt2OWRSMGtoUmdSMUVlSE9peHhqMUUwTVljRzhWdGJBdWVjTEtTMFlHLWY4TkFXU1ZGTEstbHpyNS04aHpB?oc=5\" target=\"_blank\">Waldron long seen as next Goldman CEO. The question is when</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Reuters</font>",
+      "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPZU9ydmUxdEpxTEppVlRYakhUaUxHOEVFZGtJNlc3M1ZKdlQzVHltUFJKV0hlVDN3UmVJRmg5Q0paYzJhS0hpM2M2VXk2bGp6cmZKSzQ0ZVdaMlVhX1cwbnJaRkxFa2ZhZDdfekRyLVNlVlVHWDBvQkQyMWxWQ0FtMjJETjNNby1mNWt2OWRSMGtoUmdSMUVlSE9peHhqMUUwTVljRzhWdGJBdWVjTEtTMFlHLWY4TkFXU1ZGTEstbHpyNS04aHpB?oc=5",
+      "published": "Mon, 28 Sep 2026 22:59:59 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "text": "Why the Bond Market May Be the Stock Market's Biggest Risk - Goldman Sachs. <a href=\"https://news.google.com/rss/articles/CBMiqwFBVV95cUxOMGdYOU9aZlIwcm91ZWtBZlJteDJSTkJZTU1oNExfWmVzdkdSY2ZuYWxRY1ZaUlNsSUstcVk2b09OeFR4Ymx6OVpsanE5TERNYTJCdDhjNTE1bEVGLWtNV1luZGY2ZmF3QUNzTFozaHd2SGdhZzdJaFM4TFpIdVB0VHpuREpON0g4Z1p5QjBRb05mN0NaNUx5NFhQbkF4dVZZWmdKc1czNU9OZWM?oc=5\" target=\"_blank\">Why the Bond Market May Be the Stock Market's Biggest Risk</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Goldman Sachs</font>",
+      "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOMGdYOU9aZlIwcm91ZWtBZlJteDJSTkJZTU1oNExfWmVzdkdSY2ZuYWxRY1ZaUlNsSUstcVk2b09OeFR4Ymx6OVpsanE5TERNYTJCdDhjNTE1bEVGLWtNV1luZGY2ZmF3QUNzTFozaHd2SGdhZzdJaFM4TFpIdVB0VHpuREpON0g4Z1p5QjBRb05mN0NaNUx5NFhQbkF4dVZZWmdKc1czNU9OZWM?oc=5",
+      "published": "Wed, 23 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "CNBC",
+      "text": "Conversations from Goldman Sachs' Communacopia: AI blowback, broadband and Disney's free tier - CNBC. <a href=\"https://news.google.com/rss/articles/CBMikwFBVV95cUxONG1vYllUd29QeGR2UlNaY0JQNG5Zcm5ieThnVFJYU0dBdmszQ2NsUDltRTlwYzFWVXRuSDl0RkVkUVd6YkNxOEgwTzkza0NIWHdkZ0NBTjRCdUJxRHo5M1hUZnZOMGNpYlR5TTVXUENoUEQ1MzBJdFdkV2hodnk4eGZRRzNQTTFmeDM3bnNhUWtZeW_SAZgBQVVfeXFMTmE2T2FZNThDN3N6ZDBGelNaN09YVGpET1dQSnlqZUtnamtOdVNiT2N2SWI1cE9CSG9aYVg4THZXMVNQbWdqZFl2X3pRNUIyUy1YU3FycEV6Mm5uZTh6RWlHQTAxNGdxTEt6aGxhR3plcmZ5SFJ6MHE1N05qczl0QnFsdm1pVHY2M0tPQ1BTREJhdDhCUVFZLVA?oc=5\" target=\"_blank\">Conversations from Goldman Sachs' Communacopia: AI blowback, broadband and Disney's free tier</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">CNBC</font>",
+      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxONG1vYllUd29QeGR2UlNaY0JQNG5Zcm5ieThnVFJYU0dBdmszQ2NsUDltRTlwYzFWVXRuSDl0RkVkUVd6YkNxOEgwTzkza0NIWHdkZ0NBTjRCdUJxRHo5M1hUZnZOMGNpYlR5TTVXUENoUEQ1MzBJdFdkV2hodnk4eGZRRzNQTTFmeDM3bnNhUWtZeW_SAZgBQVVfeXFMTmE2T2FZNThDN3N6ZDBGelNaN09YVGpET1dQSnlqZUtnamtOdVNiT2N2SWI1cE9CSG9aYVg4THZXMVNQbWdqZFl2X3pRNUIyUy1YU3FycEV6Mm5uZTh6RWlHQTAxNGdxTEt6aGxhR3plcmZ5SFJ6MHE1N05qczl0QnFsdm1pVHY2M0tPQ1BTREJhdDhCUVFZLVA?oc=5",
+      "published": "Wed, 09 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Reuters",
+      "text": "Goldman appoints Simon Lyons UK investment banking co-head - Reuters. <a href=\"https://news.google.com/rss/articles/CBMiogFBVV95cUxNYTdOUkdxalVPbDZiN055S05OZmhHaU40VlZBTjhLRm5KQVFLdk90QUtjRE13Z0twWEtrbFdmazllc3QwUExydU9mR1lLZk11OWRlbzRNNEJtLUlfYkdIYU5fRFF0SUw0eHpXQ0s2YWFHbURabzdnbnZHbk45d1V1b0JQdzJtOW9PRXN6bFNfaVZCZjl1UkFqRUhhOHI2dVFlcXc?oc=5\" target=\"_blank\">Goldman appoints Simon Lyons UK investment banking co-head</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Reuters</font>",
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNYTdOUkdxalVPbDZiN055S05OZmhHaU40VlZBTjhLRm5KQVFLdk90QUtjRE13Z0twWEtrbFdmazllc3QwUExydU9mR1lLZk11OWRlbzRNNEJtLUlfYkdIYU5fRFF0SUw0eHpXQ0s2YWFHbURabzdnbnZHbk45d1V1b0JQdzJtOW9PRXN6bFNfaVZCZjl1UkFqRUhhOHI2dVFlcXc?oc=5",
+      "published": "Tue, 22 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Yahoo Finance",
+      "text": "Goldman Sachs just gave AI stock fans a cold, hard reality check - Yahoo Finance. <a href=\"https://news.google.com/rss/articles/CBMivAFBVV95cUxNak5PNzM4SmJBY1V0dFBKV2JRM1QtRnlyMDQ1N21aVmNBX1JXbFNHZkFKaktScG9CWVFRT0xZYTdENTQtWlVtZTFUOHk4REJVbm41QWRxV3l0RVJTNlJYcDROMzlEVUdac0FpbHU1MHBMaXR1bXhMcWlQSlpaUWFCLTVCWVNKamU3VEVYcFBrclQwZGNNVUFtYTdQd0FSenRreTU1VFBPM0NTTGVCOUdoWDdBZURRbUpoUXJQMg?oc=5\" target=\"_blank\">Goldman Sachs just gave AI stock fans a cold, hard reality check</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Yahoo Finance</font>",
+      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNak5PNzM4SmJBY1V0dFBKV2JRM1QtRnlyMDQ1N21aVmNBX1JXbFNHZkFKaktScG9CWVFRT0xZYTdENTQtWlVtZTFUOHk4REJVbm41QWRxV3l0RVJTNlJYcDROMzlEVUdac0FpbHU1MHBMaXR1bXhMcWlQSlpaUWFCLTVCWVNKamU3VEVYcFBrclQwZGNNVUFtYTdQd0FSenRreTU1VFBPM0NTTGVCOUdoWDdBZURRbUpoUXJQMg?oc=5",
+      "published": "Fri, 25 Sep 2026 12:16:38 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "text": "Will European Gas Prices Keep Rising This Winter? - Goldman Sachs. <a href=\"https://news.google.com/rss/articles/CBMimwFBVV95cUxPS3VicUZmU1pRZ243b3VLQ21tdGxrbGNxbjZDWWhYUm1SWHJKVnpORVhFQzI1NlV6VVQ3bkdMYTBRNkN6NzF2SFdiZHJFeEZTbDU4TjNNRnZWTHM5cFZxQ2JhNm1kYXZoVnE4UXZRZEZ3Sld5N0tsR2FGMFpZLVQyeXZwMVRjODBzUEZVVndQTkhZQ2c1a3NyT3N6MA?oc=5\" target=\"_blank\">Will European Gas Prices Keep Rising This Winter?</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Goldman Sachs</font>",
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPS3VicUZmU1pRZ243b3VLQ21tdGxrbGNxbjZDWWhYUm1SWHJKVnpORVhFQzI1NlV6VVQ3bkdMYTBRNkN6NzF2SFdiZHJFeEZTbDU4TjNNRnZWTHM5cFZxQ2JhNm1kYXZoVnE4UXZRZEZ3Sld5N0tsR2FGMFpZLVQyeXZwMVRjODBzUEZVVndQTkhZQ2c1a3NyT3N6MA?oc=5",
+      "published": "Wed, 23 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "CNBC",
+      "text": "Polymarket taps Goldman Sachs veteran Lisa Mantil to attract Wall Street liquidity - CNBC. <a href=\"https://news.google.com/rss/articles/CBMihwFBVV95cUxPcVhHTDNaU04xMnZOdWFIZmZrclJoY3hlWEh0b1RxV09fMEkxZ2dBMGNWQjNuNms2NzBoNzE1UG5Ic081SklSNTZHQTEwVU1EN01hRUx1WVB1aXNGQThvcmhCbUNLOF9Vb1NtQ2plX2Ezb3U0bEc3bE56WVA3bkR5MkJWdEx6UDTSAYwBQVVfeXFMTVJnNGlRbEEwaHBuVTBTYzdPMTdEOHNiN2J1Nm12SElzdmVBVVR5Q29mRUJVT0tjdU1aNkFtWVdfRmNmX3BtbXdOTWpacElOdHVrNTJjU1p4ZFdWNjdUa3A1d2FPcVF0dC1zSGd4bDBkUWs4bU1SWFNDMTJ0dkZhQXFqdWxfZnRZSjhuUXc?oc=5\" target=\"_blank\">Polymarket taps Goldman Sachs veteran Lisa Mantil to attract Wall Street liquidity</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">CNBC</font>",
+      "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPcVhHTDNaU04xMnZOdWFIZmZrclJoY3hlWEh0b1RxV09fMEkxZ2dBMGNWQjNuNms2NzBoNzE1UG5Ic081SklSNTZHQTEwVU1EN01hRUx1WVB1aXNGQThvcmhCbUNLOF9Vb1NtQ2plX2Ezb3U0bEc3bE56WVA3bkR5MkJWdEx6UDTSAYwBQVVfeXFMTVJnNGlRbEEwaHBuVTBTYzdPMTdEOHNiN2J1Nm12SElzdmVBVVR5Q29mRUJVT0tjdU1aNkFtWVdfRmNmX3BtbXdOTWpacElOdHVrNTJjU1p4ZFdWNjdUa3A1d2FPcVF0dC1zSGd4bDBkUWs4bU1SWFNDMTJ0dkZhQXFqdWxfZnRZSjhuUXc?oc=5",
+      "published": "Tue, 29 Sep 2026 12:00:33 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Reuters",
+      "text": "Goldman Sachs pushes Fed rate hike forecast to December - Reuters. <a href=\"https://news.google.com/rss/articles/CBMingFBVV95cUxPOXRTWE8yWkFyM2l6XzdNT3kzUTVZeFd3SEhmSjBYelk4WS1tU0Q1YnRVVUZOSklUcURKMU1XQzVfSUVRRGYxejlncXpwQ3ZWelVrTW9WNVZldHZ2bUxFUlozcmVObFQ1RzlKbEhsZFhFbzUzYjBqaWltQmRWSDRLUERCejNfczlyRTIwTkxPODB2XzdyX0FvM0JpWWpIUQ?oc=5\" target=\"_blank\">Goldman Sachs pushes Fed rate hike forecast to December</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Reuters</font>",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPOXRTWE8yWkFyM2l6XzdNT3kzUTVZeFd3SEhmSjBYelk4WS1tU0Q1YnRVVUZOSklUcURKMU1XQzVfSUVRRGYxejlncXpwQ3ZWelVrTW9WNVZldHZ2bUxFUlozcmVObFQ1RzlKbEhsZFhFbzUzYjBqaWltQmRWSDRLUERCejNfczlyRTIwTkxPODB2XzdyX0FvM0JpWWpIUQ?oc=5",
+      "published": "Thu, 01 Oct 2026 03:51:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Yahoo Finance",
+      "text": "Anthropic close to awarding Morgan Stanley and Goldman Sachs top roles in $2tn IPO - Yahoo Finance. <a href=\"https://news.google.com/rss/articles/CBMipwFBVV95cUxQNkhrcGwzQ2lQRzZSWUtubW5xbHFhQzlqTHRIZTZ1YlQ3eXVGbl9tN19Za05EeU5UZDBNT0ZCR0hrcmFPbWx1LWNKV3ZDNG9RMFR6ak1aLWZNTDliRUY1TEluX3FNUUctYy1seThYTGUtMWdnTzEwS2p1S1A3SGZTN3V5Y3Njc2QyQUI1Wlh3ZjJXUHlrR0paMTIyOFU5dVVsanQ5dlpwcw?oc=5\" target=\"_blank\">Anthropic close to awarding Morgan Stanley and Goldman Sachs top roles in $2tn IPO</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Yahoo Finance</font>",
+      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQNkhrcGwzQ2lQRzZSWUtubW5xbHFhQzlqTHRIZTZ1YlQ3eXVGbl9tN19Za05EeU5UZDBNT0ZCR0hrcmFPbWx1LWNKV3ZDNG9RMFR6ak1aLWZNTDliRUY1TEluX3FNUUctYy1seThYTGUtMWdnTzEwS2p1S1A3SGZTN3V5Y3Njc2QyQUI1Wlh3ZjJXUHlrR0paMTIyOFU5dVVsanQ5dlpwcw?oc=5",
+      "published": "Fri, 04 Sep 2026 07:00:00 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "text": "Why Markets May Be Pricing in Too Many Fed Rate Hikes - Goldman Sachs. <a href=\"https://news.google.com/rss/articles/CBMisAFBVV95cUxPQnZVbHFSUTVHelRPMkJNanJzLUlXV2FuWWFEWEVzY2JSZFl0QzZfQkthYng2Y001NXB5Q3JoVjREck9IMzlxeTU4STBDNGFnM1dOTjZFeUx2aHc4RWxFZkRscjQzTWJKOGJVNUl1OWtIQWJSTklTa3RZZHo4NnBMQzFYc3N2alB4aE1sMHNaWGRxT2hEYUxpYVFSUGdidWlfVDRFTWI2ZURZanFyZmFqQw?oc=5\" target=\"_blank\">Why Markets May Be Pricing in Too Many Fed Rate Hikes</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Goldman Sachs</font>",
+      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxPQnZVbHFSUTVHelRPMkJNanJzLUlXV2FuWWFEWEVzY2JSZFl0QzZfQkthYng2Y001NXB5Q3JoVjREck9IMzlxeTU4STBDNGFnM1dOTjZFeUx2aHc4RWxFZkRscjQzTWJKOGJVNUl1OWtIQWJSTklTa3RZZHo4NnBMQzFYc3N2alB4aE1sMHNaWGRxT2hEYUxpYVFSUGdidWlfVDRFTWI2ZURZanFyZmFqQw?oc=5",
+      "published": "Thu, 01 Oct 2026 18:46:09 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "text": "AI Is Becoming a Stock Picker's Market - Goldman Sachs. <a href=\"https://news.google.com/rss/articles/CBMikAFBVV95cUxNMXhwX0lIc0xEN2liaS1fNGZrS09hQUt0ZzNuVktJUkFPMGNsa3NvNEg0c1hIb0h4bERxeTBlY2ZIVE1xakI0cGI3QlhNM2pDUXNXREVtZmpTOVRyeWR4ZlJaU2E3YmJUUWtpcUpDdTBjZXIySVVEck84MXZBenE0TjdaZUdBbUlCSU8ta3AwcnY?oc=5\" target=\"_blank\">AI Is Becoming a Stock Picker's Market</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Goldman Sachs</font>",
+      "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNMXhwX0lIc0xEN2liaS1fNGZrS09hQUt0ZzNuVktJUkFPMGNsa3NvNEg0c1hIb0h4bERxeTBlY2ZIVE1xakI0cGI3QlhNM2pDUXNXREVtZmpTOVRyeWR4ZlJaU2E3YmJUUWtpcUpDdTBjZXIySVVEck84MXZBenE0TjdaZUdBbUlCSU8ta3AwcnY?oc=5",
+      "published": "Fri, 02 Oct 2026 13:38:56 GMT"
+    },
+    {
+      "source": "Google News RSS",
+      "platform": "news",
+      "author": "Goldman Sachs",
+      "text": "Why the ECB Is Unlikely to Keep Rates Higher Than 3% - Goldman Sachs. <a href=\"https://news.google.com/rss/articles/CBMiqgFBVV95cUxPWmtOcVQ4bUhwWmtUaWszR0t6eGIzQnR2cmRBVTdWTU0yeGE1bVRLWVFoLTJQMFllUDQ3VUJpNU5Oa1JkYzhkcF9fWk1udm9hTzA2dEZvYzBhSFNFQVVVQUdoakZPYnZSaDM1Mm8wUGJ2dTZzVkJOX0xFOGFoRkFHRXAyQ2U1QUFDT1hzS2RSc3RjMV9rYmh4T0MtOV8taV9wRGdoZ21tNnc0Zw?oc=5\" target=\"_blank\">Why the ECB Is Unlikely to Keep Rates Higher Than 3%</a>&nbsp;&nbsp;<font color=\"#6f6f6f\">Goldman Sachs</font>",
+      "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPWmtOcVQ4bUhwWmtUaWszR0t6eGIzQnR2cmRBVTdWTU0yeGE1bVRLWVFoLTJQMFllUDQ3VUJpNU5Oa1JkYzhkcF9fWk1udm9hTzA2dEZvYzBhSFNFQVVVQUdoakZPYnZSaDM1Mm8wUGJ2dTZzVkJOX0xFOGFoRkFHRXAyQ2U1QUFDT1hzS2RSc3RjMV9rYmh4T0MtOV8taV9wRGdoZ21tNnc0Zw?oc=5",
+      "published": "Fri, 25 Sep 2026 10:26:29 GMT"
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "Candido Guerra",
+      "handle": "100001824342388",
+      "text": "My grandpa would say.\" Its not what you make but what you save\"",
+      "url": "https://www.facebook.com/candido.guerra.167716/posts/pfbid02GG7vUafirf8PvUbRVWVPUaPY1gmU99XGdpfQ72rDBaEkmQJAmudiARbyo8DUeXHjl",
+      "at_ms": 1791045267000,
+      "reach": 0,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "38665886589722004",
+        "pageName": {
+          "id": "100001824342388",
+          "name": "Candido Guerra",
+          "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/689022337_35812953158348709_2325318666667009394_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1024x1024&ctp=s50x50&_nc_cat=111&ccb=1-7&_nc_sid=1d2534&_nc_ohc=mR9A38-6Cr8Q7kNvwGqOFdQ&_nc_oc=AdpOqtBXA1WtgxNRI7hStzWJ5BLrLKQazDE5Mvlewn5sWKWoUVhgzDGVJub7unuJh-I&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQP9F8J3fonNmKDhNkrCBu_762NX0K3If1Dx2CqyDhQawg&oe=6AC71B11"
+        },
+        "url": "https://www.facebook.com/candido.guerra.167716/posts/pfbid02GG7vUafirf8PvUbRVWVPUaPY1gmU99XGdpfQ72rDBaEkmQJAmudiARbyo8DUeXHjl",
+        "time": "2026-10-03T16:34:27.000Z",
+        "timestamp": 1791045267,
+        "user": {
+          "id": "100001824342388",
+          "name": "Candido Guerra",
+          "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/689022337_35812953158348709_2325318666667009394_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1024x1024&ctp=s50x50&_nc_cat=111&ccb=1-7&_nc_sid=1d2534&_nc_ohc=mR9A38-6Cr8Q7kNvwGqOFdQ&_nc_oc=AdpOqtBXA1WtgxNRI7hStzWJ5BLrLKQazDE5Mvlewn5sWKWoUVhgzDGVJub7unuJh-I&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQP9F8J3fonNmKDhNkrCBu_762NX0K3If1Dx2CqyDhQawg&oe=6AC71B11"
+        },
+        "collaborators": [],
+        "text": "My grandpa would say.\" Its not what you make but what you save\"",
+        "likes": 0,
+        "shares": 0,
+        "topReactionsCount": 0,
+        "feedbackId": "ZmVlZGJhY2s6Mzg2NjU4ODY1ODk3MjIwMDQ=",
+        "sharedPost": {
+          "pageName": {
+            "id": "100059543619478",
+            "name": "Yahoo Finance",
+            "profileUrl": "https://www.facebook.com/yahoofinance",
+            "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/464177547_925775592750553_1077025823108851574_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx400x400&ctp=s40x40&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=w04_If6YzPAQ7kNvwEkDwsV&_nc_oc=Adoox_HsGMyNEvBwujoF3OyIXB4og3GLA-0pu-wrEcvOXBM_GWQvVBUPwNIu43BwvEY&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQNFzZ2JvoCFrOi2tSq-V_KiJ39RyiCb9s_oMJqVsLg4Pw&oe=6AC715C5"
+          },
+          "url": "https://www.facebook.com/yahoofinance/posts/pfbid02sLbWBKGMHxctadUoK46u397JcrT11isg5mEVNxHLtRAjZeU8WBEotJEEeP758gm7l",
+          "time": "2026-10-03T16:06:01.000Z",
+          "timestamp": 1791043561,
+          "user": {
+            "id": "100059543619478",
+            "name": "Yahoo Finance",
+            "profileUrl": "https://www.facebook.com/yahoofinance",
+            "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/464177547_925775592750553_1077025823108851574_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx400x400&ctp=s40x40&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=w04_If6YzPAQ7kNvwEkDwsV&_nc_oc=Adoox_HsGMyNEvBwujoF3OyIXB4og3GLA-0pu-wrEcvOXBM_GWQvVBUPwNIu43BwvEY&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQNFzZ2JvoCFrOi2tSq-V_KiJ39RyiCb9s_oMJqVsLg4Pw&oe=6AC715C5"
+          },
+          "text": "A bigger paycheck doesn't guarantee financial security.\n \nAbout 4 in 10 workers making over $300,000 say they're still living paycheck to paycheck, per a new Goldman Sachs survey. The culprit is a surprising \"U-shape\" pattern where financial strain dips in the middle income brackets, then rises again at the top.",
+          "media": [
+            {
+              "thumbnail": "https://scontent-dfw6-1.xx.fbcdn.net/v/t39.99422-6/833346518_1685884339771761_789831693701425839_n.png?stp=dst-jpg_tt6&cstp=mx1080x1350&ctp=s640x640&_nc_cat=102&ccb=1-7&_nc_sid=127cfc&_nc_ohc=9VWm7Am-h2gQ7kNvwH-CpA4&_nc_oc=AdpOILlVyO2dtP1IqTjoa47eHbVRSKpmMICBuqfOakAyNr8IUvWSG8PiVXaXcrRMIjw&_nc_zt=14&_nc_ht=scontent-dfw6-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQNiE9886AcxxwQLnp3PEThHu_7nFEeo1Vg05Kw1KKBivA&oe=6AC71DD2",
+              "__typename": "Photo",
+              "__isMedia": "Photo",
+              "accent_color": "FF020202",
+              "photo_product_tags": [],
+              "photo_image": {
+                "uri": "https://scontent-dfw6-1.xx.fbcdn.net/v/t39.99422-6/833346518_1685884339771761_789831693701425839_n.png?stp=dst-jpg_tt6&cstp=mx1080x1350&ctp=s640x640&_nc_cat=102&ccb=1-7&_nc_sid=127cfc&_nc_ohc=9VWm7Am-h2gQ7kNvwH-CpA4&_nc_oc=AdpOILlVyO2dtP1IqTjoa47eHbVRSKpmMICBuqfOakAyNr8IUvWSG8PiVXaXcrRMIjw&_nc_zt=14&_nc_ht=scontent-dfw6-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQNiE9886AcxxwQLnp3PEThHu_7nFEeo1Vg05Kw1KKBivA&oe=6AC71DD2",
+                "height": 640,
+                "width": 512
+              },
+              "url": "https://www.facebook.com/photo/?fbid=1459947889333318&set=a.646062470721868",
+              "id": "1459947889333318",
+              "feedback": {
+                "can_viewer_comment": false,
+                "id": "ZmVlZGJhY2s6MTQ1OTk0NzkxNTk5OTk4Mg=="
+              },
+              "ocrText": "May be an image of money and text"
+            }
+          ],
+          "paidPartnership": false
+        },
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "Neri Marchisio",
+      "handle": "100000026811916",
+      "text": "GOLDMAN SACHS LANCIA DICHIARAZIONE DI DOOMSDAY: I BOND USA NON HANNO ACQUIRENTI\n\nGoldman Sachs ha appena ammesso che il lungo termine del mercato dei Treasury USA è “completamente privo di offerte”.\ndice che quasi nessuno è ansioso di acquistare i titoli a lungo termine del governo statunitense (quelli da 10 a 30 anni). Quindi i tassi di interesse su di essi continuano a salire oltre il 5%. Il Tesoro ne sta riacquistando alcuni da sé per mantenere il mercato in movimento e ha definito le condizioni appiccicose. Il Giappone sta vendendo alcuni titoli detenuti. Il post avverte che se i titoli a breve termine perdessero acquirenti dopo, l'intero sistema del debito statunitense potrebbe bloccarsi.",
+      "url": "https://www.facebook.com/neri.marchisio/posts/pfbid06CcT4Bf9rGzz1dMt7eCxxSayWg5PRAdwC383uYvMzSyVyXNP4mPPvgf5SJ3Ji1jYl",
+      "at_ms": 1791008201000,
+      "reach": 1,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "29101329572784550",
+        "pageName": {
+          "id": "100000026811916",
+          "name": "Neri Marchisio",
+          "profilePic": "https://scontent-dfw5-2.xx.fbcdn.net/v/t39.30808-1/465710150_9056271737716963_4472474323757722381_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx670x670&ctp=s50x50&_nc_cat=107&ccb=1-7&_nc_sid=1d2534&_nc_ohc=iqJoIAE2dzgQ7kNvwE9XsDF&_nc_oc=AdoR2Xh8zPtrVyD8BMiqn9WH2xGyGAm3F1cRinKq2y_FsokEAeggKAhTEdArULTDpVQ&_nc_zt=24&_nc_ht=scontent-dfw5-2.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQOKpXwbc_PLoTlBPw7PxYB9KQjyu81_RBSP7eyICvd_UQ&oe=6AC70431"
+        },
+        "url": "https://www.facebook.com/neri.marchisio/posts/pfbid06CcT4Bf9rGzz1dMt7eCxxSayWg5PRAdwC383uYvMzSyVyXNP4mPPvgf5SJ3Ji1jYl",
+        "time": "2026-10-03T06:16:41.000Z",
+        "timestamp": 1791008201,
+        "user": {
+          "id": "100000026811916",
+          "name": "Neri Marchisio",
+          "profilePic": "https://scontent-dfw5-2.xx.fbcdn.net/v/t39.30808-1/465710150_9056271737716963_4472474323757722381_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx670x670&ctp=s50x50&_nc_cat=107&ccb=1-7&_nc_sid=1d2534&_nc_ohc=iqJoIAE2dzgQ7kNvwE9XsDF&_nc_oc=AdoR2Xh8zPtrVyD8BMiqn9WH2xGyGAm3F1cRinKq2y_FsokEAeggKAhTEdArULTDpVQ&_nc_zt=24&_nc_ht=scontent-dfw5-2.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQOKpXwbc_PLoTlBPw7PxYB9KQjyu81_RBSP7eyICvd_UQ&oe=6AC70431"
+        },
+        "collaborators": [],
+        "text": "GOLDMAN SACHS LANCIA DICHIARAZIONE DI DOOMSDAY: I BOND USA NON HANNO ACQUIRENTI\n\nGoldman Sachs ha appena ammesso che il lungo termine del mercato dei Treasury USA è “completamente privo di offerte”.\ndice che quasi nessuno è ansioso di acquistare i titoli a lungo termine del governo statunitense (quelli da 10 a 30 anni). Quindi i tassi di interesse su di essi continuano a salire oltre il 5%. Il Tesoro ne sta riacquistando alcuni da sé per mantenere il mercato in movimento e ha definito le condizioni appiccicose. Il Giappone sta vendendo alcuni titoli detenuti. Il post avverte che se i titoli a breve termine perdessero acquirenti dopo, l'intero sistema del debito statunitense potrebbe bloccarsi.",
+        "likes": 1,
+        "shares": 0,
+        "topReactionsCount": 1,
+        "feedbackId": "ZmVlZGJhY2s6MjkxMDEzMjk1NzI3ODQ1NTA=",
+        "reactionLikeCount": 1,
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "Sociaty",
+      "handle": "100064489969637",
+      "text": "Goldman Sachs CEO David Solomon is known for pushing his employees hard. A quote circulating under his name takes that reputation to its logical extreme, suggesting that a full head of hair is evidence of not putting in enough effort.\n\nGoldman Sachs junior bankers famously surveyed themselves in 2021 and reported working 95-hour weeks and deteriorating physical health. Solomon told them to come back to the office anyway. Does this quote surprise you coming from him?",
+      "url": "https://www.facebook.com/sociatycom/posts/pfbid037ZTcW4n7GfW59m6U8dRgWx7QXhGg1kfoK7FVnDy3uHxYRYoaEe6AMr4gqzW39ZJVl",
+      "at_ms": 1790965965000,
+      "reach": 1383,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "1515729417253376",
+        "pageName": {
+          "id": "100064489969637",
+          "name": "Sociaty",
+          "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/334970345_1234689493814870_8550816743249422354_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1000x1000&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=KMLUm5MMj58Q7kNvwEWi8u0&_nc_oc=AdomjCcs1GvSfL4cawWvjnDc74ojMY5ex4EG4Djhn268plBTizKezqTDYTXSkPh5gCE&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQMTUwoIQa2CScoRXdIni2QR2kMIhPISygETEyFN0uI6tQ&oe=6AC6ED40"
+        },
+        "url": "https://www.facebook.com/sociatycom/posts/pfbid037ZTcW4n7GfW59m6U8dRgWx7QXhGg1kfoK7FVnDy3uHxYRYoaEe6AMr4gqzW39ZJVl",
+        "time": "2026-10-02T18:32:45.000Z",
+        "timestamp": 1790965965,
+        "user": {
+          "id": "100064489969637",
+          "name": "Sociaty",
+          "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/334970345_1234689493814870_8550816743249422354_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1000x1000&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=KMLUm5MMj58Q7kNvwEWi8u0&_nc_oc=AdomjCcs1GvSfL4cawWvjnDc74ojMY5ex4EG4Djhn268plBTizKezqTDYTXSkPh5gCE&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQMTUwoIQa2CScoRXdIni2QR2kMIhPISygETEyFN0uI6tQ&oe=6AC6ED40"
+        },
+        "collaborators": [],
+        "text": "Goldman Sachs CEO David Solomon is known for pushing his employees hard. A quote circulating under his name takes that reputation to its logical extreme, suggesting that a full head of hair is evidence of not putting in enough effort.\n\nGoldman Sachs junior bankers famously surveyed themselves in 2021 and reported working 95-hour weeks and deteriorating physical health. Solomon told them to come back to the office anyway. Does this quote surprise you coming from him?",
+        "likes": 996,
+        "comments": 105,
+        "shares": 282,
+        "topReactionsCount": 7,
+        "media": [
+          {
+            "thumbnail": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.99422-6/831327316_1124584470079231_7366946938694470041_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=p526x296&_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_ohc=k_Baq2pjilYQ7kNvwHjwaaP&_nc_oc=Adp6__oANmiRzBGleLFco4JiAuNsK_G6AsBKwEGNvuryxQn0bDgKKPM4k76KKga33Zs&_nc_zt=14&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQN0B7PdVcuLll3c0rXp9jDR8HTkvzDFaT3MzNss95N0Cg&oe=6AC70DDC",
+            "__typename": "Photo",
+            "__isMedia": "Photo",
+            "accent_color": "FF040406",
+            "photo_product_tags": [],
+            "photo_image": {
+              "uri": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.99422-6/831327316_1124584470079231_7366946938694470041_n.png?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=p526x296&_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_ohc=k_Baq2pjilYQ7kNvwHjwaaP&_nc_oc=Adp6__oANmiRzBGleLFco4JiAuNsK_G6AsBKwEGNvuryxQn0bDgKKPM4k76KKga33Zs&_nc_zt=14&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQN0B7PdVcuLll3c0rXp9jDR8HTkvzDFaT3MzNss95N0Cg&oe=6AC70DDC",
+              "height": 701,
+              "width": 526
+            },
+            "url": "https://www.facebook.com/photo/?fbid=1515729323920052&set=a.627782592714734",
+            "id": "1515729323920052",
+            "feedback": {
+              "can_viewer_comment": false,
+              "id": "ZmVlZGJhY2s6MTUxNTcyOTQxNzI1MzM3Ng=="
+            },
+            "ocrText": "May be an image of text"
+          }
+        ],
+        "feedbackId": "ZmVlZGJhY2s6MTUxNTcyOTQxNzI1MzM3Ng==",
+        "reactionHahaCount": 725,
+        "reactionLikeCount": 242,
+        "reactionLoveCount": 12,
+        "reactionWowCount": 10,
+        "reactionAngryCount": 4,
+        "reactionCareCount": 2,
+        "reactionSadCount": 1,
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "StockMarket Insights",
+      "handle": "61593692488641",
+      "text": "🚨 GOLDMAN SACHS’ SPACEX DEAL COULD BE A MASSIVE PAYDAY!\n\nGoldman Sachs (#GS) reportedly generated hundreds of millions of dollars in incentive fees from clients’ early SpaceX investments following its IPO.\n\nThat’s on top of approximately $100 million in advisory fees from the listing itself.\n\nThe takeaway: SpaceX’s public-market debut is creating significant opportunities for Wall Street beyond traditional IPO underwriting fees.\n\nQuestion: Could SpaceX’s IPO become one of the most lucrative deals in Wall Street history? 👀\n\nFollow my page for more market and industry updates!\n\nNot financial advice. For informational purposes only.\n\n#GoldmanSachs #GS #SpaceX #IPO #WallStreet #Investing #StockMarket #Finance #PrivateEquity #Markets #BusinessNews #MarketNews",
+      "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid036bsWeucpjKeRVYgKVcnKVrGR9U5DxSeZWjFN2JDMmbtE4dNe1fqi1BH2xKWpBna1l&id=61593692488641",
+      "at_ms": 1790971212000,
+      "reach": 6,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "122117014701456416",
+        "pageName": {
+          "id": "61593692488641",
+          "name": "StockMarket Insights",
+          "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/778957763_28060354843573497_7044386912027262366_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1254x1254&ctp=s50x50&_nc_cat=106&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=oDmlSg_d0d4Q7kNvwG-hUhG&_nc_oc=AdpKv2W78CKo8riYWB5LVwsLsDHtHfW9xlHW6I2Vmm9W7fcvKEurGA-AmWBVj37H1jw&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQMPz_uyVTXf8amO1--N47vrzyNNvviDrUHWFAvDUs3Wwg&oe=6AC6ED61"
+        },
+        "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid036bsWeucpjKeRVYgKVcnKVrGR9U5DxSeZWjFN2JDMmbtE4dNe1fqi1BH2xKWpBna1l&id=61593692488641",
+        "time": "2026-10-02T20:00:12.000Z",
+        "timestamp": 1790971212,
+        "user": {
+          "id": "61593692488641",
+          "name": "StockMarket Insights",
+          "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/778957763_28060354843573497_7044386912027262366_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx1254x1254&ctp=s50x50&_nc_cat=106&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=oDmlSg_d0d4Q7kNvwG-hUhG&_nc_oc=AdpKv2W78CKo8riYWB5LVwsLsDHtHfW9xlHW6I2Vmm9W7fcvKEurGA-AmWBVj37H1jw&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQMPz_uyVTXf8amO1--N47vrzyNNvviDrUHWFAvDUs3Wwg&oe=6AC6ED61"
+        },
+        "collaborators": [],
+        "text": "🚨 GOLDMAN SACHS’ SPACEX DEAL COULD BE A MASSIVE PAYDAY!\n\nGoldman Sachs (#GS) reportedly generated hundreds of millions of dollars in incentive fees from clients’ early SpaceX investments following its IPO.\n\nThat’s on top of approximately $100 million in advisory fees from the listing itself.\n\nThe takeaway: SpaceX’s public-market debut is creating significant opportunities for Wall Street beyond traditional IPO underwriting fees.\n\nQuestion: Could SpaceX’s IPO become one of the most lucrative deals in Wall Street history? 👀\n\nFollow my page for more market and industry updates!\n\nNot financial advice. For informational purposes only.\n\n#GoldmanSachs #GS #SpaceX #IPO #WallStreet #Investing #StockMarket #Finance #PrivateEquity #Markets #BusinessNews #MarketNews",
+        "textReferences": [
+          {
+            "url": "https://www.facebook.com/hashtag/gs?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/gs",
+            "id": "492159904164504"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/goldmansachs?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/goldmansachs",
+            "id": "258322197636183"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/gs?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/gs",
+            "id": "492159904164504"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/spacex?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/spacex",
+            "id": "403181359797837"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/ipo?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/ipo",
+            "id": "142897382545899"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/wallstreet?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/wallstreet",
+            "id": "549023571798694"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/investing?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/investing",
+            "id": "384368664994061"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/stockmarket?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/stockmarket",
+            "id": "157969811027241"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/finance?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/finance",
+            "id": "228388810638944"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/privateequity?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/privateequity",
+            "id": "385422464898962"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/markets?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/markets",
+            "id": "131221410390622"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/businessnews?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/businessnews",
+            "id": "433388366737820"
+          },
+          {
+            "url": "https://www.facebook.com/hashtag/marketnews?__eep__=6",
+            "mobileUrl": "https://m.facebook.com/hashtag/marketnews",
+            "id": "521214884583580"
+          }
+        ],
+        "likes": 3,
+        "comments": 2,
+        "shares": 1,
+        "topReactionsCount": 1,
+        "media": [
+          {
+            "thumbnail": "https://scontent-dfw6-1.xx.fbcdn.net/v/t39.30808-6/831119672_122117014677456416_6226440771866898482_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1080x1241&ctp=s590x590&_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_ohc=LWizyiicGfYQ7kNvwE5NlZa&_nc_oc=Adp-9KxTGnkibxCMppzDHmyEnzZg08KRIEfB-a7YVyr2vOcsDqI2TTvPhVVV6WAZxZ8&_nc_zt=23&_nc_ht=scontent-dfw6-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQOO0hXnllrLuqLuEWe35O1UWWyCF4351m9sai2w1XHg4g&oe=6AC6EDD1",
+            "__typename": "Photo",
+            "__isMedia": "Photo",
+            "accent_color": "FFFFFFFF",
+            "photo_product_tags": [],
+            "photo_image": {
+              "uri": "https://scontent-dfw6-1.xx.fbcdn.net/v/t39.30808-6/831119672_122117014677456416_6226440771866898482_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx1080x1241&ctp=s590x590&_nc_cat=103&ccb=1-7&_nc_sid=833d8c&_nc_ohc=LWizyiicGfYQ7kNvwE5NlZa&_nc_oc=Adp-9KxTGnkibxCMppzDHmyEnzZg08KRIEfB-a7YVyr2vOcsDqI2TTvPhVVV6WAZxZ8&_nc_zt=23&_nc_ht=scontent-dfw6-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQOO0hXnllrLuqLuEWe35O1UWWyCF4351m9sai2w1XHg4g&oe=6AC6EDD1",
+              "height": 590,
+              "width": 513
+            },
+            "url": "https://www.facebook.com/photo/?fbid=122117014671456416&set=a.122096092437456416",
+            "id": "122117014671456416",
+            "feedback": {
+              "can_viewer_comment": false,
+              "id": "ZmVlZGJhY2s6MTIyMTE3MDE0NzAxNDU2NDE2"
+            },
+            "ocrText": "May be an image of text"
+          }
+        ],
+        "feedbackId": "ZmVlZGJhY2s6MTIyMTE3MDE0NzAxNDU2NDE2",
+        "reactionLikeCount": 3,
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "Stockstoearn",
+      "handle": "61578148466766",
+      "text": "According to its latest 13F filing, Goldman Sachs bought 4,886,103 Nike (NKE) shares during Q2, valued at about $200 MILLION as of June 30.\n\nGoldman held 12,453,144 Nike shares at the end of Q2, currently worth approximately $421 MILLION.\n\nThe stock has fallen to its lowest level since September 2013 and is currently down more than 17% since June 30 after Q1 FY27 revenue missed estimates. \n\nShares of Nike have plunged more than 80% from their all-time high of $179.10 reached in November 2021 to $33.87, wiping out more than $210 BILLION in market capitalization. \n\nFor the full fiscal year 2027, Nike expects revenue to decline by a high-single-digit percentage and projected adjusted EPS between $1.15 and $1.35, falling well short of prior analyst forecasts.",
+      "url": "https://www.facebook.com/Stockstoearnpage/posts/pfbid02F1PNxqevQHAffNSGBQ4HJskvrJh9woA8jp55Nt3zetydgcfjohyJFNZAmT8c4nvLl",
+      "at_ms": 1791031205000,
+      "reach": 246,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "122206305230938282",
+        "pageName": {
+          "id": "61578148466766",
+          "name": "Stockstoearn",
+          "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/552408989_122131285208938282_8173213425852204291_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx2048x2048&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=5sLRnavURpwQ7kNvwHunSGW&_nc_oc=AdpWSN775uOqUrRmvAgU2brPXDyAa55RsgNJ4em-aUu6Y8dJbzFh1eQ74OF140vqrDw&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQNVKvTtj5mBPOtcoV5IoAiNeRVmvlMZGCwRn5QQYpMYaw&oe=6AC6ED85"
+        },
+        "url": "https://www.facebook.com/Stockstoearnpage/posts/pfbid02F1PNxqevQHAffNSGBQ4HJskvrJh9woA8jp55Nt3zetydgcfjohyJFNZAmT8c4nvLl",
+        "time": "2026-10-03T12:40:05.000Z",
+        "timestamp": 1791031205,
+        "user": {
+          "id": "61578148466766",
+          "name": "Stockstoearn",
+          "profilePic": "https://scontent-dfw5-1.xx.fbcdn.net/v/t39.30808-1/552408989_122131285208938282_8173213425852204291_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx2048x2048&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=5sLRnavURpwQ7kNvwHunSGW&_nc_oc=AdpWSN775uOqUrRmvAgU2brPXDyAa55RsgNJ4em-aUu6Y8dJbzFh1eQ74OF140vqrDw&_nc_zt=24&_nc_ht=scontent-dfw5-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQNVKvTtj5mBPOtcoV5IoAiNeRVmvlMZGCwRn5QQYpMYaw&oe=6AC6ED85"
+        },
+        "collaborators": [],
+        "text": "According to its latest 13F filing, Goldman Sachs bought 4,886,103 Nike (NKE) shares during Q2, valued at about $200 MILLION as of June 30.\n\nGoldman held 12,453,144 Nike shares at the end of Q2, currently worth approximately $421 MILLION.\n\nThe stock has fallen to its lowest level since September 2013 and is currently down more than 17% since June 30 after Q1 FY27 revenue missed estimates. \n\nShares of Nike have plunged more than 80% from their all-time high of $179.10 reached in November 2021 to $33.87, wiping out more than $210 BILLION in market capitalization. \n\nFor the full fiscal year 2027, Nike expects revenue to decline by a high-single-digit percentage and projected adjusted EPS between $1.15 and $1.35, falling well short of prior analyst forecasts.",
+        "likes": 167,
+        "comments": 67,
+        "shares": 12,
+        "topReactionsCount": 5,
+        "media": [
+          {
+            "thumbnail": "https://scontent-dfw6-1.xx.fbcdn.net/v/t39.99422-6/834904095_1043847375370546_6284624396411262214_n.png?stp=dst-jpg_tt6&cstp=mx1638x2048&ctp=s640x640&_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=5G7rXTUBjlcQ7kNvwGVhWfV&_nc_oc=AdqETBSyesfTk_knRBcXooyQblCxYlTufNo0ms3AJL9hx8f2Q2y6uCq06PEqYbhoVzU&_nc_zt=14&_nc_ht=scontent-dfw6-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQN0relljhHSCZq2nSF-Na1KrWMube8X2porjv8LtlzSrg&oe=6AC706AD",
+            "__typename": "Photo",
+            "__isMedia": "Photo",
+            "accent_color": "FF070709",
+            "photo_product_tags": [],
+            "photo_image": {
+              "uri": "https://scontent-dfw6-1.xx.fbcdn.net/v/t39.99422-6/834904095_1043847375370546_6284624396411262214_n.png?stp=dst-jpg_tt6&cstp=mx1638x2048&ctp=s640x640&_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=5G7rXTUBjlcQ7kNvwGVhWfV&_nc_oc=AdqETBSyesfTk_knRBcXooyQblCxYlTufNo0ms3AJL9hx8f2Q2y6uCq06PEqYbhoVzU&_nc_zt=14&_nc_ht=scontent-dfw6-1.xx&_nc_gid=csbEpEsId5XaPv3U2yaPkQ&_nc_ss=70289&oh=00_AQN0relljhHSCZq2nSF-Na1KrWMube8X2porjv8LtlzSrg&oe=6AC706AD",
+              "height": 640,
+              "width": 512
+            },
+            "url": "https://www.facebook.com/photo/?fbid=122206303118938282&set=a.122131371110938282",
+            "id": "122206303118938282",
+            "feedback": {
+              "can_viewer_comment": false,
+              "id": "ZmVlZGJhY2s6MTIyMjA2MzA1MjMwOTM4Mjgy"
+            },
+            "ocrText": "May be an image of text"
+          }
+        ],
+        "feedbackId": "ZmVlZGJhY2s6MTIyMjA2MzA1MjMwOTM4Mjgy",
+        "reactionLikeCount": 140,
+        "reactionHahaCount": 16,
+        "reactionLoveCount": 6,
+        "reactionWowCount": 4,
+        "reactionCareCount": 1,
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "Stockstoearn",
+      "handle": "61578148466766",
+      "text": "BREAKING: On Sept. 29, Goldman Sachs analyst Eric Sheridan reiterated a Buy rating and a $220 price target on SpaceX (SPCX), implying more than 46% upside from current levels. \n\nAt $220 per share, SpaceX’s market cap would be approximately $3 trillion.\n\nGoldman views SpaceX as exceptionally well-positioned to scale across space launch/reusability, broadband connectivity (Starlink), and space-based AI infrastructure and compute platforms. \n\nA cornerstone of Goldman’s valuation is SpaceX’s transformation into an AI infrastructure giant. \n\nThe firm projects that SpaceX’s space-based AI compute revenue will experience near a 100-fold surge, rising exponentially by 2030.\n\nGoldman models total company revenue growing to $474 billion by 2030, which is expected to expand adjusted EBITDA to $352 billion by the same year.",
+      "url": "https://www.facebook.com/Stockstoearnpage/posts/pfbid0phNg8xdcPHH142XX1gfqwMBpECpAVH8vDjdH9v7UTMM9c79CPkYuHCGn7AAWFfSJl",
+      "at_ms": 1790883013000,
+      "reach": 365,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "122205972578938282",
+        "pageName": {
+          "id": "61578148466766",
+          "name": "Stockstoearn",
+          "profilePic": "https://scontent-lax3-2.xx.fbcdn.net/v/t39.30808-1/552408989_122131285208938282_8173213425852204291_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx2048x2048&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=5sLRnavURpwQ7kNvwGAByTv&_nc_oc=Adr3UsbeD0YqqJj_GRkVf9ZvEeJPUHHSht_e8v0qatK6iGezmhCS6VsPR9QYvK3Q8Ut1CxiiwHZPpv_8-mTrsweC&_nc_zt=24&_nc_ht=scontent-lax3-2.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQNX5dz281pnnj-a5xNm3HABJjDrkzNfM0ndkFR3RzVPaQ&oe=6AC6ED85"
+        },
+        "url": "https://www.facebook.com/Stockstoearnpage/posts/pfbid0phNg8xdcPHH142XX1gfqwMBpECpAVH8vDjdH9v7UTMM9c79CPkYuHCGn7AAWFfSJl",
+        "time": "2026-10-01T19:30:13.000Z",
+        "timestamp": 1790883013,
+        "user": {
+          "id": "61578148466766",
+          "name": "Stockstoearn",
+          "profilePic": "https://scontent-lax3-2.xx.fbcdn.net/v/t39.30808-1/552408989_122131285208938282_8173213425852204291_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx2048x2048&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=5sLRnavURpwQ7kNvwGAByTv&_nc_oc=Adr3UsbeD0YqqJj_GRkVf9ZvEeJPUHHSht_e8v0qatK6iGezmhCS6VsPR9QYvK3Q8Ut1CxiiwHZPpv_8-mTrsweC&_nc_zt=24&_nc_ht=scontent-lax3-2.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQNX5dz281pnnj-a5xNm3HABJjDrkzNfM0ndkFR3RzVPaQ&oe=6AC6ED85"
+        },
+        "collaborators": [],
+        "text": "BREAKING: On Sept. 29, Goldman Sachs analyst Eric Sheridan reiterated a Buy rating and a $220 price target on SpaceX (SPCX), implying more than 46% upside from current levels. \n\nAt $220 per share, SpaceX’s market cap would be approximately $3 trillion.\n\nGoldman views SpaceX as exceptionally well-positioned to scale across space launch/reusability, broadband connectivity (Starlink), and space-based AI infrastructure and compute platforms. \n\nA cornerstone of Goldman’s valuation is SpaceX’s transformation into an AI infrastructure giant. \n\nThe firm projects that SpaceX’s space-based AI compute revenue will experience near a 100-fold surge, rising exponentially by 2030.\n\nGoldman models total company revenue growing to $474 billion by 2030, which is expected to expand adjusted EBITDA to $352 billion by the same year.",
+        "likes": 296,
+        "comments": 42,
+        "shares": 27,
+        "topReactionsCount": 6,
+        "media": [
+          {
+            "thumbnail": "https://scontent-lax3-1.xx.fbcdn.net/v/t39.99422-6/833313553_1716361869449597_6962110772937458250_n.png?stp=dst-jpg_tt6&cstp=mx3277x4096&ctp=s640x640&_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=bkpEa3-ghDkQ7kNvwEWYG_-&_nc_oc=Adp4UNe4W2WzNeWGBYSLXtho679O58r8xCQpGeOxYJHxt0qazcv6KPgf66jmhO3N8AKf3FBf96W7CrknwVEWjbYc&_nc_zt=14&_nc_ht=scontent-lax3-1.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQPE_azuF1PENsHYbIXSdwZNhjHWT13AA6AuJRAZoHXbJA&oe=6AC70CA3",
+            "__typename": "Photo",
+            "__isMedia": "Photo",
+            "accent_color": "FF90949C",
+            "photo_product_tags": [],
+            "photo_image": {
+              "uri": "https://scontent-lax3-1.xx.fbcdn.net/v/t39.99422-6/833313553_1716361869449597_6962110772937458250_n.png?stp=dst-jpg_tt6&cstp=mx3277x4096&ctp=s640x640&_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=bkpEa3-ghDkQ7kNvwEWYG_-&_nc_oc=Adp4UNe4W2WzNeWGBYSLXtho679O58r8xCQpGeOxYJHxt0qazcv6KPgf66jmhO3N8AKf3FBf96W7CrknwVEWjbYc&_nc_zt=14&_nc_ht=scontent-lax3-1.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQPE_azuF1PENsHYbIXSdwZNhjHWT13AA6AuJRAZoHXbJA&oe=6AC70CA3",
+              "height": 640,
+              "width": 512
+            },
+            "url": "https://www.facebook.com/photo/?fbid=122205972560938282&set=a.122098094972938282",
+            "id": "122205972560938282",
+            "feedback": {
+              "can_viewer_comment": false,
+              "id": "ZmVlZGJhY2s6MTIyMjA1OTcyNTc4OTM4Mjgy"
+            },
+            "ocrText": "May be an image of text"
+          }
+        ],
+        "feedbackId": "ZmVlZGJhY2s6MTIyMjA1OTcyNTc4OTM4Mjgy",
+        "reactionLikeCount": 243,
+        "reactionLoveCount": 26,
+        "reactionHahaCount": 22,
+        "reactionWowCount": 3,
+        "reactionCareCount": 1,
+        "reactionAngryCount": 1,
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "Kyle B Drody",
+      "handle": "pfbid02HQdU3Ewa5DHFNe6gcL65hCkH2ePkdRSiTyZog5guo3Rw3Bkpp3scT6o8RstwmDU5l",
+      "text": "The pain coming is going to be biblical 😂",
+      "url": "https://www.facebook.com/kippers.drody/posts/pfbid02EPTS2AM4yGKmbZoc4qQ5Tt6bqcegwKGB2B5c6HDTPTweFYsFNYkaW8gNMxvaqUvWl",
+      "at_ms": 1791042800000,
+      "reach": 0,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "38860295990285384",
+        "pageName": {
+          "id": "pfbid02HQdU3Ewa5DHFNe6gcL65hCkH2ePkdRSiTyZog5guo3Rw3Bkpp3scT6o8RstwmDU5l",
+          "name": "Kyle B Drody",
+          "profilePic": "https://scontent-lax3-1.xx.fbcdn.net/v/t1.6435-1/53558664_2574769159264859_4847935367468285952_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx753x753&ctp=s50x50&_nc_cat=104&ccb=1-7&_nc_sid=e99d92&_nc_ohc=xMafzjBS0XMQ7kNvwF-Yvqd&_nc_oc=Adqo6lUCZX2xaFKc1DRPcbDu_KGefoV2d7HMmff6GQjZlmMWent77vctBT0SBTByxj-qk5vu_AkpBlenMVTLpXk0&_nc_zt=24&_nc_ht=scontent-lax3-1.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQPvUGk2yhXK7LSpodkkhA5oHmx5zRRExbiaFsTytHdNkA&oe=6AE8A23B"
+        },
+        "url": "https://www.facebook.com/kippers.drody/posts/pfbid02EPTS2AM4yGKmbZoc4qQ5Tt6bqcegwKGB2B5c6HDTPTweFYsFNYkaW8gNMxvaqUvWl",
+        "time": "2026-10-03T15:53:20.000Z",
+        "timestamp": 1791042800,
+        "user": {
+          "id": "pfbid02HQdU3Ewa5DHFNe6gcL65hCkH2ePkdRSiTyZog5guo3Rw3Bkpp3scT6o8RstwmDU5l",
+          "name": "Kyle B Drody",
+          "profilePic": "https://scontent-lax3-1.xx.fbcdn.net/v/t1.6435-1/53558664_2574769159264859_4847935367468285952_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx753x753&ctp=s50x50&_nc_cat=104&ccb=1-7&_nc_sid=e99d92&_nc_ohc=xMafzjBS0XMQ7kNvwF-Yvqd&_nc_oc=Adqo6lUCZX2xaFKc1DRPcbDu_KGefoV2d7HMmff6GQjZlmMWent77vctBT0SBTByxj-qk5vu_AkpBlenMVTLpXk0&_nc_zt=24&_nc_ht=scontent-lax3-1.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQPvUGk2yhXK7LSpodkkhA5oHmx5zRRExbiaFsTytHdNkA&oe=6AE8A23B"
+        },
+        "collaborators": [],
+        "text": "The pain coming is going to be biblical 😂",
+        "link": "https://www.goldmansachs.com/insights/the-markets/why-the-bond-market-may-be-the-stock-markets-biggest-risk",
+        "previewTitle": "Why the Bond Market May Be the Stock Market's Biggest Risk",
+        "previewDescription": "Rising bond yields may pose the biggest risk to gains in the S&P 500, says Tony Pasquariello, global head of hedge fund coverage in Goldman Sachs FICC and Equities on The Markets podcast.",
+        "previewSource": "goldmansachs.com",
+        "previewTarget": {
+          "__typename": "ExternalUrl",
+          "article_author": null,
+          "external_url": "https://www.goldmansachs.com/insights/the-markets/why-the-bond-market-may-be-the-stock-markets-biggest-risk",
+          "id": "226547524203272:38860295953618721"
+        },
+        "likes": 0,
+        "shares": 0,
+        "topReactionsCount": 0,
+        "media": [
+          {
+            "thumbnail": "https://external-lax3-2.xx.fbcdn.net/emg1/v/t13/8569725360848186335?url=https%3A%2F%2Fwww.goldmansachs.com%2Fimages%2Finsights%2Fthe-markets%2Fwhy-the-bond-market-may-be-the-stock-markets-biggest-risk%2F3x2.jpg&fb_obo=1&utld=goldmansachs.com&_nc_sid=4a39c3&_nc_ht=external-lax3-2.xx.fbcdn.net&stp=c0.5000x0.5000f_dst-jpg_flffffff_p500x261_q75_tt6&ccb=18-1&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_zt=3&oh=06_Q3_DAVaaUXwaPrs7yelItQq7tpLvIVspmiArUy7iGEsoln8M&oe=6AC32630",
+            "__typename": "GenericAttachmentMedia",
+            "__isMedia": "GenericAttachmentMedia",
+            "flexible_height_share_image": null,
+            "large_share_image": {
+              "height": 261,
+              "uri": "https://external-lax3-2.xx.fbcdn.net/emg1/v/t13/8569725360848186335?url=https%3A%2F%2Fwww.goldmansachs.com%2Fimages%2Finsights%2Fthe-markets%2Fwhy-the-bond-market-may-be-the-stock-markets-biggest-risk%2F3x2.jpg&fb_obo=1&utld=goldmansachs.com&_nc_sid=4a39c3&_nc_ht=external-lax3-2.xx.fbcdn.net&stp=c0.5000x0.5000f_dst-jpg_flffffff_p500x261_q75_tt6&ccb=18-1&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_zt=3&oh=06_Q3_DAVaaUXwaPrs7yelItQq7tpLvIVspmiArUy7iGEsoln8M&oe=6AC32630",
+              "width": 500
+            },
+            "id": "38860295953618721"
+          }
+        ],
+        "feedbackId": "ZmVlZGJhY2s6Mzg4NjAyOTU5OTAyODUzODQ=",
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "Summit Focus Vision",
+      "handle": "61593427921250",
+      "text": "GOLDMAN SACHS JUST LEAKED ITS NEXT CEO – AND WALL STREET IS ALREADY FREAKING OUT\n\nThe boardroom at Goldman Sachs is quietly orchestrating a massive power shift that could reshape the bank forever. According to a bombshell report, a succession plan is in motion to replace CEO David Solomon with COO John Waldron as early as next year. Solomon, who survived a DJ scandal, partner revolts, and a $7 billion consumer lending disaster, is finally ready to hand over the reins. But the story doesn't end there. Waldron's promotion will trigger a high-stakes scramble for the No. 2 spot, with top executives already jockeying for position. And the timeline? That's where things get really interesting. The exact date is still up in the air, but insiders say the board could approve the move in just months. What happens next will send shockwaves through the entire financial world.\nThis is the Wall Street drama you didn't see coming. Full video's here if you're curious: https://geni.us/CNN-Headlines",
+      "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid02CTxEBEmB75ak6wATSqKjjZ4z9FTkgCZp9FED4b86jpTqu9pgAAHs9be8yScpuompl&id=61593427921250",
+      "at_ms": 1790644016000,
+      "reach": 1,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "122114927655447597",
+        "pageName": {
+          "id": "61593427921250",
+          "name": "Summit Focus Vision",
+          "profilePic": "https://scontent-lax3-2.xx.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png?stp=cp0_dst-png&cstp=mx2048x2048&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=3e70f4&_nc_ohc=v_XEyutpHp0Q7kNvwE4eSd6&_nc_oc=Ado_kFyYHjof4mCxDeLl5TOfHctZzrqn39gopzxW7xMASb-lIc5MwGGL3rRnELPaUtHYlRztoUK8zhWFGtkGU6ea&_nc_zt=24&_nc_ht=scontent-lax3-2.xx&_nc_ss=70289&oh=00_AQO8EU-F3bjaxvn2r6XmvzND_SYTWgMbjCZ1zn9562H4Tg&oe=6AE8C03A"
+        },
+        "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid02CTxEBEmB75ak6wATSqKjjZ4z9FTkgCZp9FED4b86jpTqu9pgAAHs9be8yScpuompl&id=61593427921250",
+        "time": "2026-09-29T01:06:56.000Z",
+        "timestamp": 1790644016,
+        "user": {
+          "id": "61593427921250",
+          "name": "Summit Focus Vision",
+          "profilePic": "https://scontent-lax3-2.xx.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png?stp=cp0_dst-png&cstp=mx2048x2048&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=3e70f4&_nc_ohc=v_XEyutpHp0Q7kNvwE4eSd6&_nc_oc=Ado_kFyYHjof4mCxDeLl5TOfHctZzrqn39gopzxW7xMASb-lIc5MwGGL3rRnELPaUtHYlRztoUK8zhWFGtkGU6ea&_nc_zt=24&_nc_ht=scontent-lax3-2.xx&_nc_ss=70289&oh=00_AQO8EU-F3bjaxvn2r6XmvzND_SYTWgMbjCZ1zn9562H4Tg&oe=6AE8C03A"
+        },
+        "collaborators": [],
+        "text": "GOLDMAN SACHS JUST LEAKED ITS NEXT CEO – AND WALL STREET IS ALREADY FREAKING OUT\n\nThe boardroom at Goldman Sachs is quietly orchestrating a massive power shift that could reshape the bank forever. According to a bombshell report, a succession plan is in motion to replace CEO David Solomon with COO John Waldron as early as next year. Solomon, who survived a DJ scandal, partner revolts, and a $7 billion consumer lending disaster, is finally ready to hand over the reins. But the story doesn't end there. Waldron's promotion will trigger a high-stakes scramble for the No. 2 spot, with top executives already jockeying for position. And the timeline? That's where things get really interesting. The exact date is still up in the air, but insiders say the board could approve the move in just months. What happens next will send shockwaves through the entire financial world.\nThis is the Wall Street drama you didn't see coming. Full video's here if you're curious: https://geni.us/CNN-Headlines",
+        "textReferences": [
+          {
+            "url": "https://l.facebook.com/l.php?u=https%3A%2F%2Fgeni.us%2FCNN-Headlines&h=AUCv0UYfAFPg8fNi2nil8MlaXZBpbqMhIirUv7EByPpxuVFYPLnQW_Oma1Gqr-ARc1dxPNhnOhnC1rLTurcMVueSyEbik6QLG1wNxnha7ikQqosJb5n6KidTz_XOJos4CIbv-8XTTlbYGW9setXQWjOJfFpftF9K0MrmPa5bs92A0tUlUA&s=1",
+            "external_url": "https://geni.us/CNN-Headlines",
+            "web_link": {
+              "__typename": "ExternalWebLink",
+              "url": "https://geni.us/CNN-Headlines",
+              "fbclid": null,
+              "lynx_mode": "ASYNCLAZY"
+            },
+            "mobileUrl": "https://lm.facebook.com/l.php?u=https%3A%2F%2Fgeni.us%2FCNN-Headlines&h=AUC9_DCRJ6IL0PZChCt7xPaxDUkPPkiofAC59w1D3Vb4K2zXneRPcvhf7Ou1cc0_9kGv6xwjECHHFF7RUDFWYP3mwXKK8gUyJltgDv_axba4T5VEvzhyx9hA-GZNLy_M85EWLhjxce21VIY2YAFAYw_d9Oc5rv2jUKOKPQu6our00Kvf1w&s=1",
+            "id": "NjQyMTgzOTU5MjA4MTA3Omh0dHBzXGEvL2dlbmkudXMvQ05OLUhlYWRsaW5lczo6RGVmYXVsdDo6OjEyMjExNDkyNzY1NTQ0NzU5Nzo="
+          }
+        ],
+        "link": "https://geni.us/CNN-Headlines",
+        "likes": 0,
+        "comments": 1,
+        "shares": 0,
+        "topReactionsCount": 0,
+        "media": [
+          {
+            "thumbnail": "https://scontent-lax7-1.xx.fbcdn.net/v/t39.30808-6/830199783_122114927625447597_1833160822847000180_n.jpg?stp=dst-jpg_tt6&cstp=mx1200x799&ctp=p180x540&_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=52XO-k6xOHkQ7kNvwGrQi9T&_nc_oc=AdqKpcvkIuNgRLIWiD8wa2wwku8briQztcUJPzocUtlpnRfSgwtnckfWZiMs-qjkuX20vRofdDGW9MCj7oCRT7kX&_nc_zt=23&_nc_ht=scontent-lax7-1.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQPPnaDv3Eu2hQByVWjNI1tn3etn2Xwo7S3SCoAvlx1wZQ&oe=6AC71EB3",
+            "__typename": "Photo",
+            "__isMedia": "Photo",
+            "accent_color": "FF040309",
+            "photo_product_tags": [],
+            "photo_image": {
+              "uri": "https://scontent-lax7-1.xx.fbcdn.net/v/t39.30808-6/830199783_122114927625447597_1833160822847000180_n.jpg?stp=dst-jpg_tt6&cstp=mx1200x799&ctp=p180x540&_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=52XO-k6xOHkQ7kNvwGrQi9T&_nc_oc=AdqKpcvkIuNgRLIWiD8wa2wwku8briQztcUJPzocUtlpnRfSgwtnckfWZiMs-qjkuX20vRofdDGW9MCj7oCRT7kX&_nc_zt=23&_nc_ht=scontent-lax7-1.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQPPnaDv3Eu2hQByVWjNI1tn3etn2Xwo7S3SCoAvlx1wZQ&oe=6AC71EB3",
+              "height": 540,
+              "width": 811
+            },
+            "url": "https://www.facebook.com/photo/?fbid=122114927619447597&set=a.122114927649447597",
+            "id": "122114927619447597",
+            "feedback": {
+              "can_viewer_comment": false,
+              "id": "ZmVlZGJhY2s6MTIyMTE0OTI3NjU1NDQ3NTk3"
+            },
+            "ocrText": "May be an image of text"
+          }
+        ],
+        "feedbackId": "ZmVlZGJhY2s6MTIyMTE0OTI3NjU1NDQ3NTk3",
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "Yahoo Finance",
+      "handle": "100059543619478",
+      "text": "A bigger paycheck doesn't guarantee financial security.\n \nAbout 4 in 10 workers making over $300,000 say they're still living paycheck to paycheck, per a new Goldman Sachs survey. The culprit is a surprising \"U-shape\" pattern where financial strain dips in the middle income brackets, then rises again at the top.",
+      "url": "https://www.facebook.com/yahoofinance/posts/pfbid02sLbWBKGMHxctadUoK46u397JcrT11isg5mEVNxHLtRAjZeU8WBEotJEEeP758gm7l",
+      "at_ms": 1791043561000,
+      "reach": 81,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "1459947915999982",
+        "pageName": {
+          "id": "100059543619478",
+          "name": "Yahoo Finance",
+          "profilePic": "https://scontent-lax3-2.xx.fbcdn.net/v/t39.30808-1/464177547_925775592750553_1077025823108851574_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx400x400&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=w04_If6YzPAQ7kNvwHVJj7J&_nc_oc=AdriSHq9ZAwdJC5Vvz0wBokcdX1n2wtpY4fxg9aONmAlQD4R_GOGC_UzotzMsRgLkGlo5AG-9KNn_Jjmah6OKuS2&_nc_zt=24&_nc_ht=scontent-lax3-2.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQPQX7hO9Qqt2nUW9kKyW_MKjSa5i7Jy3sDbiHygHQNmvA&oe=6AC715C5"
+        },
+        "url": "https://www.facebook.com/yahoofinance/posts/pfbid02sLbWBKGMHxctadUoK46u397JcrT11isg5mEVNxHLtRAjZeU8WBEotJEEeP758gm7l",
+        "time": "2026-10-03T16:06:01.000Z",
+        "timestamp": 1791043561,
+        "user": {
+          "id": "100059543619478",
+          "name": "Yahoo Finance",
+          "profilePic": "https://scontent-lax3-2.xx.fbcdn.net/v/t39.30808-1/464177547_925775592750553_1077025823108851574_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx400x400&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=w04_If6YzPAQ7kNvwHVJj7J&_nc_oc=AdriSHq9ZAwdJC5Vvz0wBokcdX1n2wtpY4fxg9aONmAlQD4R_GOGC_UzotzMsRgLkGlo5AG-9KNn_Jjmah6OKuS2&_nc_zt=24&_nc_ht=scontent-lax3-2.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQPQX7hO9Qqt2nUW9kKyW_MKjSa5i7Jy3sDbiHygHQNmvA&oe=6AC715C5"
+        },
+        "collaborators": [],
+        "text": "A bigger paycheck doesn't guarantee financial security.\n \nAbout 4 in 10 workers making over $300,000 say they're still living paycheck to paycheck, per a new Goldman Sachs survey. The culprit is a surprising \"U-shape\" pattern where financial strain dips in the middle income brackets, then rises again at the top.",
+        "likes": 45,
+        "comments": 11,
+        "shares": 25,
+        "topReactionsCount": 5,
+        "media": [
+          {
+            "thumbnail": "https://scontent-lax3-1.xx.fbcdn.net/v/t39.99422-6/833346518_1685884339771761_789831693701425839_n.png?stp=dst-jpg_tt6&cstp=mx1080x1350&ctp=s640x640&_nc_cat=102&ccb=1-7&_nc_sid=127cfc&_nc_ohc=9VWm7Am-h2gQ7kNvwEiGrFN&_nc_oc=Adq48yCcSl2kbe1qIB6QUKK07pMfWCMd7jb3Bc46nNX28QFkPX4_BWptgecosKcYOhiKdQNEFDz2cngVBtmckIDr&_nc_zt=14&_nc_ht=scontent-lax3-1.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQOIhEV4FCL7TB4COH_yX4jLKhkht1fXxL7EnzaSOjRXiA&oe=6AC71DD2",
+            "__typename": "Photo",
+            "__isMedia": "Photo",
+            "accent_color": "FF020202",
+            "photo_product_tags": [],
+            "photo_image": {
+              "uri": "https://scontent-lax3-1.xx.fbcdn.net/v/t39.99422-6/833346518_1685884339771761_789831693701425839_n.png?stp=dst-jpg_tt6&cstp=mx1080x1350&ctp=s640x640&_nc_cat=102&ccb=1-7&_nc_sid=127cfc&_nc_ohc=9VWm7Am-h2gQ7kNvwEiGrFN&_nc_oc=Adq48yCcSl2kbe1qIB6QUKK07pMfWCMd7jb3Bc46nNX28QFkPX4_BWptgecosKcYOhiKdQNEFDz2cngVBtmckIDr&_nc_zt=14&_nc_ht=scontent-lax3-1.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQOIhEV4FCL7TB4COH_yX4jLKhkht1fXxL7EnzaSOjRXiA&oe=6AC71DD2",
+              "height": 640,
+              "width": 512
+            },
+            "url": "https://www.facebook.com/photo/?fbid=1459947889333318&set=a.646062470721868",
+            "id": "1459947889333318",
+            "feedback": {
+              "can_viewer_comment": false,
+              "id": "ZmVlZGJhY2s6MTQ1OTk0NzkxNTk5OTk4Mg=="
+            },
+            "ocrText": "May be an image of money and text"
+          }
+        ],
+        "feedbackId": "ZmVlZGJhY2s6MTQ1OTk0NzkxNTk5OTk4Mg==",
+        "reactionLikeCount": 34,
+        "reactionHahaCount": 6,
+        "reactionSadCount": 3,
+        "reactionCareCount": 1,
+        "reactionWowCount": 1,
+        "paidPartnership": false
+      }
+    },
+    {
+      "source": "Apify / facebook",
+      "platform": "facebook",
+      "author": "AK Atharina",
+      "handle": "pfbid0zLrjgTn8G2GjqcJiEthJeqbRmjY7fX8PEpxuD71iwMbhU7cZdwNg6j2NJMQMhTkvl",
+      "text": "🚨 GOLDMAN SACHS DROPS DOOMSDAY STATEMENT: U.S. BONDS HAVE NO BUYERS\n\nGoldman Sachs just admitted the long end of U.S. Treasury market is “totally bidless.”\n\nTranslation: almost nobody wants the 10- to 30-year debt the U.S. is trying to sell.\n\nNo buyers. None. Zero.\n\nWhile Treasury Secretary Scott Bessent tells Congress we’re in an “illiquid period,” doubles then triples long-bond buybacks, taps the General Treasury Account to fund it and openly says “I am the house.”\n\nYields are surging anyway. The 10-year has pushed toward 5.3% and the 30-year is even higher, levels not seen in years while Japan, one of the biggest foreign holders, keeps selling Treasuries and bringing money home.\n\nThis was exactly warned by Japan’s @yutokanzakireal that the measures being prepared by Bank of Japan will affect the lives of billions of people and apologized to people of the West. \n\nSoon after, Scott Bessent intervened and effectively took over BoJ operations which Japanese policymakers heavily criticized.\n\nIf the same ”bidless” condition hits the short-dated treasuries market, the entire U.S. debt market (and global) collapses.\n\nThe U.S. debt crisis will turn into a global liquidity crisis.",
+      "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid0GhgCxTpFNMrsrvufpXShXJ9kHF54ujjyxUay4AZzwaqqepCG9cAgWhMVbx95SU8hl&id=61588592661040",
+      "at_ms": 1791028969000,
+      "reach": 0,
+      "raw": {
+        "facebookUrl": "https://www.facebook.com/search/top?q=Goldman%20Sachs",
+        "searchType": "posts",
+        "postId": "122128469055286422",
+        "pageName": {
+          "id": "pfbid0zLrjgTn8G2GjqcJiEthJeqbRmjY7fX8PEpxuD71iwMbhU7cZdwNg6j2NJMQMhTkvl",
+          "name": "AK Atharina",
+          "profilePic": "https://scontent-lax3-2.xx.fbcdn.net/v/t39.30808-1/698658661_122114126559286422_3043566552773814835_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx916x916&ctp=s50x50&_nc_cat=100&ccb=1-7&_nc_sid=e99d92&_nc_ohc=GD7a-KsU1kwQ7kNvwHMupdr&_nc_oc=AdpvQwtNCA8Gk2_L9OT76e2aPlxI1_aoeyw-cmdI6USJr9CpEHBMIzrYVJ1HYnUAR2UMAbhAXtDz5tfubC-TgGAH&_nc_zt=24&_nc_ht=scontent-lax3-2.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQP7P0JU7Lm_H7GWNlBO_hAvIq0NWEmIFVoOGgpapj_qJQ&oe=6AC70B3D"
+        },
+        "url": "https://www.facebook.com/permalink.php?story_fbid=pfbid0GhgCxTpFNMrsrvufpXShXJ9kHF54ujjyxUay4AZzwaqqepCG9cAgWhMVbx95SU8hl&id=61588592661040",
+        "time": "2026-10-03T12:02:49.000Z",
+        "timestamp": 1791028969,
+        "user": {
+          "id": "pfbid0zLrjgTn8G2GjqcJiEthJeqbRmjY7fX8PEpxuD71iwMbhU7cZdwNg6j2NJMQMhTkvl",
+          "name": "AK Atharina",
+          "profilePic": "https://scontent-lax3-2.xx.fbcdn.net/v/t39.30808-1/698658661_122114126559286422_3043566552773814835_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx916x916&ctp=s50x50&_nc_cat=100&ccb=1-7&_nc_sid=e99d92&_nc_ohc=GD7a-KsU1kwQ7kNvwHMupdr&_nc_oc=AdpvQwtNCA8Gk2_L9OT76e2aPlxI1_aoeyw-cmdI6USJr9CpEHBMIzrYVJ1HYnUAR2UMAbhAXtDz5tfubC-TgGAH&_nc_zt=24&_nc_ht=scontent-lax3-2.xx&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_ss=70289&oh=00_AQP7P0JU7Lm_H7GWNlBO_hAvIq0NWEmIFVoOGgpapj_qJQ&oe=6AC70B3D"
+        },
+        "collaborators": [],
+        "text": "🚨 GOLDMAN SACHS DROPS DOOMSDAY STATEMENT: U.S. BONDS HAVE NO BUYERS\n\nGoldman Sachs just admitted the long end of U.S. Treasury market is “totally bidless.”\n\nTranslation: almost nobody wants the 10- to 30-year debt the U.S. is trying to sell.\n\nNo buyers. None. Zero.\n\nWhile Treasury Secretary Scott Bessent tells Congress we’re in an “illiquid period,” doubles then triples long-bond buybacks, taps the General Treasury Account to fund it and openly says “I am the house.”\n\nYields are surging anyway. The 10-year has pushed toward 5.3% and the 30-year is even higher, levels not seen in years while Japan, one of the biggest foreign holders, keeps selling Treasuries and bringing money home.\n\nThis was exactly warned by Japan’s @yutokanzakireal that the measures being prepared by Bank of Japan will affect the lives of billions of people and apologized to people of the West. \n\nSoon after, Scott Bessent intervened and effectively took over BoJ operations which Japanese policymakers heavily criticized.\n\nIf the same ”bidless” condition hits the short-dated treasuries market, the entire U.S. debt market (and global) collapses.\n\nThe U.S. debt crisis will turn into a global liquidity crisis.\n\n",
+        "link": "https://x.com/sterndrewcrypto/status/2106044033634079186?s=46",
+        "previewTitle": "Stern Drew (@SternDrewCrypto) on X",
+        "previewSource": "x.com",
+        "previewTarget": {
+          "__typename": "ExternalUrl",
+          "article_author": null,
+          "external_url": "https://x.com/sterndrewcrypto/status/2106044033634079186?s=46",
+          "id": "226547524203272:122128469049286422"
+        },
+        "likes": 0,
+        "shares": 0,
+        "topReactionsCount": 0,
+        "media": [
+          {
+            "thumbnail": "https://external-lax3-2.xx.fbcdn.net/emg1/v/t13/4414725012747419534?url=https%3A%2F%2Fjf.x.com%2Fimages%2Fpost%2F2106044033634079186.png&fb_obo=1&utld=x.com&_nc_sid=4a39c3&_nc_ht=external-lax3-2.xx.fbcdn.net&stp=c0.5000x0.5000f_dst-jpg_flffffff_p500x261_q75_tt6&ccb=18-1&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_zt=3&oh=06_Q3_DASFy9qxYutdHCpoBKZgx5A92hvT4V_AmsZLIVv7VhDH7&oe=6AC2FFFE",
+            "__typename": "GenericAttachmentMedia",
+            "__isMedia": "GenericAttachmentMedia",
+            "flexible_height_share_image": null,
+            "large_share_image": {
+              "height": 261,
+              "uri": "https://external-lax3-2.xx.fbcdn.net/emg1/v/t13/4414725012747419534?url=https%3A%2F%2Fjf.x.com%2Fimages%2Fpost%2F2106044033634079186.png&fb_obo=1&utld=x.com&_nc_sid=4a39c3&_nc_ht=external-lax3-2.xx.fbcdn.net&stp=c0.5000x0.5000f_dst-jpg_flffffff_p500x261_q75_tt6&ccb=18-1&_nc_gid=uYSdeibxIOSZjAek0fRjvQ&_nc_zt=3&oh=06_Q3_DASFy9qxYutdHCpoBKZgx5A92hvT4V_AmsZLIVv7VhDH7&oe=6AC2FFFE",
+              "width": 500
+            },
+            "id": "122128469049286422"
+          }
+        ],
+        "feedbackId": "ZmVlZGJhY2s6MTIyMTI4NDY5MDU1Mjg2NDIy",
+        "paidPartnership": false
+      }
+    }
+  ],
+  "errors": []
+}

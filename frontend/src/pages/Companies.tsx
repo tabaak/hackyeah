@@ -139,6 +139,7 @@ function CompanyCard({ c }: { c: Company }) {
                     <FileText size={16} className="shrink-0 text-fg-3" />
                     <span className="min-w-0 flex-1 truncate">{d.name}</span>
                     {d.status === 'processing' && <Badge>Summarizing…</Badge>}
+                    {d.status === 'failed' && <Badge tone="danger">Processing failed</Badge>}
                     <ClassBadge c={d.classification} />
                   </div>
                   {d.summary ? (

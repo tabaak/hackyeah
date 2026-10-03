@@ -169,7 +169,7 @@ export default function LiveFeed() {
             key={responding.id}
             post={responding}
             company={respondingCompany}
-            onDone={() => { setPostStatus(responding.id, 'responded'); set('respond', null) }}
+            onDone={() => set('respond', null)}
           />
         )}
       </Dialog>

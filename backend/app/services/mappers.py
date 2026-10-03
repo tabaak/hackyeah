@@ -33,5 +33,5 @@ def mention(row: dict) -> Mention:
         text=row["text"], at=to_ms(row["published_at"]), severity=row["severity"], verdict=row["verdict"],
         reason=row["reason"], reach=row["reach"],
         cluster=Cluster(size=c["size"], accounts=c["unique_authors"]) if c else None,
-        injection=row["injection_suspected"], status=row["status"],
+        injection=row["injection_suspected"], status=row["status"], url=row.get("url"),
     )

@@ -232,7 +232,8 @@ def test_template_draft_and_hash():
 
 
 def test_news_helpers():
-    assert news.query_for(COMPANY) == '"Kestrel Bank" OR "Kestrel"'
+    assert news.queries_for(COMPANY) == ["Kestrel Bank", "Kestrel"]  # plain text: quoted/OR queries return nothing on Serper
+    assert news.queries_for({"name": "Pekao", "aliases": ["pekao", " "]}) == ["Pekao"]
     assert to_ms(news.parse_date("3 hours ago")) < to_ms(news.parse_date(None))
     assert news.parse_date("Jan 5, 2026").startswith("2026-01-05")
 

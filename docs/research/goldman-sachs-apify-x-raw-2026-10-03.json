@@ -1,0 +1,38 @@
+{
+  "actor": "apidojo/tweet-scraper",
+  "query": "Goldman Sachs",
+  "requested_limit": 10,
+  "raw_count": 10,
+  "raw_items": [
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    },
+    {
+      "noResults": true
+    }
+  ]
+}
