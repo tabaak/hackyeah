@@ -1,4 +1,4 @@
-import { Archive, ArrowCounterClockwise, ArrowSquareOut, Lightning, Quotes, UsersThree, Warning } from '@phosphor-icons/react'
+import { Archive, ArrowCounterClockwise, ArrowSquareOut, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
 import { useSearchParams } from 'react-router-dom'
 import { CounterPost } from '../components/CounterPost'
 import { PLATFORM_LABEL, sourceUrl, type Platform, type Post } from '../lib/mock'
@@ -37,7 +37,6 @@ export default function LiveFeed() {
   const urgent = posts
     .filter(p => p.severity === 'high' && p.status === 'new' && (company === 'all' || p.companyId === company))
     .sort((a, b) => b.reach - a.reach)
-    .slice(0, 3)
 
   const list = posts.filter(p =>
     (company === 'all' || p.companyId === company) &&
@@ -53,54 +52,34 @@ export default function LiveFeed() {
         <section aria-labelledby="urgent-h">
           <div className="mb-3 flex items-center gap-2">
             <Warning size={20} weight="fill" className="text-danger" />
-            <h2 id="urgent-h" className="text-lg font-semibold">Needs attention</h2>
+            <h2 id="urgent-h" className="text-lg font-semibold">Needs attention <span className="font-mono text-sm font-normal text-fg-3">{urgent.length}</span></h2>
           </div>
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-4 md:-mx-6 md:scroll-px-6 md:px-6">
             {urgent.map(p => (
-              <article key={p.id} className="flex flex-col overflow-hidden rounded-panel border border-danger/40 bg-surface">
-                <header className="flex items-start gap-3 px-4 pt-4">
-                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-subtle text-fg-2"><PlatformIcon p={p.platform} size={18} /></span>
+              <article key={p.id} className="flex w-[340px] shrink-0 snap-start flex-col gap-3 rounded-panel border border-danger/40 bg-surface p-4">
+                <div className="flex gap-3">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-2"><PlatformIcon p={p.platform} size={16} /></span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold">{nameOf(p.companyId)}</p>
-                    <p className="truncate text-xs text-fg-3">{p.handle}</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="truncate font-semibold">{nameOf(p.companyId)}</span>
+                      <span className="truncate text-xs text-fg-3">{p.handle}</span>
+                      <time className="ml-auto shrink-0 text-xs text-fg-3" dateTime={new Date(p.at).toISOString()} title={new Date(p.at).toLocaleString()}>{timeAgo(p.at)}</time>
+                    </div>
+                    <p className="mt-1 line-clamp-2 text-[15px] leading-6">{p.text}</p>
                   </div>
-                  <time className="shrink-0 text-xs text-fg-3" dateTime={new Date(p.at).toISOString()} title={new Date(p.at).toLocaleString()}>{timeAgo(p.at)}</time>
-                </header>
-
-                {p.injection && (
-                  <div className="px-4 pt-3">
-                    <Badge tone="danger"><Warning size={14} weight="bold" />AI manipulation</Badge>
-                  </div>
-                )}
-
-                <figure className="mx-4 mt-3">
-                  <Quotes size={20} weight="fill" className="text-fg-3/60" aria-hidden />
-                  <blockquote className="mt-1 line-clamp-3 text-[15px] leading-6">{p.text}</blockquote>
-                </figure>
-
-                <div className="mx-4 mb-4 mt-4 rounded-control bg-subtle px-3 py-2.5">
-                  <p className="text-[11px] font-medium uppercase tracking-wider text-fg-3">Why flagged</p>
-                  <p className="mt-1 line-clamp-3 text-sm text-fg-2">{p.reason}</p>
                 </div>
 
-                <dl className="mt-auto grid grid-cols-2 divide-x divide-line border-y border-line">
-                  <div className="px-4 py-3">
-                    <dt className="flex items-center gap-1 text-xs text-fg-3"><Lightning size={14} />Reach</dt>
-                    <dd className="mt-0.5 font-mono text-lg font-semibold">{compact(p.reach)}</dd>
-                  </div>
-                  <div className="px-4 py-3">
-                    <dt className="flex items-center gap-1 text-xs text-fg-3"><UsersThree size={14} />Cluster</dt>
-                    <dd className="mt-0.5 font-mono text-lg font-semibold">
-                      {p.cluster ? <>{p.cluster.size} <span className="font-sans text-xs font-normal text-fg-3">posts · {p.cluster.accounts} accts</span></> : <span className="text-fg-3">—</span>}
-                    </dd>
-                  </div>
-                </dl>
+                <p className="line-clamp-2 rounded-control bg-subtle px-3 py-2 text-sm text-fg-2" title={p.reason}>{p.reason}</p>
 
-                <div className="flex gap-2 p-4">
-                  <Button variant="primary" className="flex-1" onClick={() => set('respond', p.id)}>
-                    Create counter-post
-                  </Button>
-                  <Button variant="ghost" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-fg-3">
+                  {p.injection && <Badge tone="danger"><Warning size={14} weight="bold" />AI manipulation</Badge>}
+                  <span className="flex items-center gap-1"><Lightning size={14} /><span className="font-mono text-fg-2">{compact(p.reach)}</span> reach</span>
+                  {p.cluster && <span className="flex items-center gap-1"><UsersThree size={14} /><span className="font-mono text-fg-2">{p.cluster.size}</span> similar</span>}
+                </div>
+
+                <div className="mt-auto flex gap-2">
+                  <Button variant="primary" className="flex-1" onClick={() => set('respond', p.id)}>Create counter-post</Button>
+                  <Button variant="ghost" className="w-9 px-0" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
                 </div>
               </article>
             ))}

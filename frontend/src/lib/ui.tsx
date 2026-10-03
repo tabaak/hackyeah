@@ -4,7 +4,15 @@ import newsIcon from '../assets/platforms/news.svg'
 import threadsIcon from '../assets/platforms/threads.svg'
 import xIcon from '../assets/platforms/x.svg'
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
+import { useOutletContext } from 'react-router-dom'
 import { PLATFORM_LABEL, VERDICT_LABEL, type Classification, type Platform, type Severity, type Verdict } from './mock'
+
+// Renders page-level actions into the title row of AppShell
+export function PageActions({ children }: { children: ReactNode }) {
+  const slot = useOutletContext<HTMLElement | null>()
+  return slot ? createPortal(children, slot) : null
+}
 
 export const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ')
 

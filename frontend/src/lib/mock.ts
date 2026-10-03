@@ -125,18 +125,32 @@ export function seedPosts(c: Company): Post[] {
   return TEMPLATES.map((_, i) => makePost(c, i, now - (i * 23 + 4) * 60_000))
 }
 
-// 24 hourly buckets of mentions by severity — deterministic per company id
-export function hourlySeries(companies: Company[]) {
+export type Range = '24h' | '7d' | '30d'
+export const RANGES: Record<Range, { label: string; ms: number }> = {
+  '24h': { label: '24 hours', ms: 864e5 },
+  '7d': { label: '7 days', ms: 7 * 864e5 },
+  '30d': { label: '30 days', ms: 30 * 864e5 },
+}
+
+// Mentions by severity, bucketed per hour (24h) or per day (7d/30d), ending now — deterministic per company id
+export function mentionSeries(companies: Company[], range: Range) {
   const seed = companies.reduce((s, c) => s + c.id.charCodeAt(0), 7)
-  return Array.from({ length: 24 }, (_, h) => {
-    const wave = Math.sin((h + seed) / 3) * 0.5 + 0.5
-    const burst = h >= 19 ? (h - 18) * 14 : 0
-    const k = Math.max(1, companies.length)
+  const k = Math.max(1, companies.length)
+  const hourly = range === '24h'
+  const n = hourly ? 24 : range === '7d' ? 7 : 30
+  const scale = hourly ? 1 : 24
+  const now = new Date()
+  return Array.from({ length: n }, (_, i) => {
+    const wave = Math.sin((i + seed) / (hourly ? 3 : 2)) * 0.5 + 0.5
+    const burst = i >= n - 5 ? (i - n + 6) * 14 : 0 // incident ramps up in the last 5 buckets
+    const t = new Date(now.getTime() - (n - 1 - i) * (hourly ? 36e5 : 864e5))
     return {
-      hour: `${String(h).padStart(2, '0')}:00`,
-      low: Math.round((18 + wave * 22) * k),
-      medium: Math.round((6 + wave * 8) * k + burst * 0.4),
-      high: Math.round((1 + (h % 5 === 0 ? 2 : 0)) * k + burst),
+      label: hourly
+        ? `${String(t.getHours()).padStart(2, '0')}:00`
+        : t.toLocaleDateString('en', range === '7d' ? { weekday: 'short' } : { month: 'short', day: 'numeric' }),
+      low: Math.round((18 + wave * 22) * k * scale),
+      medium: Math.round((6 + wave * 8) * k * scale + burst * 0.4 * (hourly ? 1 : 6)),
+      high: Math.round((1 + (i % 5 === 0 ? 2 : 0)) * k * scale + burst * (hourly ? 1 : 6)),
     }
   })
 }
