@@ -65,7 +65,7 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 
 **Company**
 ```
-{ id, name, website, aliases[], sector, country, people[], topics[], documents: Doc[], createdAt }
+{ id, name, website, aliases[], sector, country, people[], topics[], logoUrl, documents: Doc[], createdAt }
 ```
 **Doc** — `{ id, name, size /* байти */, classification, status, summary /* string або null */ }`
 
@@ -98,6 +98,8 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 * `POST /companies` → 201 — створення `{ name, website?, aliases?[], sector, country, people?[], topics?[] }`. При `DEMO_SEED=true` бекенд одразу додає 10 демо-згадок (з них 4 high); з `SERPER_API_KEY` у фоні збирає новини.
 * `GET /companies/{id}` — одна компанія.
 * `PUT /companies/{id}` — оновлення (повне тіло, як у POST).
+* `PUT /companies/{id}/logo` — multipart поле `file`: PNG/JPG/WebP до 2 МБ. Сервер перевіряє й зменшує зображення та повертає `{ logoUrl }`. Логотип зберігається у приватному bucket `company-logos`; `GET /companies` також повертає підписане посилання `logoUrl` або `null`.
+* `DELETE /companies/{id}/logo` → 204 — видалити логотип компанії.
 * `DELETE /companies/{id}` → 204 — припинити моніторинг; видаляє також згадки, документи та файли компанії.
 * `GET /companies/meta` — довідники для форм: `{ sectors: { [sector]: topics[] }, countries[] }` (ті ж значення, що `SECTORS` / `COUNTRIES` у фронтенді).
 

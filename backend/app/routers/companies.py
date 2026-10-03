@@ -1,5 +1,6 @@
 """2. Tracked companies and their documents."""
 import asyncio
+import re
 
 from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile, status
 
@@ -8,9 +9,9 @@ from app.db import get_db, not_found
 from app.deps import get_current_user
 from app.schemas.auth import CurrentUser
 from app.schemas.common import Classification
-from app.schemas.companies import CompaniesMeta, Company, CompanyDraft
+from app.schemas.companies import CompaniesMeta, Company, CompanyDraft, CompanyLogo
 from app.schemas.documents import Doc
-from app.services import demo, documents, mappers, news
+from app.services import demo, documents, logos, mappers, news
 
 router = APIRouter(tags=["companies"])
 
@@ -35,8 +36,12 @@ def load_company(company_id: str, user: CurrentUser, select: str = "*") -> dict:
 
 def _clean(body: CompanyDraft) -> dict:
     strip = lambda xs: list(dict.fromkeys(x.strip() for x in xs if x.strip()))
+    website = body.website.strip()
+    # Rendered as a link in the UI: http(s) only, so a stored `javascript:` URL can't run in a colleague's browser.
+    if website and not re.match(r"https?://[^\s/]", website, re.I):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Website must start with http:// or https://")
     return {
-        "name": body.name.strip(), "website": body.website.strip(), "aliases": strip(body.aliases), "sector": body.sector,
+        "name": body.name.strip(), "website": website, "aliases": strip(body.aliases), "sector": body.sector,
         "country": body.country, "people": strip(body.people), "topics": strip(body.topics),
     }
 
@@ -47,7 +52,8 @@ def list_companies(user: CurrentUser = Depends(get_current_user)):
         get_db().table("companies").select(mappers.COMPANY_SELECT)
         .eq("organization_id", user.organization_id).order("created_at").execute().data
     )
-    return [mappers.company(r, user.role) for r in rows]
+    urls = logos.signed_urls(rows)
+    return [mappers.company(r, user.role, urls.get(r["id"])) for r in rows]
 
 
 @router.post("/companies", response_model=Company, status_code=201)
@@ -69,23 +75,39 @@ def companies_meta():
 
 @router.get("/companies/{company_id}", response_model=Company)
 def get_company(company_id: str, user: CurrentUser = Depends(get_current_user)):
-    return mappers.company(load_company(company_id, user, mappers.COMPANY_SELECT), user.role)
+    row = load_company(company_id, user, mappers.COMPANY_SELECT)
+    return mappers.company(row, user.role, logos.signed_urls([row]).get(company_id))
 
 
 @router.put("/companies/{company_id}", response_model=Company)
 def update_company(company_id: str, body: CompanyDraft, user: CurrentUser = Depends(get_current_user)):
     load_company(company_id, user)
     get_db().table("companies").update(_clean(body)).eq("id", company_id).eq("organization_id", user.organization_id).execute()
-    return mappers.company(load_company(company_id, user, mappers.COMPANY_SELECT), user.role)
+    row = load_company(company_id, user, mappers.COMPANY_SELECT)
+    return mappers.company(row, user.role, logos.signed_urls([row]).get(company_id))
 
 
 @router.delete("/companies/{company_id}", status_code=204)
 def delete_company(company_id: str, user: CurrentUser = Depends(get_current_user)):
     """Stops monitoring; deletes the company's mentions, documents and stored files."""
-    load_company(company_id, user)
+    row = load_company(company_id, user)
     for d in get_db().table("documents").select("id, storage_path").eq("company_id", company_id).execute().data:
         documents.remove(d)
+    logos.remove(row)
     get_db().table("companies").delete().eq("id", company_id).eq("organization_id", user.organization_id).execute()
+
+
+@router.put("/companies/{company_id}/logo", response_model=CompanyLogo)
+async def upload_company_logo(company_id: str, file: UploadFile = File(...), user: CurrentUser = Depends(get_current_user)):
+    row = await asyncio.to_thread(load_company, company_id, user)
+    data = await file.read(logos.MAX_BYTES + 1)
+    url = await asyncio.to_thread(logos.upload, row, data)
+    return CompanyLogo(logo_url=url)
+
+
+@router.delete("/companies/{company_id}/logo", status_code=204)
+def delete_company_logo(company_id: str, user: CurrentUser = Depends(get_current_user)):
+    logos.remove(load_company(company_id, user))
 
 
 @router.get("/companies/{company_id}/documents", response_model=list[Doc])
@@ -113,7 +135,7 @@ async def upload_company_documents(
         name = f.filename or "file"
         if not documents.content_type_for(name):
             raise HTTPException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, f"{name}: only PDF and TXT are supported")
-        data = await f.read()
+        data = await f.read(documents.MAX_BYTES + 1)  # bounded: never buffer an oversized upload
         if len(data) > documents.MAX_BYTES:
             raise HTTPException(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, f"{name}: larger than 5 MB")
         payloads.append((name, data))

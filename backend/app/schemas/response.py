@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from app.schemas.common import ApprovalState, CamelModel, Classification, Verdict
 
 
@@ -33,9 +35,9 @@ class MentionResponse(CamelModel):
 
 
 class DraftUpdate(CamelModel):
-    text: str
+    text: str = Field(max_length=10_000)
 
 
 class Decision(CamelModel):
     approve: bool
-    comment: str | None = None
+    comment: str | None = Field(None, max_length=2_000)

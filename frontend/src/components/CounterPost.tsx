@@ -1,4 +1,4 @@
-import { Check, Copy, FileText, ShieldWarning, Warning } from '@phosphor-icons/react'
+import { Check, FileText, ShieldWarning, Warning } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { PLATFORM_LABEL, type Classification, type Company, type Post, type Verdict } from '../lib/mock'
@@ -147,7 +147,7 @@ export function CounterPost({ post, company, onDone }: { post: Post; company: Co
         )}
         <div className="mt-auto flex flex-wrap justify-end gap-2 pt-2">
           {loadError && <Button onClick={() => setAttempt(n => n + 1)}>Retry</Button>}
-          <Button onClick={copy} disabled={!data}>{copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'Copied' : 'Copy'}</Button>
+          <Button onClick={copy} disabled={!data}>{copied ? 'Copied' : 'Copy'}</Button>
           <Button variant="primary" onClick={submit} disabled={!data || busy || approval !== 'none'}>
             {approval === 'approved' ? 'Approved' : approval === 'pending' ? 'Approval requested' : requestOnly ? 'Request approval' : 'Approve response'}
           </Button>

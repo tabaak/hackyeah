@@ -1,4 +1,4 @@
-import { Archive, ArrowCounterClockwise, ArrowSquareOut, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
+import { Archive, ArrowSquareOut, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
 import { useSearchParams } from 'react-router-dom'
 import { CounterPost } from '../components/CounterPost'
 import { PLATFORM_LABEL, sourceUrl, type Platform, type Post } from '../lib/mock'
@@ -111,7 +111,7 @@ export default function LiveFeed() {
           <select aria-label="Status" value={status} onChange={e => set('status', e.target.value)} className={filterCls}>
             {Object.entries(STATUSES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
-          {filtered && <Button variant="ghost" onClick={() => setQ({})}><ArrowCounterClockwise size={16} />Reset</Button>}
+          {filtered && <Button variant="ghost" onClick={() => setQ({})}>Reset</Button>}
         </div>
 
         {list.length === 0 ? (

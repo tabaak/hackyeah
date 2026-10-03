@@ -1,7 +1,9 @@
-import { FileText, Trash, UploadSimple } from '@phosphor-icons/react'
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { FileText, Trash } from '@phosphor-icons/react'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { COUNTRIES, SECTORS, uid, type Classification, type CompanyDraft, type Doc } from '../lib/mock'
 import { Button, cx, Field, inputCls } from '../lib/ui'
+import { CompanyCreatedError } from '../lib/companyLogo'
+import CompanyLogoPicker from './CompanyLogoPicker'
 
 const split = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
 
@@ -9,7 +11,7 @@ export type { CompanyDraft } from '../lib/mock'
 // A file chosen in DocsUpload, not uploaded yet
 export type PendingDoc = Pick<Doc, 'id' | 'name' | 'size' | 'classification'> & { file: File }
 
-export function CompanyForm({ onSubmit, submitLabel, aside, initial }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string; aside?: ReactNode; initial?: CompanyDraft }) {
+export function CompanyForm({ onSubmit, submitLabel, aside, initial, logo = null, onLogoChange }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string; aside?: ReactNode; initial?: CompanyDraft; logo?: { file: File; preview: string } | null; onLogoChange?: (file: File | null) => void }) {
   const [sector, setSector] = useState(initial?.sector ?? 'Banking')
   const [topics, setTopics] = useState<string[]>(initial?.topics ?? SECTORS.Banking.slice(0, 3))
 
@@ -35,6 +37,7 @@ export function CompanyForm({ onSubmit, submitLabel, aside, initial }: { onSubmi
 
   return (
     <form onSubmit={submit} className="space-y-5">
+      {onLogoChange && <CompanyLogoPicker file={logo?.file ?? null} preview={logo?.preview ?? null} onChange={onLogoChange} />}
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Company name">
           <input name="name" required autoFocus defaultValue={initial?.name} className={cx(inputCls, "w-full")} placeholder="Kestrel Bank" />
@@ -117,9 +120,8 @@ export function DocsUpload({ docs, onChange }: { docs: PendingDoc[]; onChange: (
           drag ? 'border-accent bg-selected' : 'border-line hover:border-control',
         )}
       >
-        <UploadSimple size={24} className="text-accent" />
         <span className="font-medium">Drop files or click to choose</span>
-        <span className="text-xs text-fg-3">PDF with a text layer or TXT · up to {MAX_FILES} files, 5 MB each</span>
+        <span className="text-xs text-fg-3">PDF with a text layer or TXT up to {MAX_FILES} files, 5 MB each</span>
         <input type="file" multiple accept=".pdf,.txt" className="sr-only" onChange={e => { add(e.target.files); e.target.value = '' }} />
       </label>
       {error && <p role="alert" className="text-sm text-danger">{error}</p>}
@@ -155,19 +157,29 @@ export function DocsUpload({ docs, onChange }: { docs: PendingDoc[]; onChange: (
 
 // Two steps: profile → optional documents. Shared by onboarding and "Track another company".
 // `aside` renders next to Continue on the first step (e.g. sign out during onboarding).
-export function CompanyWizard({ onDone, aside, initialCompany }: { onDone: (c: CompanyDraft, docs: PendingDoc[]) => Promise<void>; aside?: ReactNode; initialCompany?: CompanyDraft }) {
+export function CompanyWizard({ onDone, onExit, aside, initialCompany }: { onDone: (c: CompanyDraft, docs: PendingDoc[], logo: File | null) => Promise<void>; onExit: () => void; aside?: ReactNode; initialCompany?: CompanyDraft }) {
   const [draft, setDraft] = useState<CompanyDraft | null>(null)
+  const [profileStep, setProfileStep] = useState(true)
+  const [logo, setLogo] = useState<{ file: File; preview: string } | null>(null)
   const [docs, setDocs] = useState<PendingDoc[]>([])
   const [busy, setBusy] = useState(false)
+  const [created, setCreated] = useState(false)
   const [error, setError] = useState('')
 
+  useEffect(() => () => { if (logo) URL.revokeObjectURL(logo.preview) }, [logo])
+
+  function chooseLogo(file: File | null) {
+    setLogo(file ? { file, preview: URL.createObjectURL(file) } : null)
+  }
+
   async function finish(d: PendingDoc[]) {
-    if (!draft || busy) return
+    if (!draft || busy || created) return
     setBusy(true)
     setError('')
     try {
-      await onDone(draft, d)
+      await onDone(draft, d, logo?.file ?? null)
     } catch (e) {
+      if (e instanceof CompanyCreatedError) setCreated(true)
       setError(e instanceof Error && !(e instanceof TypeError) ? e.message : 'The company could not be saved. Please try again.')
     } finally {
       setBusy(false)
@@ -178,8 +190,8 @@ export function CompanyWizard({ onDone, aside, initialCompany }: { onDone: (c: C
     <div>
       <ol className="mb-6 flex items-center gap-3 text-sm" aria-label="Setup progress">
         {['Company', 'Documents'].map((s, i) => {
-          const active = (draft ? 1 : 0) === i
-          const done = i === 0 && draft
+          const active = (profileStep ? 0 : 1) === i
+          const done = i === 0 && !profileStep
           return (
             <li key={s} className="flex items-center gap-2" aria-current={active ? 'step' : undefined}>
               {i > 0 && <span className="h-px w-8 bg-line" />}
@@ -189,8 +201,14 @@ export function CompanyWizard({ onDone, aside, initialCompany }: { onDone: (c: C
           )
         })}
       </ol>
-      {!draft ? (
-        <CompanyForm submitLabel="Continue" onSubmit={setDraft} aside={aside} initial={initialCompany} />
+      {profileStep || !draft ? (
+        <CompanyForm submitLabel="Continue" onSubmit={c => { setDraft(c); setProfileStep(false) }} aside={aside} initial={draft ?? initialCompany} logo={logo} onLogoChange={chooseLogo} />
+      ) : created ? (
+        <div className="space-y-5">
+          <p className="font-medium">{draft.name} was added</p>
+          <p role="alert" className="text-sm text-danger">{error}</p>
+          <div className="flex justify-end"><Button variant="primary" onClick={onExit}>Done</Button></div>
+        </div>
       ) : (
         <fieldset disabled={busy} aria-busy={busy} className="motion-page min-w-0 space-y-5">
           <p className="text-[15px] leading-6 text-fg-2">
@@ -200,7 +218,7 @@ export function CompanyWizard({ onDone, aside, initialCompany }: { onDone: (c: C
           {error && <p role="alert" className="text-sm text-danger">{error}</p>}
           {busy && <p role="status" className="text-sm text-fg-2">Saving company…</p>}
           <div className="flex justify-between gap-3 pt-2">
-            <Button variant="ghost" disabled={busy} onClick={() => setDraft(null)}>Back</Button>
+            <Button variant="ghost" disabled={busy} onClick={() => { setError(''); setProfileStep(true) }}>Back</Button>
             <div className="flex gap-3">
               <Button variant="secondary" disabled={busy} onClick={() => finish([])}>Skip for now</Button>
               <Button variant="primary" disabled={!docs.length || busy} onClick={() => finish(docs)}>{busy ? 'Uploading…' : 'Start monitoring'}</Button>
