@@ -24,7 +24,7 @@ def load_mention(mention_id: str, user: CurrentUser, select: str = mappers.MENTI
     return rows[0]
 
 
-def query_mentions(user: CurrentUser, company_id=None, severity=None, platform=None, status=None, since: str | None = None, limit: int = 50) -> list[dict]:
+def query_mentions(user: CurrentUser, company_id=None, severity=None, platform=None, status=None, since: str | None = None, limit: int = 50, before: str | None = None) -> list[dict]:
     q = get_db().table("mentions").select(mappers.MENTION_SELECT).eq("organization_id", user.organization_id)
     if company_id:
         q = q.eq("company_id", company_id)
@@ -36,6 +36,8 @@ def query_mentions(user: CurrentUser, company_id=None, severity=None, platform=N
         q = q.eq("status", status)
     if since:
         q = q.gt("published_at", since)
+    if before:
+        q = q.lte("published_at", before)  # inclusive: mentions sharing the last timestamp of a page are not skipped
     return q.order("published_at", desc=True).limit(limit).execute().data
 
 
@@ -47,13 +49,15 @@ def list_mentions(
     status: MentionStatus | None = None,
     since_timestamp: int | None = Query(None, description="Unix ms; only mentions published after it"),
     since_id: str | None = Query(None, description="Only mentions published after this mention"),
+    before_timestamp: int | None = Query(None, description="Unix ms; only mentions published at or before it (next page of older ones)"),
     limit: int = Query(50, ge=1, le=200),
     user: CurrentUser = Depends(get_current_user),
 ):
     since = from_ms(since_timestamp) if since_timestamp else None
     if since_id:
         since = load_mention(since_id, user, "published_at")["published_at"]
-    rows = query_mentions(user, company_id, severity and severity.value, platform and platform.value, status and status.value, since, limit)
+    rows = query_mentions(user, company_id, severity and severity.value, platform and platform.value, status and status.value, since, limit,
+                          from_ms(before_timestamp) if before_timestamp else None)
     return [mappers.mention(r) for r in rows]
 
 

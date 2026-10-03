@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.deps import get_current_user
 from app.routers import analytics, auth, companies, documents, feed, notifications, push, response, sources
-from app.services import demo
+from app.services import demo, scheduler
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,9 +16,11 @@ logging.basicConfig(level=logging.INFO)
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     task = asyncio.create_task(demo.live_loop()) if settings.demo_live_interval_s > 0 else None
+    syncs = scheduler.start()
     yield
-    if task:
-        task.cancel()
+    for t in (task, *syncs):
+        if t:
+            t.cancel()
 
 
 app = FastAPI(title="Palladion API", version="0.2.0", lifespan=lifespan)

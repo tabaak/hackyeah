@@ -10,6 +10,8 @@ from app.services.notifications import notify_high_mentions
 
 log = logging.getLogger(__name__)
 MEDIA_COLUMNS = ("avatar_url", "media_urls")  # added by migration 20261003210000_mention_media.sql
+LOOKUP_CHUNK = 20  # external ids per "already stored?" query: they travel in the URL, and article links are long
+INSERT_CHUNK = 100  # rows per upsert request
 
 
 def _upsert(rows: list[dict]) -> list[dict]:
@@ -27,13 +29,16 @@ def insert_mentions(company: dict, rows: list[dict]) -> list[dict]:
     for r in rows:
         r["company_id"] = company["id"]
         r["organization_id"] = company["organization_id"]
-    try:
-        inserted = _upsert(rows)
-    except APIError as e:
-        if not any(c in str(e) for c in MEDIA_COLUMNS):
-            raise
-        log.warning("mentions has no avatar_url/media_urls columns yet: run the media migration. Saving without them.")
-        inserted = _upsert([{k: v for k, v in r.items() if k not in MEDIA_COLUMNS} for r in rows])
+    inserted: list[dict] = []
+    for i in range(0, len(rows), INSERT_CHUNK):
+        chunk = rows[i:i + INSERT_CHUNK]
+        try:
+            inserted += _upsert(chunk)
+        except APIError as e:
+            if not any(c in str(e) for c in MEDIA_COLUMNS):
+                raise
+            log.warning("mentions has no avatar_url/media_urls columns yet: run the media migration. Saving without them.")
+            inserted += _upsert([{k: v for k, v in r.items() if k not in MEDIA_COLUMNS} for r in chunk])
     notify_high_mentions(company["organization_id"], inserted)
     return inserted
 
@@ -41,12 +46,13 @@ def insert_mentions(company: dict, rows: list[dict]) -> list[dict]:
 def analyse_and_insert(company: dict, items: list[dict]) -> list[dict]:
     """Items need platform, external_id, text, published_at; optional author, handle, url, reach, lang."""
     existing = set()
-    if items:
+    ids = [i["external_id"] for i in items]
+    for start in range(0, len(ids), LOOKUP_CHUNK):
         found = (
             get_db().table("mentions").select("platform, external_id").eq("company_id", company["id"])
-            .in_("external_id", [i["external_id"] for i in items]).execute().data
+            .in_("external_id", ids[start:start + LOOKUP_CHUNK]).execute().data
         )
-        existing = {(r["platform"], r["external_id"]) for r in found}
+        existing |= {(r["platform"], r["external_id"]) for r in found}
     rows = []
     for item in items:
         if (item["platform"], item["external_id"]) in existing:

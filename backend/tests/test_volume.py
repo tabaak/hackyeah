@@ -290,3 +290,65 @@ def test_news_sync_needs_serper_or_rss(signed_in, monkeypatch):
 def test_sync_company_routes_news_to_the_news_service(monkeypatch):
     monkeypatch.setattr(social.news, "sync_company", lambda c: 7)
     assert social.sync_company(COMPANY, Platform.news) == 7
+
+
+# --- large batches (history loads) --------------------------------------------------------------------
+
+class BatchDb:
+    """Records every lookup and upsert; `stored` ids count as already in the database."""
+
+    def __init__(self, stored=()):
+        self.stored, self.lookups, self.upserts, self._ids, self._rows, self._mode = set(stored), [], [], [], [], None
+
+    def table(self, name):
+        return self
+
+    def select(self, *a, **k):
+        self._mode = "select"
+        return self
+
+    def eq(self, *a):
+        return self
+
+    def in_(self, col, ids):
+        self.lookups.append(len(ids))
+        self._ids = ids
+        return self
+
+    def upsert(self, rows, **k):
+        self._mode = "upsert"
+        self.upserts.append(len(rows))
+        self._rows = rows
+        return self
+
+    def execute(self):
+        if self._mode == "select":
+            return SimpleNamespace(data=[{"platform": "news", "external_id": i} for i in self._ids if i in self.stored])
+        return SimpleNamespace(data=self._rows)
+
+
+def big_batch(n):
+    return [{"platform": "news", "external_id": f"https://news.google.com/rss/articles/{'x' * 300}{i}", "text": f"Goldman Sachs story {i}",
+             "published_at": "2026-09-01T00:00:00+00:00", "reach": 0} for i in range(n)]
+
+
+def test_large_batches_are_looked_up_and_written_in_chunks(monkeypatch):
+    items = big_batch(250)
+    db = BatchDb(stored={items[0]["external_id"], items[249]["external_id"]})
+    monkeypatch.setattr(ingest, "get_db", lambda: db)
+    monkeypatch.setattr(ingest, "notify_high_mentions", lambda *a: None)
+    monkeypatch.setattr(ingest.retrieval, "search", lambda *a, **k: [])
+    monkeypatch.setattr(ingest.analysis.settings, "llm_analyse_all", False)
+    out = ingest.analyse_and_insert(COMPANY, items)
+    assert len(out) == 248  # the two stored articles are skipped
+    assert db.lookups and max(db.lookups) <= ingest.LOOKUP_CHUNK and sum(db.lookups) == 250
+    assert db.upserts == [100, 100, 48]
+
+
+def test_small_batch_is_one_request(monkeypatch):
+    db = BatchDb()
+    monkeypatch.setattr(ingest, "get_db", lambda: db)
+    monkeypatch.setattr(ingest, "notify_high_mentions", lambda *a: None)
+    monkeypatch.setattr(ingest.retrieval, "search", lambda *a, **k: [])
+    assert len(ingest.analyse_and_insert(COMPANY, big_batch(5))) == 5 and db.upserts == [5]
+    assert ingest.analyse_and_insert(COMPANY, []) == [] and db.upserts == [5]  # an empty batch makes no request

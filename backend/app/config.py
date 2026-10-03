@@ -62,14 +62,28 @@ class Settings:
     apify_max_age_days: int = _int("APIFY_MAX_AGE_DAYS", 30)  # search results can be old; skip posts older than this
 
     # News volume: Serper returns 10 articles per page (1 credit each); Google News RSS is free, up to 100 per request.
-    serper_pages: int = _int("SERPER_PAGES", 3)
-    news_window: str = _env("NEWS_WINDOW", "w")  # Serper time window: h | d | w | m
+    # Regular runs only look for what is new (cheap); a company's history is loaded once by a deeper "backfill" run.
+    serper_pages: int = _int("SERPER_PAGES", 1)
+    news_window: str = _env("NEWS_WINDOW", "d")  # Serper window of regular runs: h | d | w | m
+    news_backfill_days: int = _int("NEWS_BACKFILL_DAYS", 60)  # how far back the one-time history run goes (RSS, free)
+    news_backfill_pages: int = _int("NEWS_BACKFILL_PAGES", 5)  # Serper pages per query over the last month (1 credit each)
     news_rss: bool = _env("NEWS_RSS", "true").lower() == "true"
     # Analyse every item with the LLM (~6 s each). Default: only items with a risk signal; the rest keep the keyword score.
     llm_analyse_all: bool = _env("LLM_ANALYSE_ALL", "false").lower() == "true"
 
     # Expo push service. Optional: only needed when "enhanced push security" is on for the Expo project.
     expo_access_token: str = _env("EXPO_ACCESS_TOKEN")
+
+    # Scheduler: repeats the collection in the background. Minutes between runs per source, 0 = never.
+    # Costs: news ~2 Serper credits per company and run; X ~$0.03 per 200 posts; Facebook ~$0.2 per 30 posts; Threads ~$0.1.
+    sync_enabled: bool = _env("SYNC_ENABLED", "true").lower() == "true"
+    sync_news_minutes: int = _int("SYNC_NEWS_MINUTES", 60)
+    sync_x_minutes: int = _int("SYNC_X_MINUTES", 180)
+    sync_facebook_minutes: int = _int("SYNC_FACEBOOK_MINUTES", 720)
+    sync_threads_minutes: int = _int("SYNC_THREADS_MINUTES", 0)
+    sync_startup_delay_s: int = _int("SYNC_STARTUP_DELAY_SECONDS", 120)
+    # Critical notifications (and phone pushes) only for mentions this recent: loaded history must not alarm anyone.
+    notify_max_age_hours: int = _int("NOTIFY_MAX_AGE_HOURS", 72)
 
     # Demo data: seed sample mentions for every new company, and optionally add one every N seconds.
     demo_seed: bool = _env("DEMO_SEED", "true").lower() == "true"

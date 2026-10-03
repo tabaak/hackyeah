@@ -42,6 +42,7 @@ TEST_SETTINGS = {
     "local_llm_model": "bonsai-2-27b",
     "local_llm_api_key": "not-needed",
     "llm_force": "",
+    "sync_enabled": False,  # no background scheduler in tests
     "llm_timeout_s": 5.0,
 }
 

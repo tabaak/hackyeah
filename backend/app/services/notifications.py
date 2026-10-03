@@ -1,5 +1,7 @@
+from app.config import settings
 from app.db import get_db
 from app.services import push
+from app.services.timeutil import now, to_ms
 
 
 def notify(org_id: str, kind: str, title: str, severity: str, mention_id: str | None, roles: tuple[str, ...] | None = None,
@@ -21,6 +23,8 @@ def notify(org_id: str, kind: str, title: str, severity: str, mention_id: str | 
 
 
 def notify_high_mentions(org_id: str, mentions: list[dict]) -> None:
+    cutoff = to_ms(now()) - settings.notify_max_age_hours * 3_600_000
     for m in mentions:
-        if m["severity"] == "high":
+        # Loaded history (old articles) must not raise alarms or phone pushes
+        if m["severity"] == "high" and (m.get("published_at") is None or to_ms(m["published_at"]) >= cutoff):
             notify(org_id, "critical_mention", m["text"], "high", m["id"])

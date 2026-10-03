@@ -15,7 +15,7 @@ const STATUSES = { open: 'Open', archive: 'Archive', responded: 'Responded', dis
 const actionable = (p: Post) => p.status === 'new' && p.severity !== 'low'
 
 export default function LiveFeed() {
-  const { posts, companies, setPostStatus } = useStore()
+  const { posts, companies, setPostStatus, hasMore, loadingOlder, loadOlder } = useStore()
   const [q, setQ] = useSearchParams()
   const company = q.get('company') ?? 'all'
   const severity = q.get('severity') ?? 'all'
@@ -135,6 +135,11 @@ export default function LiveFeed() {
               />
             ))}
           </ul>
+        )}
+        {hasMore && (
+          <div className="border-t border-line p-3 text-center">
+            <Button onClick={() => void loadOlder()} disabled={loadingOlder}>{loadingOlder ? 'Loading…' : 'Load older mentions'}</Button>
+          </div>
         )}
       </section>
 

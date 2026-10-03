@@ -23,7 +23,11 @@ const NO_NOTIFICATIONS: Notifications = { items: [], openCount: 0 }
 
 // The API knows more platforms than the UI has icons and labels for; skip those instead of crashing.
 const knownPlatform = (p: Post) => p.platform in PLATFORM_LABEL
-const fetchPosts = (signal?: AbortSignal) => api<Post[]>('/mentions?limit=200', { signal }).then(ps => ps.filter(knownPlatform))
+const PAGE = 200 // the API's maximum page size
+type Page = { items: Post[]; full: boolean } // full: there may be older mentions behind this page
+const fetchPage = (before?: number, signal?: AbortSignal): Promise<Page> =>
+  api<Post[]>(`/mentions?limit=${PAGE}${before ? `&before_timestamp=${before}` : ''}`, { signal })
+    .then(ps => ({ items: ps.filter(knownPlatform), full: ps.length >= PAGE }))
 const fetchNotifications = (signal?: AbortSignal) => api<Notifications>('/notifications', { signal })
 
 function uploadDocs(companyId: string, docs: PendingDoc[], token: string) {
@@ -62,6 +66,9 @@ interface Store {
   posts: Post[]
   setPostStatus: (id: string, s: PostStatus) => void
   refreshFeed: () => Promise<void>
+  hasMore: boolean // older mentions can still be loaded
+  loadingOlder: boolean
+  loadOlder: () => Promise<void>
   notifications: Notifications
   markNotificationRead: (id: string) => void
   theme: Theme
@@ -83,6 +90,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const sessionRevision = useRef(0)
   const [companies, setCompanies] = useState<Company[]>([])
   const [posts, setPosts] = useState<Post[]>([])
+  const [newestFull, setNewestFull] = useState(false) // the newest page was full, so older mentions may exist
+  const [olderDone, setOlderDone] = useState(false) // paging back reached the oldest mention
+  const [loadingOlder, setLoadingOlder] = useState(false)
+  const resetPosts = () => { setPosts([]); setNewestFull(false); setOlderDone(false) }
   const [notifications, setNotifications] = useState<Notifications>(NO_NOTIFICATIONS)
   const pendingStatus = useRef(new Map<string, PostStatus>()) // optimistic changes the server has not confirmed yet
   // Older builds stored 'dark'; anything unknown falls back to graphite
@@ -113,7 +124,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         controller?.abort()
         setUser(null)
         setCompanies([])
-        setPosts([])
+        resetPosts()
         setNotifications(NO_NOTIFICATIONS)
         setSessionError(null)
         return
@@ -132,7 +143,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const { signal } = controller
       setUser(undefined)
       setCompanies([])
-      setPosts([])
+      resetPosts()
       setNotifications(NO_NOTIFICATIONS)
       setSessionError(null)
 
@@ -141,14 +152,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         Promise.all([
           api<User>('/me', { signal }, session.access_token),
           api<Company[]>('/companies', { signal }, session.access_token),
-          fetchPosts(signal),
+          fetchPage(undefined, signal),
           fetchNotifications(signal),
-        ]).then(([profile, cs, ps, ns]) => {
+        ]).then(([profile, cs, page, ns]) => {
           if (stopped || revision !== sessionRevision.current) return
           hydrated = id
           pending = null
           setCompanies(cs)
-          setPosts(ps)
+          setPosts(page.items)
+          setNewestFull(page.full)
           setNotifications(ns)
           setAuthError(null)
           setUser(profile)
@@ -198,9 +210,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const acct = account.current
     if (!acct) return
     try {
-      const [ps, ns] = await Promise.all([fetchPosts(), fetchNotifications()])
+      const [page, ns] = await Promise.all([fetchPage(), fetchNotifications()])
       if (account.current !== acct) return // signed out or switched account meanwhile
-      setPosts(ps.map(p => (pendingStatus.current.has(p.id) ? { ...p, status: pendingStatus.current.get(p.id)! } : p)))
+      const pending = (p: Post) => (pendingStatus.current.has(p.id) ? { ...p, status: pendingStatus.current.get(p.id)! } : p)
+      // The newest page replaces what it covers; older mentions the user already paged back to stay.
+      setPosts(prev => {
+        const oldest = Math.min(...page.items.map(p => p.at))
+        return [...page.items, ...(page.full ? prev.filter(p => p.at < oldest) : [])].map(pending)
+      })
+      setNewestFull(page.full)
       setNotifications(ns)
     } catch { /* keep what is shown; the next poll retries */ }
   }
@@ -234,7 +252,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       void supabase.auth.signOut()
       setUser(null)
       setCompanies([])
-      setPosts([])
+      resetPosts()
       setNotifications(NO_NOTIFICATIONS)
       setSessionError(null)
       setAuthError(null)
@@ -304,6 +322,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         .finally(() => pendingStatus.current.delete(id))
     },
     refreshFeed,
+    hasMore: newestFull && !olderDone,
+    loadingOlder,
+    loadOlder: async () => {
+      const acct = account.current
+      const oldest = Math.min(...posts.map(p => p.at))
+      if (!acct || loadingOlder || !Number.isFinite(oldest)) return
+      setLoadingOlder(true)
+      try {
+        const page = await fetchPage(oldest)
+        if (account.current !== acct) return
+        setPosts(prev => { const ids = new Set(prev.map(p => p.id)); return [...prev, ...page.items.filter(p => !ids.has(p.id))] })
+        if (!page.full) setOlderDone(true)
+      } catch { /* the button stays; try again */ } finally { setLoadingOlder(false) }
+    },
     notifications,
     markNotificationRead: id => {
       setNotifications(n => {
