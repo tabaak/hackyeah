@@ -20,6 +20,13 @@ class HourBucket(CamelModel):
     high: int
 
 
+class DayBucket(CamelModel):
+    day: str  # "YYYY-MM-DD", UTC
+    low: int
+    medium: int
+    high: int
+
+
 class PlatformReach(CamelModel):
     platform: Platform
     mentions: int

@@ -13,22 +13,22 @@ const TABS = [
 ]
 
 function Notifications({ id, placement }: { id: string; placement: string }) {
-  const { posts, companies } = useStore()
+  const { posts, companies, notifications, markNotificationRead } = useStore()
   const nav = useNavigate()
-  const incidents = posts.filter(p => p.severity === 'high' && p.status === 'new')
+  const incidents = notifications.items.filter(n => n.mentionId)
   const name = (cid: string) => companies.find(c => c.id === cid)?.name
 
   return (
     <>
       <button
         popoverTarget={id}
-        aria-label={`Notifications, ${incidents.length} open incidents`}
+        aria-label={`Notifications, ${notifications.openCount} open incidents`}
         className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
       >
         <Bell size={20} />
-        {incidents.length > 0 && (
+        {notifications.openCount > 0 && (
           <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ef4444] px-1 font-mono text-[10px] font-medium text-white">
-            {incidents.length}
+            {notifications.openCount}
           </span>
         )}
       </button>
@@ -41,21 +41,24 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
           <p className="px-4 py-6 text-center text-sm text-fg-3">No open high-priority incidents.</p>
         ) : (
           <ul className="max-h-96 divide-y divide-line overflow-y-auto">
-            {incidents.slice(0, 6).map(p => (
-              <li key={p.id}>
-                <button
-                  className="block w-full cursor-pointer px-4 py-3 text-left motion-control hover:bg-subtle"
-                  onClick={() => { document.getElementById(id)?.hidePopover(); nav(`/app/feed?respond=${p.id}`) }}
-                >
-                  <div className="mb-1 flex items-center gap-2 text-xs text-fg-3">
-                    <PlatformIcon p={p.platform} size={14} />
-                    <span>{PLATFORM_LABEL[p.platform]} · {name(p.companyId)}</span>
-                    <span className="ml-auto">{timeAgo(p.at)}</span>
-                  </div>
-                  <p className="line-clamp-2 text-sm">{p.text}</p>
-                </button>
-              </li>
-            ))}
+            {incidents.slice(0, 6).map(n => {
+              const post = posts.find(p => p.id === n.mentionId)
+              return (
+                <li key={n.id}>
+                  <button
+                    className={cx('block w-full cursor-pointer px-4 py-3 text-left motion-control hover:bg-subtle', n.read && 'opacity-60')}
+                    onClick={() => { markNotificationRead(n.id); document.getElementById(id)?.hidePopover(); nav(`/app/feed?respond=${n.mentionId}`) }}
+                  >
+                    <div className="mb-1 flex items-center gap-2 text-xs text-fg-3">
+                      {post && <PlatformIcon p={post.platform} size={14} />}
+                      {post && <span>{PLATFORM_LABEL[post.platform]} · {name(post.companyId)}</span>}
+                      <span className="ml-auto">{timeAgo(n.at)}</span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">{n.title}</p>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>

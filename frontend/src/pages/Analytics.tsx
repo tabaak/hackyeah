@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Link, useSearchParams } from 'react-router-dom'
-import { mentionSeries, PLATFORM_LABEL, RANGES, type Range, VERDICT_LABEL, type Platform, type Severity, type Verdict } from '../lib/mock'
+import { api } from '../lib/api'
+import { PLATFORM_LABEL, RANGES, type Range, VERDICT_LABEL, type Platform, type Severity, type Verdict } from '../lib/mock'
 import { useStore } from '../lib/store'
 import { compact, cx, PageActions, PlatformIcon, VerdictBadge } from '../lib/ui'
 
@@ -32,6 +33,22 @@ function Panel({ title, sub, children }: { title: string; sub?: string; children
   )
 }
 
+// Server-side aggregates (Endpoints.md §6) for the selected range
+type Summary = { total: number; high: number; medium: number; low: number; openHigh: number; responded: number; dismissed: number; clusters: number; injectionsBlocked: number }
+type Counts = { low: number; medium: number; high: number }
+type AnalyticsData = {
+  summary: Summary
+  series: ({ label: string } & Counts)[]
+  reach: { platform: Platform; mentions: number; reach: number }[]
+  verdicts: { verdict: Verdict; count: number }[]
+  byCompany: { name: string; n: number }[]
+}
+const EMPTY: AnalyticsData = {
+  summary: { total: 0, high: 0, medium: 0, low: 0, openHigh: 0, responded: 0, dismissed: 0, clusters: 0, injectionsBlocked: 0 },
+  series: [], reach: [], verdicts: [], byCompany: [],
+}
+const HOUR_MS = 36e5
+
 export default function Analytics() {
   const { posts: allPosts, companies, theme } = useStore()
   const c = SEV[theme === 'light' ? 'light' : 'dark']
@@ -41,41 +58,70 @@ export default function Analytics() {
   const { label: rangeLabel, ms } = RANGES[range]
   const [now] = useState(Date.now)
   const since = now - ms
+  const [data, setData] = useState<AnalyticsData>(EMPTY)
+  const [error, setError] = useState<string | null>(null)
+  const companyKey = companies.map(co => co.id).join(',')
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const { signal } = controller
+    const qs = `range=${range}`
+    const buckets = range === '24h'
+      ? api<({ hour: string } & Counts)[]>('/analytics/mentions-by-hour', { signal }).then(rows => {
+        const end = Math.floor(Date.now() / HOUR_MS) * HOUR_MS + HOUR_MS // the API's buckets are UTC hours ending at the next full hour
+        return rows.map((r, i) => ({ label: `${String(new Date(end - (rows.length - i) * HOUR_MS).getHours()).padStart(2, '0')}:00`, low: r.low, medium: r.medium, high: r.high }))
+      })
+      : api<({ day: string } & Counts)[]>(`/analytics/mentions-by-day?${qs}`, { signal }).then(rows => rows.map(r => ({
+        label: new Date(`${r.day}T00:00:00Z`).toLocaleDateString('en', { timeZone: 'UTC', ...(range === '7d' ? { weekday: 'short' } : { month: 'short', day: 'numeric' }) }),
+        low: r.low, medium: r.medium, high: r.high,
+      })))
+    Promise.all([
+      api<Summary>(`/analytics/summary?${qs}`, { signal }),
+      buckets,
+      api<AnalyticsData['reach']>(`/analytics/reach-by-platform?${qs}`, { signal }),
+      api<AnalyticsData['verdicts']>(`/analytics/claim-verification?${qs}`, { signal }),
+      Promise.all(companies.map(co => api<Summary>(`/analytics/summary?${qs}&company_id=${co.id}`, { signal }).then(sm => ({ name: co.name, n: sm.total })))),
+    ]).then(([summary, series, reach, verdicts, byCompany]) => {
+      setData({ summary, series, reach: reach.filter(r => r.platform in PLATFORM_LABEL), verdicts, byCompany })
+      setError(null)
+    }).catch((e: Error) => { if (!signal.aborted) setError(e.message) })
+    return () => controller.abort()
+  }, [range, companyKey])
+
+  // The platform x priority grid has no endpoint: it uses the latest mentions loaded for the feed.
   const posts = allPosts.filter(p => p.at >= since)
-  const series = mentionSeries(companies, range)
+  const { summary, series } = data
   const per = range === '24h' ? 'hourly' : 'daily'
   const tickEvery = range === '30d' ? 4 : range === '7d' ? 0 : 3
   const total = series.reduce((s, h) => s + h.low + h.medium + h.high, 0)
-  const openHigh = posts.filter(p => p.severity === 'high' && p.status === 'new').length
-  const responded = posts.filter(p => p.status === 'responded').length
-  const coordinated = posts.filter(p => p.cluster).length
+  const openHigh = summary.openHigh
+  const responded = summary.responded
+  const coordinated = summary.clusters
 
   const byPlatform = (Object.keys(PLATFORM_LABEL) as Platform[])
-    .map(p => ({ p, n: posts.filter(x => x.platform === p).length, reach: posts.filter(x => x.platform === p).reduce((s, x) => s + x.reach, 0) }))
+    .map(p => { const r = data.reach.find(x => x.platform === p); return { p, n: r?.mentions ?? 0, reach: r?.reach ?? 0 } })
     .sort((a, b) => b.reach - a.reach)
   const maxReach = Math.max(1, ...byPlatform.map(x => x.reach))
 
-  const verdicts = (Object.keys(VERDICT_LABEL) as Verdict[]).map(v => ({ v, n: posts.filter(p => p.verdict === v && p.severity !== 'low').length }))
+  const verdicts = (Object.keys(VERDICT_LABEL) as Verdict[]).map(v => ({ v, n: data.verdicts.find(x => x.verdict === v)?.count ?? 0 }))
 
   const mix = SEVS.map(k => ({ k, n: series.reduce((s, h) => s + h[k], 0) }))
   const highShare = series.map(h => ({ label: h.label, share: Math.round((h.high / Math.max(1, h.low + h.medium + h.high)) * 100) }))
-  const totalReach = posts.reduce((s, p) => s + p.reach, 0)
-  const injections = posts.filter(p => p.injection).length
+  const totalReach = byPlatform.reduce((s, x) => s + x.reach, 0)
+  const injections = summary.injectionsBlocked
 
   const heat = byPlatform.map(x => ({ p: x.p, cells: SEVS.map(k => posts.filter(y => y.platform === x.p && y.severity === k).length) }))
   const maxHeat = Math.max(1, ...heat.flatMap(r => r.cells))
 
-  const byCompany = companies
-    .map(co => ({ name: co.name, n: posts.filter(p => p.companyId === co.id).length }))
-    .sort((a, b) => b.n - a.n)
+  const byCompany = [...data.byCompany].sort((a, b) => b.n - a.n)
   const maxCompany = Math.max(1, ...byCompany.map(x => x.n))
 
   const statuses = [
-    { label: 'Awaiting review', n: posts.filter(p => p.status === 'new').length, color: c.low },
+    { label: 'Awaiting review', n: Math.max(0, summary.total - responded - summary.dismissed), color: c.low },
     { label: 'Responded', n: responded, color: 'var(--accent)' },
-    { label: 'Dismissed', n: posts.filter(p => p.status === 'dismissed').length, color: 'var(--border)' },
+    { label: 'Dismissed', n: summary.dismissed, color: 'var(--border)' },
   ]
-  const statusTotal = Math.max(1, posts.length)
+  const statusTotal = Math.max(1, summary.total)
 
   const metrics = [
     { label: `Mentions in ${rangeLabel}`, value: compact(total) },
@@ -101,6 +147,7 @@ export default function Analytics() {
           ))}
         </div>
       </PageActions>
+      {error && <p role="alert" className="text-sm text-danger">{error}</p>}
 
       {/* One metric strip with dividers (DESIGN §3.4) */}
       <dl className="grid grid-cols-2 divide-line rounded-panel border border-line bg-surface sm:grid-cols-4 xl:grid-cols-7 xl:divide-x">

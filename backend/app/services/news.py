@@ -31,21 +31,32 @@ def parse_date(value: str | None) -> str:
     return iso(now())
 
 
+def queries_for(company: dict) -> list[str]:
+    """The company name, then its first other name. Plain text on purpose: Serper /news returns nothing for
+    quoted phrases and for `"A" OR "B"` queries (checked: `"Goldman Sachs" OR "Goldman"` -> 0, `Goldman Sachs` -> 10)."""
+    name = company["name"].strip()
+    alias = next((a.strip() for a in company.get("aliases") or [] if a.strip() and a.strip().lower() != name.lower()), None)
+    return [name, *([alias] if alias else [])]
+
+
 def query_for(company: dict) -> str:
-    names = [company["name"], *(company.get("aliases") or [])]
-    return " OR ".join(f'"{n}"' for n in dict.fromkeys(n.strip() for n in names if n.strip()))
+    return queries_for(company)[0]
 
 
 def fetch(company: dict) -> list[dict]:
-    body = {"q": query_for(company), "num": 20, "tbs": "qdr:d"}
-    if gl := COUNTRY_GL.get(company.get("country", "")):
-        body["gl"] = gl
-    r = httpx.post("https://google.serper.dev/news", headers={"X-API-KEY": settings.serper_api_key}, json=body, timeout=20)
-    r.raise_for_status()
+    articles, seen = [], set()
+    for q in queries_for(company):
+        body = {"q": q, "num": 20, "tbs": "qdr:d"}
+        if gl := COUNTRY_GL.get(company.get("country", "")):
+            body["gl"] = gl
+        r = httpx.post("https://google.serper.dev/news", headers={"X-API-KEY": settings.serper_api_key}, json=body, timeout=20)
+        r.raise_for_status()
+        for n in r.json().get("news", []):
+            if n.get("link") and n["link"] not in seen:
+                seen.add(n["link"])
+                articles.append(n)
     items = []
-    for n in r.json().get("news", []):
-        if not n.get("link"):
-            continue
+    for n in articles:
         items.append({
             "platform": "news",
             "external_id": n["link"],
