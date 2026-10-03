@@ -1,4 +1,4 @@
-import { Bell, Buildings, ChartLine, Check, Palette, Pulse, SignOut } from '@phosphor-icons/react'
+import { Bell, Broadcast, Buildings, ChartLine, Check, Palette, SignOut } from '@phosphor-icons/react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { PLATFORM_LABEL } from '../lib/mock'
 import { THEMES, useStore, type Theme } from '../lib/store'
@@ -6,8 +6,8 @@ import { cx, PlatformIcon, timeAgo } from '../lib/ui'
 import { LogoMark, PRODUCT_NAME } from './Login'
 
 const TABS = [
+  { to: '/app/feed', label: 'Live feed', icon: Broadcast },
   { to: '/app/analytics', label: 'Analytics', icon: ChartLine },
-  { to: '/app/feed', label: 'Live feed', icon: Pulse },
   { to: '/app/companies', label: 'Companies', icon: Buildings },
 ]
 
@@ -63,10 +63,10 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
 }
 
 const THEME_META: Record<Theme, { label: string; swatch: [string, string] }> = {
-  graphite: { label: 'Graphite', swatch: ['#202020', '#2dd4bf'] },
-  navy: { label: 'Navy', swatch: ['#111827', '#2dd4bf'] },
-  laurel: { label: 'Laurel', swatch: ['#11241e', '#3cc9a6'] },
-  light: { label: 'Light', swatch: ['#ffffff', '#0f766e'] },
+  graphite: { label: 'Graphite', swatch: ['#202020', '#737373'] },
+  navy: { label: 'Navy', swatch: ['#111827', '#64748b'] },
+  laurel: { label: 'Laurel', swatch: ['#11241e', '#5a8075'] },
+  light: { label: 'Light', swatch: ['#ffffff', '#e2e8f0'] },
 }
 
 function ThemeMenu({ id, placement }: { id: string; placement: string }) {
@@ -89,7 +89,8 @@ function ThemeMenu({ id, placement }: { id: string; placement: string }) {
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-sm transition-colors duration-150 hover:bg-subtle"
           >
             <span
-              className="h-4 w-4 shrink-0 rounded-full ring-1 ring-line"
+              aria-hidden="true"
+              className="h-6 w-6 shrink-0 rounded-full ring-1 ring-line"
               style={{ background: `linear-gradient(135deg, ${THEME_META[t].swatch[0]} 50%, ${THEME_META[t].swatch[1]} 50%)` }}
             />
             {THEME_META[t].label}
@@ -118,9 +119,9 @@ export default function AppShell() {
     <div className="min-h-dvh md:pl-[216px]">
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 hidden w-[216px] flex-col bg-sidebar p-3 md:flex">
-        <div className="mb-6 flex items-center gap-2 px-2 pt-2 text-sidebar-text">
+        <div className="mb-3 flex items-center gap-3 border-b border-sidebar-active px-2 pt-2 pb-3 text-sidebar-text">
           <LogoMark />
-          <span className="font-semibold">{PRODUCT_NAME}</span>
+          <span className="translate-y-[3px] font-display text-[28px] font-medium leading-none tracking-tight">{PRODUCT_NAME}</span>
         </div>
         <nav className="space-y-1" aria-label="Main">
           {TABS.map(t => (
@@ -153,9 +154,9 @@ export default function AppShell() {
 
       {/* Mobile header */}
       <header className="sticky top-0 z-20 bg-sidebar px-4 md:hidden">
-        <div className="flex h-14 items-center gap-2">
+        <div className="flex h-14 items-center gap-2.5">
           <LogoMark />
-          <span className="font-semibold text-sidebar-text">{PRODUCT_NAME}</span>
+          <span className="translate-y-[3px] font-display text-2xl font-medium leading-none tracking-tight text-sidebar-text">{PRODUCT_NAME}</span>
           <div className="ml-auto flex items-center gap-1">
             <Notifications id="notif-mobile" placement="fixed top-14 right-4 left-auto" />
             <ThemeMenu id="theme-mobile" placement="fixed top-14 right-4 left-auto" />
@@ -173,14 +174,8 @@ export default function AppShell() {
         </nav>
       </header>
 
-      <div className="flex h-14 items-center gap-3 border-b border-line bg-surface px-4 md:px-6">
-        <h1 className="text-lg font-semibold">{title}</h1>
-        <span className="ml-auto flex items-center gap-2 text-xs text-fg-3">
-          <span className="h-2 w-2 rounded-full bg-[#22c55e]" aria-hidden />
-          Sources active
-        </span>
-      </div>
       <main className="p-4 md:p-6">
+        <h1 className="mb-6 font-display text-2xl font-medium leading-none tracking-tight md:translate-y-px md:text-[28px]">{title}</h1>
         <Outlet />
       </main>
     </div>

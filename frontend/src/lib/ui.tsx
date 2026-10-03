@@ -1,7 +1,8 @@
-import {
-  ChatsCircle, CheckCircle, FacebookLogo, GitDiff, LinkedinLogo, Newspaper, Question, RedditLogo,
-  TelegramLogo, ThreadsLogo, TiktokLogo, Warning, XLogo, X as XIcon,
-} from '@phosphor-icons/react'
+import { ChatsCircle, CheckCircle, GitDiff, Question, Warning, X as XIcon } from '@phosphor-icons/react'
+import facebookIcon from '../assets/platforms/facebook.svg'
+import newsIcon from '../assets/platforms/news.svg'
+import threadsIcon from '../assets/platforms/threads.svg'
+import xIcon from '../assets/platforms/x.svg'
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { PLATFORM_LABEL, VERDICT_LABEL, type Classification, type Platform, type Severity, type Verdict } from './mock'
 
@@ -70,12 +71,11 @@ export function ClassBadge({ c }: { c: Classification }) {
   return <Badge tone={tone} className="font-mono uppercase tracking-wide">{c}</Badge>
 }
 
-const PLATFORM_ICON: Record<Platform, typeof XLogo> = {
-  x: XLogo, facebook: FacebookLogo, reddit: RedditLogo, telegram: TelegramLogo, tiktok: TiktokLogo, linkedin: LinkedinLogo, threads: ThreadsLogo, news: Newspaper,
-}
+// Simple Icons brand marks (news: Phosphor fill); painted via mask so they take currentColor
+const PLATFORM_ICON: Record<Platform, string> = { x: xIcon, facebook: facebookIcon, threads: threadsIcon, news: newsIcon }
 export function PlatformIcon({ p, size = 16 }: { p: Platform; size?: number }) {
-  const I = PLATFORM_ICON[p]
-  return <I size={size} aria-label={PLATFORM_LABEL[p]} />
+  const mask = `url("${PLATFORM_ICON[p]}") center / contain no-repeat`
+  return <span role="img" aria-label={PLATFORM_LABEL[p]} className="inline-block shrink-0 bg-current" style={{ width: size, height: size, mask, WebkitMask: mask }} />
 }
 
 export function timeAgo(t: number) {

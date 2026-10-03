@@ -1,8 +1,9 @@
 import { createContext, use, useEffect, useState, type ReactNode } from 'react'
-import { DEMO_USER, makePost, seedPosts, type Company, type Post, type PostStatus } from './mock'
+import { api, supabase } from './api'
+import { makePost, seedPosts, type Company, type Post, type PostStatus } from './mock'
 
-// ponytail: localStorage-backed mock session; swap for Supabase Auth + TanStack Query when the API lands.
-type User = typeof DEMO_USER
+// ponytail: auth is real (Supabase + GET /me); companies/posts are still localStorage mocks until wired to the API.
+export type User = { name: string; email: string; role: 'analyst' | 'compliance' }
 
 function load<T>(key: string, fallback: T): T {
   try {
@@ -20,7 +21,8 @@ function save(key: string, v: unknown) {
 }
 
 interface Store {
-  user: User | null
+  user: User | null | undefined // undefined while the session is being restored
+  authError: string | null
   signIn: () => Promise<void>
   signOut: () => void
   companies: Company[]
@@ -38,7 +40,8 @@ export type Theme = (typeof THEMES)[number]
 const Ctx = createContext<Store | null>(null)
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => load('pg.user', null))
+  const [user, setUser] = useState<User | null | undefined>(undefined)
+  const [authError, setAuthError] = useState<string | null>(null)
   const [companies, setCompanies] = useState<Company[]>(() => load('pg.companies', []))
   const [posts, setPosts] = useState<Post[]>(() => companies.flatMap(seedPosts))
   // Older builds stored 'dark'; anything unknown falls back to graphite
@@ -47,7 +50,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return (THEMES as readonly string[]).includes(t) ? (t as Theme) : 'graphite'
   })
 
-  useEffect(() => save('pg.user', user), [user])
+  useEffect(() => {
+    const { data } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!session) return setUser(null)
+      // Deferred: awaiting supabase calls inside this callback deadlocks the auth client
+      setTimeout(() =>
+        api<User>('/me').then(setUser, (e: Error) => {
+          setAuthError(e.message)
+          supabase.auth.signOut()
+        }),
+      )
+    })
+    return () => data.subscription.unsubscribe()
+  }, [])
   useEffect(() => save('pg.companies', companies), [companies])
   useEffect(() => {
     save('pg.theme', theme)
@@ -69,11 +84,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const value: Store = {
     user,
+    authError,
     signIn: async () => {
-      await new Promise(r => setTimeout(r, 700))
-      setUser(DEMO_USER)
+      setAuthError(null)
+      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })
+      if (error) setAuthError(error.message)
     },
     signOut: () => {
+      supabase.auth.signOut()
       setUser(null)
       setCompanies([])
       setPosts([])

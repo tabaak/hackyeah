@@ -1,13 +1,19 @@
+from typing import Literal
+
+from pydantic import Field
+
 from app.schemas.common import CamelModel
 from app.schemas.documents import Doc
 
+Sector = Literal["Banking", "Defence", "Fintech", "Energy", "Other"]
+
 
 class CompanyDraft(CamelModel):
-    name: str
+    name: str = Field(min_length=1, max_length=200)
     website: str = ""
     aliases: list[str] = []
-    sector: str  # Banking | Defence | Fintech | Energy | Other
-    country: str
+    sector: Sector
+    country: str = Field(min_length=1)
     people: list[str] = []
     topics: list[str] = []
 

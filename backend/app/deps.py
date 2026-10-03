@@ -14,11 +14,6 @@ bearer = HTTPBearer(auto_error=False)
 ASYMMETRIC_ALGS = ("RS256", "ES256")
 
 
-def not_implemented() -> None:
-    """Every endpoint is a stub until its owner implements it."""
-    raise HTTPException(status.HTTP_501_NOT_IMPLEMENTED, "Not implemented")
-
-
 def _unauthorized(detail: str) -> HTTPException:
     return HTTPException(status.HTTP_401_UNAUTHORIZED, detail, headers={"WWW-Authenticate": "Bearer"})
 
