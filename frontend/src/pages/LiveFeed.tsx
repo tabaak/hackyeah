@@ -69,7 +69,9 @@ export default function LiveFeed() {
                   </div>
                 </div>
 
-                <p className="line-clamp-2 rounded-control bg-subtle px-3 py-2 text-sm text-fg-2" title={p.reason}>{p.reason}</p>
+                <div className="rounded-control bg-subtle px-3 py-2" title={p.reason}>
+                  <p className="line-clamp-2 text-sm text-fg-2">{p.reason}</p>
+                </div>
 
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-fg-3">
                   {p.injection && <Badge tone="danger"><Warning size={14} weight="bold" />AI manipulation</Badge>}
