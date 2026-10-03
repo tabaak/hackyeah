@@ -1,4 +1,4 @@
-"""Social posts (X, Facebook, Threads) through Apify, routed into the shared analysis + ingestion pipeline.
+"""Social posts (X, Facebook) through Apify, routed into the shared analysis + ingestion pipeline.
 
 Runs are slow (30-300 s, plus one LLM call per new post) and cost Apify credits, so they run in the background,
 one at a time per organization and platform, and only when someone calls POST /feed/sources/{platform}/sync.
@@ -18,7 +18,7 @@ from app.sources import apify
 
 log = logging.getLogger(__name__)
 
-PLATFORMS = (Platform.x, Platform.facebook, Platform.threads)  # Apify
+PLATFORMS = (Platform.x, Platform.facebook)  # Apify
 BACKGROUND = (*PLATFORMS, Platform.news)  # everything that runs as a background job
 mentions_company = relevance.mentions_company
 
@@ -53,7 +53,6 @@ def to_item(m: Mention) -> dict:
 LIMITS = {  # read at call time so tests and env changes apply
     Platform.x: lambda: settings.apify_limit_x,
     Platform.facebook: lambda: settings.apify_limit_facebook,
-    Platform.threads: lambda: settings.apify_limit_threads,
 }
 
 

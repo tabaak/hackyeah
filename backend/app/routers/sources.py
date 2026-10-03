@@ -22,8 +22,8 @@ async def facebook_webhook(request: Request):
 
 @router.post("/{platform}/sync", response_model=SyncRequested, status_code=202)
 def sync(platform: Platform, background: BackgroundTasks, user: CurrentUser = Depends(get_current_user)):
-    """Collection run for every company of the caller's organization. news (Serper + Google News RSS) and x / facebook /
-    threads (Apify) take minutes (one LLM call per risky item) and cost credits, so they run in the background:
+    """Collection run for every company of the caller's organization. news (Serper + Google News RSS) and x / facebook
+    (Apify) take minutes (one LLM call per risky item) and cost credits, so they run in the background:
     `added` is 0, watch the feed and `status`; 409 while a run of the same platform is in progress."""
     if platform in social.BACKGROUND:
         if platform == Platform.news and not (settings.serper_api_key or settings.news_rss):

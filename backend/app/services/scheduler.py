@@ -26,7 +26,6 @@ def intervals() -> dict[Platform, int]:
         Platform.news: settings.sync_news_minutes,
         Platform.x: settings.sync_x_minutes,
         Platform.facebook: settings.sync_facebook_minutes,
-        Platform.threads: settings.sync_threads_minutes,
     }
 
 

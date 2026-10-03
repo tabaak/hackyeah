@@ -55,10 +55,9 @@ class Settings:
 
     serper_api_key: str = _env("SERPER_API_KEY")
     apify_token: str = _env("APIFY_TOKEN")
-    # Posts per run, per platform: bounds Apify cost. X is almost free (~$0.00015/post), Facebook ~$0.006, Threads ~$0.01.
+    # Posts per run, per platform: bounds Apify cost. X is almost free (~$0.00015/post), Facebook ~$0.006.
     apify_limit_x: int = _int("APIFY_LIMIT_X", 200)
     apify_limit_facebook: int = _int("APIFY_LIMIT_FACEBOOK", 30)
-    apify_limit_threads: int = _int("APIFY_LIMIT_THREADS", 10)
     apify_max_age_days: int = _int("APIFY_MAX_AGE_DAYS", 30)  # search results can be old; skip posts older than this
 
     # News volume: Serper returns 10 articles per page (1 credit each); Google News RSS is free, up to 100 per request.
@@ -75,18 +74,17 @@ class Settings:
     expo_access_token: str = _env("EXPO_ACCESS_TOKEN")
 
     # Scheduler: repeats the collection in the background. Minutes between runs per source, 0 = never.
-    # Costs: news ~2 Serper credits per company and run; X ~$0.03 per 200 posts; Facebook ~$0.2 per 30 posts; Threads ~$0.1.
+    # Costs: news ~2 Serper credits per company and run; X ~$0.03 per 200 posts; Facebook ~$0.2 per 30 posts.
     sync_enabled: bool = _env("SYNC_ENABLED", "true").lower() == "true"
     sync_news_minutes: int = _int("SYNC_NEWS_MINUTES", 60)
     sync_x_minutes: int = _int("SYNC_X_MINUTES", 180)
     sync_facebook_minutes: int = _int("SYNC_FACEBOOK_MINUTES", 720)
-    sync_threads_minutes: int = _int("SYNC_THREADS_MINUTES", 0)
     sync_startup_delay_s: int = _int("SYNC_STARTUP_DELAY_SECONDS", 120)
     # Critical notifications (and phone pushes) only for mentions this recent: loaded history must not alarm anyone.
     notify_max_age_hours: int = _int("NOTIFY_MAX_AGE_HOURS", 72)
 
     # Demo data: seed sample mentions for every new company, and optionally add one every N seconds.
-    demo_seed: bool = _env("DEMO_SEED", "true").lower() == "true"
+    demo_seed: bool = _env("DEMO_SEED", "false").lower() == "true"
     demo_live_interval_s: int = _int("DEMO_LIVE_INTERVAL_SECONDS", 0)
 
 

@@ -1,11 +1,11 @@
-"""Social posts (X, Facebook, Threads) through Apify actors -> `Mention` objects.
+"""Social posts (X, Facebook) through Apify actors -> `Mention` objects.
 
 Each platform is one Apify actor run; its dataset items are mapped to `Mention` with tolerant field lookups,
 because actor output schemas differ and change. Actor ids and input fields are defaults: check the actor page in
 the Apify Store and adjust `ACTORS` / the `*_input` functions if it complains.
 
 Look at raw answers first (costs Apify credits):
-    python -m app.sources.apify x          # or: facebook | threads
+    python -m app.sources.apify x          # or: facebook
 Raw dataset items are printed so you can see the real field names.
 """
 import hashlib
@@ -28,9 +28,6 @@ ACTORS = {
     # ("Monthly run limit exceeded per user") and returns only `noResults` rows.
     Platform.x: "xquik/x-tweet-scraper",
     Platform.facebook: "apify/facebook-search-scraper",  # keyword search; alternative: danek/facebook-search-ppr
-    # futurizerush: keyword search, ~$0.08 for a 10-post run on the free plan (igview-owner/threads-search-scraper
-    # costs about 5x more per post).
-    Platform.threads: "futurizerush/meta-threads-scraper",
 }
 
 
@@ -49,12 +46,7 @@ def facebook_input(company: CompanyDraft, queries: list[str], limit: int) -> lis
     return [{"categories": queries, "searchType": "posts", "resultsLimit": limit}]
 
 
-def threads_input(company: CompanyDraft, queries: list[str], limit: int) -> list[dict]:
-    # One run, first query only: the actor bills per post and per run, and `max_posts` (minimum 10) applies per keyword.
-    return [{"mode": "search", "keywords": queries[:1], "max_posts": max(limit, 10), "search_filter": "recent"}]
-
-
-INPUTS = {Platform.x: x_input, Platform.facebook: facebook_input, Platform.threads: threads_input}
+INPUTS = {Platform.x: x_input, Platform.facebook: facebook_input}
 
 
 def _first(item: dict, *paths: str):
@@ -115,8 +107,6 @@ def _images(item: dict) -> list[str]:
 
 
 def to_mention(item: dict, platform: Platform, company_id: str, now_ms: int) -> Mention | None:
-    if item.get("record_type") not in (None, "post"):  # Threads actor can also emit profile rows
-        return None
     text = _first(item, "text", "text_content", "fullText", "full_text", "captionText", "caption.text", "caption", "message", "postText", "previewTitle", "content")
     url = _first(item, "url", "postUrl", "post_url", "twitterUrl", "topLevelUrl", "link")
     if not text:
@@ -176,7 +166,7 @@ def search_posts(
     company_id: str,
     queries: list[str],
     *,
-    platforms: tuple[Platform, ...] = (Platform.x, Platform.facebook),  # Threads costs ~$0.7/run: opt in
+    platforms: tuple[Platform, ...] = (Platform.x, Platform.facebook),
     limit: int = 30,
     max_age_days: int = 90,
     client: httpx.Client | None = None,

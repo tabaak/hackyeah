@@ -142,7 +142,7 @@ def runs(monkeypatch):
     return started
 
 
-@pytest.mark.parametrize("platform", ["x", "facebook", "threads"])
+@pytest.mark.parametrize("platform", ["x", "facebook"])
 def test_sync_starts_a_background_run(signed_in, runs, monkeypatch, platform):
     monkeypatch.setattr(social.settings, "apify_token", "t")
     r = signed_in.post(f"{API}/feed/sources/{platform}/sync")
@@ -161,9 +161,9 @@ def test_second_sync_while_running_is_409(signed_in, runs, monkeypatch):
 
 def test_sync_without_token_is_503_and_starts_nothing(signed_in, runs, monkeypatch):
     monkeypatch.setattr(social.settings, "apify_token", "")
-    r = signed_in.post(f"{API}/feed/sources/threads/sync")
+    r = signed_in.post(f"{API}/feed/sources/facebook/sync")
     assert r.status_code == 503 and "APIFY_TOKEN" in r.json()["detail"]
-    assert runs == [] and social.try_start(ORG_ID, Platform.threads)  # no slot was taken
+    assert runs == [] and social.try_start(ORG_ID, Platform.facebook)  # no slot was taken
 
 
 @pytest.mark.parametrize("platform", ["reddit", "telegram", "tiktok", "linkedin"])

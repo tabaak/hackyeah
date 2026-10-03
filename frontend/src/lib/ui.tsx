@@ -1,7 +1,6 @@
 import { ChatsCircle, CheckCircle, GitDiff, Question, Warning, X as XIcon } from '@phosphor-icons/react'
 import facebookIcon from '../assets/platforms/facebook.svg'
 import newsIcon from '../assets/platforms/news.svg'
-import threadsIcon from '../assets/platforms/threads.svg'
 import xIcon from '../assets/platforms/x.svg'
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
@@ -80,7 +79,7 @@ export function ClassBadge({ c }: { c: Classification }) {
 }
 
 // Simple Icons brand marks (news: Phosphor fill); painted via mask so they take currentColor
-const PLATFORM_ICON: Record<Platform, string> = { x: xIcon, facebook: facebookIcon, threads: threadsIcon, news: newsIcon }
+const PLATFORM_ICON: Record<Platform, string> = { x: xIcon, facebook: facebookIcon, news: newsIcon }
 export function PlatformIcon({ p, size = 16 }: { p: Platform; size?: number }) {
   const mask = `url("${PLATFORM_ICON[p]}") center / contain no-repeat`
   return <span role="img" aria-label={PLATFORM_LABEL[p]} className="inline-block shrink-0 bg-current" style={{ width: size, height: size, mask, WebkitMask: mask }} />

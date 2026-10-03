@@ -52,7 +52,7 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 
 | Поле | Значення |
 |---|---|
-| `platform` | `x`, `facebook`, `reddit`, `telegram`, `tiktok`, `linkedin`, `threads`, `news` |
+| `platform` | `x`, `facebook`, `reddit`, `telegram`, `tiktok`, `linkedin`, `news` |
 | `severity` | `high`, `medium`, `low` |
 | `verdict` | `contradicted_by_documents`, `supported_by_documents`, `insufficient_evidence`, `opinion` |
 | `status` (згадка) | `new`, `responded`, `dismissed` |
@@ -192,9 +192,9 @@ UI для ролей: аналітик бачить «Approve response», якщ
 
 Адмін/воркери; фронтенд їх не викликає.
 
-* `POST /feed/sources/{platform}/sync` → 202 `{ accepted, added }` — збір для всіх компаній організації. Усе йде у фоні: відповідь одразу, `added` = 0, нові згадки зʼявляються в стрічці за хвилини; поки попередній запуск тієї ж платформи не завершився — 409. `news` — Google News через Serper (10 статей на сторінку, `SERPER_PAGES` сторінок на запит; потрібен `SERPER_API_KEY`) плюс безкоштовний Google News RSS (до 100 статей, `NEWS_RSS`); без обох — 503. `x`, `facebook`, `threads` — Apify (потрібен `APIFY_TOKEN`, інакше 503), коштує кредити; ліміт постів за запуск — `APIFY_LIMIT_X` / `_FACEBOOK` / `_THREADS`. До LLM потрапляють лише елементи з ознакою ризику (`LLM_ANALYSE_ALL=true` — усі).
+* `POST /feed/sources/{platform}/sync` → 202 `{ accepted, added }` — збір для всіх компаній організації. Усе йде у фоні: відповідь одразу, `added` = 0, нові згадки зʼявляються в стрічці за хвилини; поки попередній запуск тієї ж платформи не завершився — 409. `news` — Google News через Serper (10 статей на сторінку, `SERPER_PAGES` сторінок на запит; потрібен `SERPER_API_KEY`) плюс безкоштовний Google News RSS (до 100 статей, `NEWS_RSS`); без обох — 503. `x`, `facebook` — Apify (потрібен `APIFY_TOKEN`, інакше 503), коштує кредити; ліміт постів за запуск — `APIFY_LIMIT_X` / `_FACEBOOK`. До LLM потрапляють лише елементи з ознакою ризику (`LLM_ANALYSE_ALL=true` — усі).
 
-**Автозапуск.** Бекенд сам повторює збір у фоні: `SYNC_NEWS_MINUTES` (60), `SYNC_X_MINUTES` (180), `SYNC_FACEBOOK_MINUTES` (720), `SYNC_THREADS_MINUTES` (0 = вимкнено); `SYNC_ENABLED=false` вимикає все. Перший прохід — через `SYNC_STARTUP_DELAY_SECONDS` після старту, і лише для джерел, що не збирали дані протягом інтервалу (захист від перезапусків). Ручний `sync` ділить із ним один «слот» на організацію й платформу, тож запуски не дублюються. Історія новин (`NEWS_BACKFILL_DAYS`, 60 днів) довантажується один раз, коли в компанії ще немає статей старших за 14 днів; критичні сповіщення та push — лише для згадок не старших за `NOTIFY_MAX_AGE_HOURS` (72). Лишає лише пости, де згадано назву компанії чи її аліас (≥ 3 символи). Інші платформи — 501.
+**Автозапуск.** Бекенд сам повторює збір у фоні: `SYNC_NEWS_MINUTES` (60), `SYNC_X_MINUTES` (180), `SYNC_FACEBOOK_MINUTES` (720); `SYNC_ENABLED=false` вимикає все. Перший прохід — через `SYNC_STARTUP_DELAY_SECONDS` після старту, і лише для джерел, що не збирали дані протягом інтервалу (захист від перезапусків). Ручний `sync` ділить із ним один «слот» на організацію й платформу, тож запуски не дублюються. Історія новин (`NEWS_BACKFILL_DAYS`, 60 днів) довантажується один раз, коли в компанії ще немає статей старших за 14 днів; критичні сповіщення та push — лише для згадок не старших за `NOTIFY_MAX_AGE_HOURS` (72). Лишає лише пости, де згадано назву компанії чи її аліас (≥ 3 символи). Інші платформи — 501.
 * `POST /feed/sources/facebook/webhook` — події Graph API (501, поки немає конектора; автентифікація підписом Meta, не JWT).
 * `GET /feed/sources/{platform}/status` — `{ healthy, lastSyncAt, detail }`: чи налаштований конектор і коли платформа востаннє дала реальну (не демо) згадку.
 
