@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import './index.css'
 import { StoreProvider, useStore } from './lib/store'
+import SessionLoading from './components/SessionLoading'
 import AppShell from './pages/AppShell'
 import Companies from './pages/Companies'
 import LiveFeed from './pages/LiveFeed'
@@ -14,7 +15,7 @@ const Analytics = lazy(() => import('./pages/Analytics')) // recharts stays out 
 // login → onboarding (first company) → app
 function Gate({ need, children }: { need: 'guest' | 'onboarding' | 'app'; children: ReactNode }) {
   const { user, companies } = useStore()
-  if (user === undefined) return null // restoring session
+  if (user === undefined) return <SessionLoading />
   const at = !user ? 'guest' : companies.length === 0 ? 'onboarding' : 'app'
   if (at === need) return children
   return <Navigate to={{ guest: '/login', onboarding: '/onboarding', app: '/app/feed' }[at]} replace />

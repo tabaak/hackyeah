@@ -6,7 +6,7 @@ import { useStore } from '../lib/store'
 import { Badge, Button, compact, cx, Dialog, PlatformIcon, SeverityBadge, timeAgo, VerdictBadge } from '../lib/ui'
 
 // Matches the severity segmented control
-const filterCls = 'h-[38px] cursor-pointer rounded-control border border-line bg-surface px-3 text-sm text-fg-2 transition-colors duration-150 hover:text-fg focus:outline-none focus-visible:border-accent'
+const filterCls = 'h-[38px] cursor-pointer rounded-control border border-line bg-surface px-3 text-sm text-fg-2 motion-control hover:text-fg focus:outline-none focus-visible:border-accent'
 
 const SEVERITIES = ['all', 'high', 'medium', 'low'] as const
 const STATUSES = { open: 'Open', responded: 'Responded', dismissed: 'Dismissed', all: 'All' } as const
@@ -47,7 +47,7 @@ export default function LiveFeed() {
   const filtered = q.has('company') || q.has('severity') || q.has('platform') || q.has('status')
 
   return (
-    <div className="space-y-6">
+    <div className="motion-page space-y-6">
       {urgent.length > 0 && (
         <section aria-labelledby="urgent-h">
           <div className="mb-3 flex items-center gap-2">
@@ -96,7 +96,7 @@ export default function LiveFeed() {
                 key={s}
                 aria-pressed={severity === s}
                 onClick={() => set('severity', s)}
-                className={cx('h-8 cursor-pointer rounded-[4px] px-3 text-sm capitalize transition-colors duration-150', severity === s ? 'bg-selected font-medium text-fg' : 'text-fg-2 hover:text-fg')}
+                className={cx('h-8 cursor-pointer rounded-[4px] px-3 text-sm capitalize motion-control', severity === s ? 'bg-selected font-medium text-fg' : 'text-fg-2 hover:text-fg')}
               >{s}</button>
             ))}
           </div>
@@ -122,7 +122,7 @@ export default function LiveFeed() {
         ) : (
           <ul className="divide-y divide-line">
             {list.map(p => (
-              <li key={p.id} className={cx('flex gap-3 p-4', p.status !== 'new' && 'opacity-70')}>
+              <li key={p.id} className={cx('motion-control flex gap-3 p-4', p.status !== 'new' && 'opacity-70')}>
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-2"><PlatformIcon p={p.platform} size={16} /></span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">
@@ -153,7 +153,7 @@ export default function LiveFeed() {
                     rel="noopener noreferrer"
                     aria-label="Open source"
                     title="Open source"
-                    className="inline-flex size-9 items-center justify-center rounded-control text-fg-2 transition-colors duration-150 hover:bg-subtle hover:text-fg"
+                    className="inline-flex size-9 items-center justify-center rounded-control text-fg-2 motion-control hover:bg-subtle hover:text-fg"
                   ><ArrowSquareOut size={16} /></a>
                   {actionable(p) && <Button className="ml-1" onClick={() => set('respond', p.id)}>Counter-post</Button>}
                 </div>

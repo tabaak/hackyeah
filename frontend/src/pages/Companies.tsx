@@ -60,7 +60,7 @@ function CompanyCard({ c }: { c: Company }) {
           <div key={m.label} className="px-4 py-3">
             <dt className="text-xs text-fg-3">{m.label}</dt>
             <dd className={cx('mt-1 text-2xl font-semibold', m.danger && 'text-danger')}>
-              {m.to ? <Link to={m.to} className="hover:text-accent">{m.value}</Link> : m.value}
+              {m.to ? <Link to={m.to} className="motion-control hover:text-accent">{m.value}</Link> : m.value}
             </dd>
           </div>
         ))}
@@ -128,13 +128,13 @@ export default function Companies() {
   const { companies, addCompany } = useStore()
   const [adding, setAdding] = useState(false)
   return (
-    <div className="space-y-4">
+    <div className="motion-page space-y-4">
       <PageActions>
         <Button variant="primary" onClick={() => setAdding(true)}><Plus size={16} />Track another company</Button>
       </PageActions>
       {companies.map(c => <CompanyCard key={c.id} c={c} />)}
       <Dialog wide open={adding} onClose={() => setAdding(false)} title="Track another company">
-        <CompanyWizard onDone={c => { addCompany(c); setAdding(false) }} />
+        <CompanyWizard onDone={async (c, docs) => { await addCompany(c, docs); setAdding(false) }} />
       </Dialog>
     </div>
   )

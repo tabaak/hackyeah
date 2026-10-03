@@ -9,6 +9,9 @@
 
 /* Light tokens from TEST_DESIGN.md §3.6; neutral graphite surfaces in dark mode. */
 :root {
+  --motion-fast: 160ms;
+  --motion-enter: 220ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --canvas: #f7f9fa;
   --surface: #ffffff;
   --surface-subtle: #f1f5f9;
@@ -168,6 +171,52 @@ body {
   }
 }
 
+/* Small, interruptible feedback; layout and live data updates stay still. */
+.motion-control {
+  transition-property: background-color, border-color, color, box-shadow, opacity, transform;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--motion-ease);
+}
+
+.motion-press:enabled:active {
+  transform: translateY(1px);
+  transition-duration: 100ms;
+}
+
+@keyframes content-enter {
+  from { opacity: 0.82; }
+  to { opacity: 1; }
+}
+
+.motion-page {
+  animation: content-enter var(--motion-enter) var(--motion-ease);
+}
+
+/* Native popovers retain their keyboard and dismissal behavior. */
+[popover] {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(2px);
+  transition:
+    opacity var(--motion-fast) var(--motion-ease),
+    transform var(--motion-enter) var(--motion-ease),
+    display var(--motion-enter) allow-discrete,
+    overlay var(--motion-enter) allow-discrete;
+}
+
+[popover]:popover-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+@starting-style {
+  [popover]:popover-open {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
 /* Custom chevron: the native one sits flush against the right edge */
 select {
   appearance: none;
@@ -195,7 +244,7 @@ select {
     width: 16px;
     height: 16px;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") center no-repeat;
-    transition: rotate 150ms;
+    transition: rotate var(--motion-enter) var(--motion-ease);
   }
   select:open::picker-icon {
     rotate: 180deg;
@@ -213,6 +262,25 @@ select {
     background: var(--surface);
     color: var(--text);
     box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(2px);
+    transition:
+      opacity var(--motion-fast) var(--motion-ease),
+      transform var(--motion-enter) var(--motion-ease),
+      display var(--motion-enter) allow-discrete,
+      overlay var(--motion-enter) allow-discrete;
+  }
+  select:open::picker(select) {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+  @starting-style {
+    select:open::picker(select) {
+      opacity: 0;
+      transform: translateY(2px);
+    }
   }
   option {
     padding: 6px 10px;
@@ -220,6 +288,9 @@ select {
     font-size: 14px;
     color: var(--text-secondary);
     cursor: pointer;
+    transition:
+      background-color var(--motion-fast) var(--motion-ease),
+      color var(--motion-fast) var(--motion-ease);
   }
   option:hover,
   option:focus-visible {
@@ -243,6 +314,25 @@ dialog::backdrop {
   background: rgb(0 0 0 / 0.6);
 }
 
+@keyframes dialog-enter {
+  from { opacity: 0; transform: translateY(2px) scale(0.995); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes backdrop-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Dialog children unmount on close, so animate only their arrival. */
+dialog[open] {
+  animation: dialog-enter var(--motion-enter) var(--motion-ease);
+}
+
+dialog[open]::backdrop {
+  animation: backdrop-enter var(--motion-enter) var(--motion-ease);
+}
+
 /* Login: vertical post "reels" */
 @keyframes reel-up {
   to { transform: translateY(-50%); }
@@ -261,6 +351,9 @@ dialog::backdrop {
 .threat-scan { animation: scan 4s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .reel-up, .reel-down, .threat-scan { animation: none; }
-  * { transition-duration: 0ms !important; }
+  .reel-up, .reel-down, .threat-scan, .motion-page,
+  dialog[open], dialog[open]::backdrop { animation: none; }
+  .motion-press:enabled:active { transform: none; }
+  *, *::before, *::after { transition-duration: 0ms !important; }
+  select::picker-icon, ::picker(select) { transition-duration: 0ms !important; }
 }

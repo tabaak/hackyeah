@@ -52,9 +52,10 @@ def list_companies(user: CurrentUser = Depends(get_current_user)):
 
 @router.post("/companies", response_model=Company, status_code=201)
 def create_company(body: CompanyDraft, background: BackgroundTasks, user: CurrentUser = Depends(get_current_user)):
+    # Ownership comes exclusively from the verified account, never the request body.
     row = get_db().table("companies").insert({**_clean(body), "organization_id": user.organization_id}).execute().data[0]
     if settings.demo_seed:
-        demo.seed_company(row)
+        background.add_task(demo.seed_company, row)
     background.add_task(news.sync_company, row)  # no-op without SERPER_API_KEY
     return mappers.company(row)
 
@@ -74,7 +75,7 @@ def get_company(company_id: str, user: CurrentUser = Depends(get_current_user)):
 @router.put("/companies/{company_id}", response_model=Company)
 def update_company(company_id: str, body: CompanyDraft, user: CurrentUser = Depends(get_current_user)):
     load_company(company_id, user)
-    get_db().table("companies").update(_clean(body)).eq("id", company_id).execute()
+    get_db().table("companies").update(_clean(body)).eq("id", company_id).eq("organization_id", user.organization_id).execute()
     return mappers.company(load_company(company_id, user, mappers.COMPANY_SELECT))
 
 
@@ -84,7 +85,7 @@ def delete_company(company_id: str, user: CurrentUser = Depends(get_current_user
     load_company(company_id, user)
     for d in get_db().table("documents").select("id, storage_path").eq("company_id", company_id).execute().data:
         documents.remove(d)
-    get_db().table("companies").delete().eq("id", company_id).execute()
+    get_db().table("companies").delete().eq("id", company_id).eq("organization_id", user.organization_id).execute()
 
 
 @router.get("/companies/{company_id}/documents", response_model=list[Doc])

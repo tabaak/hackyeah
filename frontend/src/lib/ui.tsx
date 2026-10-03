@@ -28,7 +28,7 @@ export function Button({ variant = 'secondary', className, ...p }: ButtonHTMLAtt
     <button
       {...p}
       className={cx(
-        'inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control px-3 text-sm font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50',
+        'motion-control motion-press inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-control px-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50',
         VARIANT[variant], className,
       )}
     />
@@ -36,7 +36,7 @@ export function Button({ variant = 'secondary', className, ...p }: ButtonHTMLAtt
 }
 
 export const inputCls =
-  'h-9 rounded-control border border-control bg-surface px-3 text-sm text-fg placeholder:text-fg-3 focus:border-accent focus:outline-none focus:ring-3 focus:ring-accent/20'
+  'motion-control h-9 rounded-control border border-control bg-surface px-3 text-sm text-fg placeholder:text-fg-3 focus:border-accent focus:outline-none focus:ring-3 focus:ring-accent/20'
 
 export function Field({ label, hint, children, optional }: { label: string; hint?: string; children: ReactNode; optional?: boolean }) {
   return (

@@ -27,6 +27,8 @@ export interface Company {
   createdAt: number
 }
 
+export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt'>
+
 export interface Post {
   id: string
   companyId: string

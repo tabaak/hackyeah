@@ -1,11 +1,11 @@
 import { FileText, Trash, UploadSimple } from '@phosphor-icons/react'
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { COUNTRIES, SECTORS, uid, type Classification, type Company, type Doc } from '../lib/mock'
+import { COUNTRIES, SECTORS, uid, type Classification, type CompanyDraft, type Doc } from '../lib/mock'
 import { Button, cx, Field, inputCls } from '../lib/ui'
 
 const split = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
 
-export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt'>
+export type { CompanyDraft } from '../lib/mock'
 
 export function CompanyForm({ onSubmit, submitLabel, aside }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string; aside?: ReactNode }) {
   const [sector, setSector] = useState('Banking')
@@ -68,7 +68,7 @@ export function CompanyForm({ onSubmit, submitLabel, aside }: { onSubmit: (c: Co
               <label
                 key={t}
                 className={cx(
-                  'cursor-pointer rounded-full border px-3 py-1.5 text-sm transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-accent',
+                  'cursor-pointer rounded-full border px-3 py-1.5 text-sm motion-control has-focus-visible:outline-2 has-focus-visible:outline-accent',
                   on ? 'border-accent bg-selected text-fg' : 'border-line text-fg-2 hover:border-control',
                 )}
               >
@@ -111,7 +111,7 @@ export function DocsUpload({ docs, onChange }: { docs: Doc[]; onChange: (d: Doc[
         onDragLeave={() => setDrag(false)}
         onDrop={e => { e.preventDefault(); setDrag(false); add(e.dataTransfer.files) }}
         className={cx(
-          'flex cursor-pointer flex-col items-center justify-center gap-2 rounded-panel border-2 border-dashed px-6 py-10 text-center transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-accent',
+          'flex cursor-pointer flex-col items-center justify-center gap-2 rounded-panel border-2 border-dashed px-6 py-10 text-center motion-control has-focus-visible:outline-2 has-focus-visible:outline-accent',
           drag ? 'border-accent bg-selected' : 'border-line hover:border-control',
         )}
       >
@@ -153,12 +153,24 @@ export function DocsUpload({ docs, onChange }: { docs: Doc[]; onChange: (d: Doc[
 
 // Two steps: profile → optional documents. Shared by onboarding and "Track another company".
 // `aside` renders next to Continue on the first step (e.g. sign out during onboarding).
-export function CompanyWizard({ onDone, aside }: { onDone: (c: Company) => void; aside?: ReactNode }) {
+export function CompanyWizard({ onDone, aside }: { onDone: (c: CompanyDraft, docs: Doc[]) => Promise<void>; aside?: ReactNode }) {
   const [draft, setDraft] = useState<CompanyDraft | null>(null)
   const [docs, setDocs] = useState<Doc[]>([])
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
 
-  const finish = (d: Doc[]) =>
-    onDone({ ...draft!, id: uid(), createdAt: Date.now(), documents: d.map(x => ({ ...x, status: 'ready' })) })
+  async function finish(d: Doc[]) {
+    if (!draft || pending) return
+    setPending(true)
+    setError('')
+    try {
+      await onDone(draft, d.map(x => ({ ...x, status: 'ready' })))
+    } catch (e) {
+      setError(e instanceof Error && !(e instanceof TypeError) ? e.message : 'The company could not be saved. Please try again.')
+    } finally {
+      setPending(false)
+    }
+  }
 
   return (
     <div>
@@ -169,8 +181,8 @@ export function CompanyWizard({ onDone, aside }: { onDone: (c: Company) => void;
           return (
             <li key={s} className="flex items-center gap-2" aria-current={active ? 'step' : undefined}>
               {i > 0 && <span className="h-px w-8 bg-line" />}
-              <span className={cx('flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs', active || done ? 'bg-accent text-on-accent' : 'bg-subtle text-fg-3')}>{i + 1}</span>
-              <span className={active ? 'font-medium text-fg' : 'text-fg-3'}>{s}{i === 1 && ' · optional'}</span>
+              <span className={cx('motion-control flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs', active || done ? 'bg-accent text-on-accent' : 'bg-subtle text-fg-3')}>{i + 1}</span>
+              <span className={cx('motion-control', active ? 'font-medium text-fg' : 'text-fg-3')}>{s}{i === 1 && ' · optional'}</span>
             </li>
           )
         })}
@@ -178,11 +190,13 @@ export function CompanyWizard({ onDone, aside }: { onDone: (c: Company) => void;
       {!draft ? (
         <CompanyForm submitLabel="Continue" onSubmit={setDraft} aside={aside} />
       ) : (
-        <div className="space-y-5">
+        <fieldset disabled={pending} aria-busy={pending} className="motion-page min-w-0 space-y-5">
           <p className="text-[15px] leading-6 text-fg-2">
             Upload documents the agent can use to check claims about <b className="text-fg">{draft.name}</b> — press releases, status reports, ops logs, FAQs. You can skip this and add them later.
           </p>
           <DocsUpload docs={docs} onChange={setDocs} />
+          {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+          {pending && <p role="status" className="text-sm text-fg-2">Saving company…</p>}
           <div className="flex justify-between gap-3 pt-2">
             <Button variant="ghost" onClick={() => setDraft(null)}>Back</Button>
             <div className="flex gap-3">
@@ -190,7 +204,7 @@ export function CompanyWizard({ onDone, aside }: { onDone: (c: Company) => void;
               <Button variant="primary" disabled={!docs.length} onClick={() => finish(docs)}>Start monitoring</Button>
             </div>
           </div>
-        </div>
+        </fieldset>
       )}
     </div>
   )

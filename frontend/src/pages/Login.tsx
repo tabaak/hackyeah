@@ -91,7 +91,7 @@ export default function Login() {
       </div>
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--canvas)_40%,transparent_75%)]" />
 
-      <section className="relative z-10 w-full max-w-xl text-center">
+      <section className="motion-page relative z-10 w-full max-w-xl text-center">
         <Logo />
         <h1 className="mt-8 text-balance font-display text-6xl font-medium leading-[1.02] tracking-[-0.02em] sm:text-7xl">Catch the attack before it trends</h1>
         <p className="mx-auto mt-6 max-w-md text-balance text-lg leading-7 text-fg-2">
@@ -100,7 +100,7 @@ export default function Login() {
         <button
           onClick={go}
           disabled={pending}
-          className="mt-10 inline-flex h-13 w-full max-w-xs cursor-pointer items-center justify-center gap-3 rounded-control border border-line bg-white text-base font-medium text-[#1f1f1f] shadow-sm transition-colors duration-150 hover:bg-[#f2f2f2] disabled:opacity-60"
+          className="motion-control motion-press mt-10 inline-flex h-13 w-full max-w-xs cursor-pointer items-center justify-center gap-3 rounded-control border border-line bg-white text-base font-medium text-[#1f1f1f] shadow-sm hover:bg-[#f2f2f2] disabled:opacity-60"
         >
           {pending ? <Spinner size={20} className="animate-spin" /> : <GoogleIcon />}
           {pending ? 'Signing in…' : 'Continue with Google'}
