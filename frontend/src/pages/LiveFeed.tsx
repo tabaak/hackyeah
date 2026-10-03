@@ -7,10 +7,10 @@ import { useStore } from '../lib/store'
 import { Badge, Button, compact, cx, Dialog, PlatformIcon, timeAgo } from '../lib/ui'
 
 // Matches the severity segmented control
-const filterCls = 'h-[38px] cursor-pointer rounded-control border border-line bg-surface px-3 text-sm text-fg-2 motion-control hover:text-fg focus:outline-none focus-visible:border-accent'
+const filterCls = 'h-[38px] min-w-0 flex-1 cursor-pointer sm:flex-none rounded-control border border-line bg-surface px-3 text-sm text-fg-2 motion-control hover:text-fg focus:outline-none focus-visible:border-accent'
 
 const SEVERITIES = ['all', 'high', 'medium', 'low'] as const
-const STATUSES = { open: 'Open', responded: 'Responded', dismissed: 'Dismissed', all: 'All' } as const
+const STATUSES = { open: 'Open', archive: 'Archive', responded: 'Responded', dismissed: 'Dismissed', all: 'All' } as const
 
 const actionable = (p: Post) => p.status === 'new' && p.severity !== 'low'
 
@@ -43,7 +43,7 @@ export default function LiveFeed() {
     (company === 'all' || p.companyId === company) &&
     (severity === 'all' || p.severity === severity) &&
     (platform === 'all' || p.platform === platform) &&
-    (status === 'all' || (status === 'open' ? p.status === 'new' : p.status === status)),
+    (status === 'all' || (status === 'open' ? p.status === 'new' : status === 'archive' ? p.status !== 'new' : p.status === status)),
   )
   const filtered = q.has('company') || q.has('severity') || q.has('platform') || q.has('status')
 
@@ -57,7 +57,7 @@ export default function LiveFeed() {
           </div>
           <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-4 md:-mx-6 md:scroll-px-6 md:px-6">
             {urgent.map(p => (
-              <article key={p.id} className="flex w-[340px] shrink-0 snap-start flex-col gap-3 rounded-panel border border-danger/40 bg-surface p-4">
+              <article key={p.id} className="flex w-[min(340px,85vw)] shrink-0 snap-start flex-col gap-3 rounded-panel border border-danger/40 bg-surface p-4">
                 <div className="flex gap-3">
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-2"><PlatformIcon p={p.platform} size={16} /></span>
                   <div className="min-w-0 flex-1">
@@ -70,7 +70,9 @@ export default function LiveFeed() {
                   </div>
                 </div>
 
-                <p className="line-clamp-2 rounded-control bg-subtle px-3 py-2 text-sm text-fg-2" title={p.reason}>{p.reason}</p>
+                <div className="rounded-control bg-subtle px-3 py-2" title={p.reason}>
+                  <p className="line-clamp-2 text-sm text-fg-2">{p.reason}</p>
+                </div>
 
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-fg-3">
                   {p.injection && <Badge tone="danger"><Warning size={14} weight="bold" />AI manipulation</Badge>}
@@ -88,16 +90,16 @@ export default function LiveFeed() {
         </section>
       )}
 
-      <section aria-labelledby="feed-h" className="rounded-panel border border-line bg-surface">
-        <div className="flex flex-wrap items-center gap-3 rounded-t-panel border-b border-line bg-surface p-4 lg:sticky lg:top-0 lg:z-10">
+      <section aria-labelledby="feed-h" className="rounded-panel border border-line bg-surface max-sm:-mx-4 max-sm:rounded-none max-sm:border-x-0">
+        <div className="flex flex-wrap items-center gap-3 rounded-t-panel border-b max-sm:rounded-none border-line bg-surface p-4 lg:sticky lg:top-0 lg:z-10">
           <h2 id="feed-h" className="mr-auto text-lg font-semibold">All mentions <span className="font-mono text-sm font-normal text-fg-3">{list.length}</span></h2>
-          <div role="group" aria-label="Severity" className="flex rounded-control border border-line p-0.5">
+          <div role="group" aria-label="Severity" className="flex w-full rounded-control border border-line p-0.5 sm:w-auto">
             {SEVERITIES.map(s => (
               <button
                 key={s}
                 aria-pressed={severity === s}
                 onClick={() => set('severity', s)}
-                className={cx('h-8 cursor-pointer rounded-[4px] px-3 text-sm capitalize motion-control', severity === s ? 'bg-selected font-medium text-fg' : 'text-fg-2 hover:text-fg')}
+                className={cx('h-8 flex-1 cursor-pointer rounded-[4px] px-3 text-sm capitalize motion-control', severity === s ? 'bg-selected font-medium text-fg' : 'text-fg-2 hover:text-fg')}
               >{s}</button>
             ))}
           </div>

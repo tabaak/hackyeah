@@ -80,7 +80,7 @@ export function PostRow({ post: p, companyName, actionable, onDismiss, onRespond
 
   return (
     <li className={cx('motion-control', p.status !== 'new' && 'opacity-70')}>
-      <div className="flex gap-3 p-4">
+      <div className="flex flex-wrap gap-3 p-4 sm:flex-nowrap">
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-2"><PlatformIcon p={p.platform} size={16} /></span>
         <div id={bodyId} className="min-w-0 flex-1">
           <div className="flex items-baseline gap-2">
@@ -116,7 +116,7 @@ export function PostRow({ post: p, companyName, actionable, onDismiss, onRespond
             </div>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-1 self-center">
+        <div className="flex w-full shrink-0 items-center gap-1 pl-11 sm:w-auto sm:self-center sm:pl-0">
           {actionable && <Button variant="ghost" className="w-9 px-0" aria-label="Dismiss" title="Dismiss" onClick={onDismiss}><Archive size={16} /></Button>}
           {expandable && (
             <Button variant="ghost" className="w-9 px-0" aria-label={open ? 'Collapse post' : 'Expand post'} title={open ? 'Collapse' : 'Expand'}
@@ -132,7 +132,7 @@ export function PostRow({ post: p, companyName, actionable, onDismiss, onRespond
             title="Open source"
             className="inline-flex size-9 items-center justify-center rounded-control text-fg-2 motion-control hover:bg-subtle hover:text-fg"
           ><ArrowSquareOut size={16} /></a>
-          {actionable && <Button className="ml-1" onClick={onRespond}>Counter-post</Button>}
+          {actionable && <Button className="ml-auto sm:ml-1" onClick={onRespond}>Counter-post</Button>}
         </div>
       </div>
     </li>

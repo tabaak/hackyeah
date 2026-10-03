@@ -163,6 +163,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* iOS Safari zooms the page into any field under 16px. Unlayered, so it beats text-sm utilities on phones. */
+@media (max-width: 639px) {
+  input, textarea, select { font-size: 16px; }
+}
+
 /* In the base layer so utilities like focus:outline-none on inputs can override it */
 @layer base {
   :focus-visible {

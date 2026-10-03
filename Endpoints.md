@@ -183,6 +183,8 @@ UI для ролей: аналітик бачить «Approve response», якщ
 * `GET /notifications?limit=20` (максимум 100) — `{ items: [{ id, kind, mentionId, title, severity, at, read }], openCount }`, нові зверху. `kind` = `critical_mention` | `approval_requested` | `approval_decided`; `title` — текст згадки (обрізайте в UI); `openCount` — кількість непрочитаних (бейдж). Клік → відкрити згадку `mentionId` і `PATCH …/read`.
 * `PATCH /notifications/{id}/read` — позначити прочитаним, повертає Notification.
 * `POST /notifications/mark-all-read` → 204.
+* `POST /push-tokens` `{ token, platform }` → 204 — мобільний застосунок реєструє свій Expo push-токен (`ExponentPushToken[…]`, `platform` = `ios` | `android`) після входу. Токен прив'язується до поточного користувача; якщо пристрій увійшов в інший акаунт — переходить до нього. Сповіщення `critical_mention` додатково надсилаються push-ом на всі пристрої одержувача; токени видалених застосунків прибираються автоматично.
+* `DELETE /push-tokens/{token}` → 204 — при виході з акаунта (лише свій токен).
 
 ---
 

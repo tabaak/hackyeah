@@ -12,7 +12,7 @@ from tests.conftest import API, bearer, hs256
 
 pytestmark = pytest.mark.db
 PUBLIC_TABLES = ["organizations", "profiles", "companies", "documents", "document_chunks", "clusters", "mentions",
-                 "mention_responses", "approvals", "outbox", "notifications"]
+                 "mention_responses", "approvals", "outbox", "notifications", "push_tokens"]
 
 
 def vec(*hot, dim=1536):

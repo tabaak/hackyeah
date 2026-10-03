@@ -217,9 +217,9 @@ export function CompanyWizard({ onDone, onExit, aside, initialCompany }: { onDon
           <DocsUpload docs={docs} onChange={setDocs} />
           {error && <p role="alert" className="text-sm text-danger">{error}</p>}
           {busy && <p role="status" className="text-sm text-fg-2">Saving company…</p>}
-          <div className="flex justify-between gap-3 pt-2">
+          <div className="flex flex-wrap justify-between gap-3 pt-2">
             <Button variant="ghost" disabled={busy} onClick={() => { setError(''); setProfileStep(true) }}>Back</Button>
-            <div className="flex gap-3">
+            <div className="ml-auto flex gap-3">
               <Button variant="secondary" disabled={busy} onClick={() => finish([])}>Skip for now</Button>
               <Button variant="primary" disabled={!docs.length || busy} onClick={() => finish(docs)}>{busy ? 'Uploading…' : 'Start monitoring'}</Button>
             </div>
