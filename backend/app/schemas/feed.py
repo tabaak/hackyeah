@@ -21,6 +21,7 @@ class Mention(CamelModel):
     cluster: Cluster | None = None
     injection: bool = False  # hidden prompt injection detected and blocked
     status: MentionStatus
+    url: str | None = None  # link to the original post/article (news and Google results)
 
 
 class MentionStatusUpdate(CamelModel):

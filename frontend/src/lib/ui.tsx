@@ -1,6 +1,6 @@
 import {
   ChatsCircle, CheckCircle, FacebookLogo, GitDiff, LinkedinLogo, Newspaper, Question, RedditLogo,
-  TelegramLogo, TiktokLogo, Warning, XLogo, X as XIcon,
+  TelegramLogo, ThreadsLogo, TiktokLogo, Warning, XLogo, X as XIcon,
 } from '@phosphor-icons/react'
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { PLATFORM_LABEL, VERDICT_LABEL, type Classification, type Platform, type Severity, type Verdict } from './mock'
@@ -71,7 +71,7 @@ export function ClassBadge({ c }: { c: Classification }) {
 }
 
 const PLATFORM_ICON: Record<Platform, typeof XLogo> = {
-  x: XLogo, facebook: FacebookLogo, reddit: RedditLogo, telegram: TelegramLogo, tiktok: TiktokLogo, linkedin: LinkedinLogo, news: Newspaper,
+  x: XLogo, facebook: FacebookLogo, reddit: RedditLogo, telegram: TelegramLogo, tiktok: TiktokLogo, linkedin: LinkedinLogo, threads: ThreadsLogo, news: Newspaper,
 }
 export function PlatformIcon({ p, size = 16 }: { p: Platform; size?: number }) {
   const I = PLATFORM_ICON[p]

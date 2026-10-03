@@ -2,7 +2,7 @@
 
 export type Severity = 'high' | 'medium' | 'low'
 export type Classification = 'public' | 'internal' | 'confidential' | 'restricted'
-export type Platform = 'x' | 'facebook' | 'reddit' | 'telegram' | 'tiktok' | 'linkedin' | 'news'
+export type Platform = 'x' | 'facebook' | 'reddit' | 'telegram' | 'tiktok' | 'linkedin' | 'threads' | 'news'
 export type Verdict = 'contradicted_by_documents' | 'supported_by_documents' | 'insufficient_evidence' | 'opinion'
 export type PostStatus = 'new' | 'responded' | 'dismissed'
 
@@ -55,7 +55,7 @@ export const SECTORS: Record<string, string[]> = {
 export const COUNTRIES = ['Poland', 'Germany', 'Ukraine', 'Lithuania', 'Czechia', 'United Kingdom', 'United States', 'Global']
 
 export const PLATFORM_LABEL: Record<Platform, string> = {
-  x: 'X', facebook: 'Facebook', reddit: 'Reddit', telegram: 'Telegram', tiktok: 'TikTok', linkedin: 'LinkedIn', news: 'News',
+  x: 'X', facebook: 'Facebook', reddit: 'Reddit', telegram: 'Telegram', tiktok: 'TikTok', linkedin: 'LinkedIn', threads: 'Threads', news: 'News',
 }
 
 export const VERDICT_LABEL: Record<Verdict, string> = {
