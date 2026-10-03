@@ -63,3 +63,6 @@ Thumbs.db
 # Testing & Agent artifacts
 .playwright-mcp/
 coverage/
+
+# Local pipeline runs (raw scraper output + analysis)
+backend/results/

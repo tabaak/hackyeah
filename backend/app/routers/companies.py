@@ -16,7 +16,7 @@ router = APIRouter(tags=["companies"])
 
 # Mirrors the frontend's SECTORS / COUNTRIES.
 SECTORS = {
-    "Banking": ["Liquidity / bank run", "Frozen withdrawals", "App or card outage", "Data breach", "Regulatory action", "Fraud & scams"],
+    "Banking": ["Liquidity / bank run", "Frozen withdrawals", "App or card outage", "Data breach", "Regulatory action", "Fraud & scams", "Trading losses", "Market manipulation", "Sanctions", "Layoffs"],
     "Defence": ["Delivery delays", "Export control", "Product failure", "Sanctions", "Leadership", "Data breach"],
     "Fintech": ["Frozen accounts", "App outage", "Data breach", "Licence / regulator", "Fraud & scams"],
     "Energy": ["Supply disruption", "Safety incident", "Pricing", "Environmental", "Regulatory action"],

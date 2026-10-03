@@ -1,0 +1,51 @@
+{
+ "searchParameters": {
+  "q": "Bank Pekao",
+  "gl": "pl",
+  "hl": "en",
+  "type": "news",
+  "num": 10,
+  "page": 1,
+  "tbs": "qdr:m",
+  "allowSuggested": true,
+  "engine": "google"
+ },
+ "news": [
+  {
+   "title": "Bank Pekao to support Polish companies in foreign markets, joins forces with Raiffeisen Bank International",
+   "link": "https://media.pekao.com.pl/en/pr/877404/bank-pekao-to-support-polish-companies-in-foreign-markets-joins-forces-with-raiffeisen-bank-international",
+   "snippet": "Bank Pekao S.A. and Raiffeisen Bank International (RBI) have signed a cooperation agreement aimed at supporting clients expanding across European markets.",
+   "date": "4 days ago",
+   "source": "Bank Pekao S.A."
+  },
+  {
+   "title": "Bank Pekao S.A. wydał komunikat. Dotyczy wszystkich klientów",
+   "link": "https://www.dobreprogramy.pl/bank-pekao-s-a-wydal-komunikat-dotyczy-wszystkich-klientow,7334256095324416a",
+   "snippet": "Bank Pekao S.A. przypomina, że dane osobowe i kontaktowe mogą posłużyć do wyłudzenia pieniędzy lub poufnych informacji. Bank zaleca regularną kontrolę...",
+   "date": "5 days ago",
+   "source": "dobreprogramy"
+  },
+  {
+   "title": "Bank Pekao z premią do 2700 zł za konto tylko do końca września. Do tego 5,7% na oszczędnościach",
+   "link": "https://www.bankier.pl/wiadomosc/Bank-Pekao-z-premia-do-2700-zl-za-konto-tylko-do-konca-wrzesnia-Do-tego-5-7-na-oszczednosciach-9202202.html",
+   "snippet": "Nowi klienci Banku Pekao mogą do końca września przystąpić do trzech równoległych promocji wokół Konta Przekorzystnego i Konta Świat Premium.",
+   "date": "1 week ago",
+   "source": "Bankier.pl"
+  },
+  {
+   "title": "Bank Pekao wspiera Grupę Kęty w przejęciu włoskiego producenta profili aluminiowych",
+   "link": "https://strefainwestorow.pl/wiadomosci/20260916/bank-pekao-wspiera-grupe-kety-w-przejeciu-wloskiego-producenta-profili",
+   "snippet": "Bank Pekao S.A. udzielił finansowania terminowego do 2 mld zł dla Grupy Kęty S.A., wspierając jedno z największych zagranicznych przejęć realizowanych przez...",
+   "date": "2 weeks ago",
+   "source": "Strefa Inwestorów"
+  },
+  {
+   "title": "Zgłoszenia o awarii w Banku Pekao. Nie działały niektóre usługi",
+   "link": "https://next.gazeta.pl/next/7,151003,33044663,awaria-w-banku-pekao-czesc-uslug-nie-dziala-przerwa-serwisowa.html",
+   "snippet": "Zgłoszenia użytkowników z piątku wskazywały na ewentualną awarię w Banku Pekao. Niektóre usługi mogły nie działać prawidłowo. Aplikacja banku informowała o...",
+   "date": "1 week ago",
+   "source": "Next Gazeta.pl"
+  }
+ ],
+ "credits": 1
+}

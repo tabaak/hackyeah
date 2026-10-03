@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { CompanyWizard } from '../components/CompanySetup'
 import { useStore } from '../lib/store'
+import { DEMO_COMPANY_PROFILE } from '../lib/mock'
 import { Button } from '../lib/ui'
 import { LogoMark, PRODUCT_NAME } from './Login'
 
@@ -18,6 +19,7 @@ export default function Onboarding() {
         <p className="mt-1 mb-8 text-fg-2">We use this to find mentions and tell real criticism apart from attacks. Takes about a minute.</p>
         <section className="rounded-panel border border-line bg-surface p-6">
           <CompanyWizard
+            initialCompany={DEMO_COMPANY_PROFILE}
             onDone={async (c, docs) => { await addCompany(c, docs); nav('/app/feed', { replace: true }) }}
             aside={
               <Button type="button" variant="ghost" className="-ml-3" onClick={() => { signOut(); nav('/login', { replace: true }) }}>

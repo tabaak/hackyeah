@@ -52,7 +52,7 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 
 | Поле | Значення |
 |---|---|
-| `platform` | `x`, `facebook`, `reddit`, `telegram`, `tiktok`, `linkedin`, `news` |
+| `platform` | `x`, `facebook`, `reddit`, `telegram`, `tiktok`, `linkedin`, `threads`, `news` |
 | `severity` | `high`, `medium`, `low` |
 | `verdict` | `contradicted_by_documents`, `supported_by_documents`, `insufficient_evidence`, `opinion` |
 | `status` (згадка) | `new`, `responded`, `dismissed` |
