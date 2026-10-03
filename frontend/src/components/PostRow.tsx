@@ -116,7 +116,7 @@ export function PostRow({ post: p, companyName, actionable, onDismiss, onRespond
           </div>
         </div>
         <div className="flex w-full shrink-0 items-center gap-1 pl-11 sm:w-auto sm:self-start sm:pl-0">
-          {actionable && <Button variant="ghost" className="w-9 px-0" aria-label="Dismiss" title="Dismiss" onClick={onDismiss}><Archive size={16} /></Button>}
+          {actionable && <Button variant="ghost" className="w-9 px-0!" aria-label="Dismiss" title="Dismiss" onClick={onDismiss}><Archive size={16} /></Button>}
           <a
             href={sourceUrl(p)}
             target="_blank"

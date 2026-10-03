@@ -82,7 +82,7 @@ export default function LiveFeed() {
 
                 <div className="mt-auto flex gap-2">
                   <Button variant="primary" className="flex-1" onClick={() => set('respond', p.id)}>Create counter-post</Button>
-                  <Button variant="ghost" className="w-9 px-0" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
+                  <Button variant="ghost" className="w-9 px-0!" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
                 </div>
               </article>
             ))}

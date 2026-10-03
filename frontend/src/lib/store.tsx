@@ -73,6 +73,7 @@ interface Store {
   addCompany: (draft: CompanyDraft, docs: PendingDoc[], logo?: File | null) => Promise<void>
   updateCompany: (companyId: string, draft: CompanyDraft) => Promise<void>
   uploadDocuments: (companyId: string, docs: PendingDoc[]) => Promise<void>
+  deleteDocument: (companyId: string, documentId: string) => Promise<void>
   setCompanyLogo: (companyId: string, file: File | null) => Promise<void>
   posts: Post[]
   setPostStatus: (id: string, s: PostStatus) => void
@@ -308,6 +309,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const added = await uploadDocs(companyId, docs, token)
       if (owner !== account.current || revision !== sessionRevision.current) return
       setCompanies(cs => cs.map(c => (c.id === companyId ? { ...c, documents: [...c.documents, ...added] } : c)))
+    },
+    deleteDocument: async (companyId, documentId) => {
+      const owner = account.current
+      const revision = sessionRevision.current
+      const token = accessToken.current
+      if (!owner || !token) throw new Error('Please sign in before deleting documents.')
+      await api(`/documents/${documentId}`, { method: 'DELETE' }, token)
+      if (owner !== account.current || revision !== sessionRevision.current) return
+      setCompanies(cs => cs.map(c => (c.id === companyId ? { ...c, documents: c.documents.filter(d => d.id !== documentId) } : c)))
     },
     setCompanyLogo: async (companyId, file) => {
       const owner = account.current
