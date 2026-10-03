@@ -1,17 +1,18 @@
-from pydantic import BaseModel
-
-from app.schemas.common import Classification, DocumentStatus
+from app.schemas.common import CamelModel, Classification, DocumentStatus
 
 
-class Document(BaseModel):
+class Doc(CamelModel):
     id: str
-    filename: str
+    name: str
+    size: int
     classification: Classification
     status: DocumentStatus
-    uploaded_at: str
-    size_bytes: int | None = None
 
 
-class DocumentUrl(BaseModel):
+class DocumentUpdate(CamelModel):
+    classification: Classification
+
+
+class DocumentUrl(CamelModel):
     url: str
     expires_at: str

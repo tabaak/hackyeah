@@ -1,13 +1,13 @@
-"""7. Notifications. Owners: Vitya / Max."""
+"""7. Notifications (bell: latest open incidents)."""
 from fastapi import APIRouter
 
 from app.deps import not_implemented
-from app.schemas.notifications import Notification
+from app.schemas.notifications import Notification, NotificationList
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 
-@router.get("", response_model=list[Notification])
+@router.get("", response_model=NotificationList)
 def list_notifications():
     not_implemented()
 

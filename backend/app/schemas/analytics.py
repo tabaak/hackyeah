@@ -1,33 +1,29 @@
-from pydantic import BaseModel
+from app.schemas.common import CamelModel, Platform, Verdict
 
 
-class TrendPoint(BaseModel):
-    bucket: str  # hour or day, ISO 8601
+class AnalyticsSummary(CamelModel):
+    high: int
+    medium: int
+    low: int
+    responded: int
+    dismissed: int
+    clusters: int
+    injections_blocked: int
+
+
+class HourBucket(CamelModel):
+    hour: str  # "HH:00"
+    low: int
+    medium: int
+    high: int
+
+
+class PlatformReach(CamelModel):
+    platform: Platform
     mentions: int
-    incidents: int
-    confirmed_disinformation: int = 0
+    reach: int
 
 
-class Trends(BaseModel):
-    points: list[TrendPoint]
-
-
-class Narrative(BaseModel):
-    id: str
-    title: str
-    mentions: int
-    verification_status: str
-
-
-class CoordinationSignal(BaseModel):
-    kind: str  # new_accounts | synchrony | duplicates
-    description: str
+class VerdictCount(CamelModel):
+    verdict: Verdict
     count: int
-
-
-class AiMetrics(BaseModel):
-    blocked_actions: int
-    tokens: int
-    estimated_cost_usd: float
-    gateway_latency_p50_ms: float | None = None
-    gateway_latency_p95_ms: float | None = None

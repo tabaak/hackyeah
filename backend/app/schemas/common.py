@@ -1,6 +1,13 @@
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
+
+
+class CamelModel(BaseModel):
+    """JSON is camelCase (matches the frontend); Python code stays snake_case."""
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 class Role(str, Enum):
@@ -9,21 +16,13 @@ class Role(str, Enum):
 
 
 class Platform(str, Enum):
-    twitter = "twitter"
+    x = "x"
     facebook = "facebook"
-    gnews = "gnews"
-
-
-class Sentiment(str, Enum):
-    negative = "negative"
-    neutral = "neutral"
-    positive = "positive"
-
-
-class RiskLevel(str, Enum):
-    high = "high"
-    medium = "medium"
-    low = "low"
+    reddit = "reddit"
+    telegram = "telegram"
+    tiktok = "tiktok"
+    linkedin = "linkedin"
+    news = "news"
 
 
 class Severity(str, Enum):
@@ -32,10 +31,17 @@ class Severity(str, Enum):
     low = "low"
 
 
-class IncidentStatus(str, Enum):
-    open = "open"
-    review = "review"
-    resolved = "resolved"
+class Verdict(str, Enum):
+    contradicted_by_documents = "contradicted_by_documents"
+    supported_by_documents = "supported_by_documents"
+    insufficient_evidence = "insufficient_evidence"
+    opinion = "opinion"
+
+
+class MentionStatus(str, Enum):
+    new = "new"
+    responded = "responded"
+    dismissed = "dismissed"
 
 
 class Classification(str, Enum):
@@ -51,19 +57,18 @@ class DocumentStatus(str, Enum):
     failed = "failed"
 
 
-class Verdict(str, Enum):
-    supported = "supported"
-    contradicted = "contradicted"
-    insufficient = "insufficient"
-    opinion = "opinion"
+class ApprovalState(str, Enum):
+    none = "none"
+    pending = "pending"
+    approved = "approved"
 
 
-class SourceStatus(BaseModel):
+class SourceStatus(CamelModel):
     healthy: bool
     last_sync_at: str | None = None
     detail: str | None = None
 
 
-class SyncRequested(BaseModel):
+class SyncRequested(CamelModel):
     accepted: bool = True
     job_id: str | None = None

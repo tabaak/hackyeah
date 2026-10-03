@@ -1,10 +1,15 @@
-from pydantic import BaseModel
+from app.schemas.common import CamelModel, Severity
 
 
-class Notification(BaseModel):
+class Notification(CamelModel):
     id: str
-    kind: str  # burst | critical_incident | draft_awaiting_approval
+    mention_id: str
     title: str
-    created_at: str
+    severity: Severity
+    at: int  # Unix ms
     read: bool = False
-    incident_id: str | None = None
+
+
+class NotificationList(CamelModel):
+    items: list[Notification]
+    open_count: int

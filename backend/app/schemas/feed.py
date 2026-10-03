@@ -1,36 +1,27 @@
-from pydantic import BaseModel
-
-from app.schemas.common import Platform, RiskLevel, Sentiment
+from app.schemas.common import CamelModel, MentionStatus, Platform, Severity, Verdict
 
 
-class Mention(BaseModel):
+class Cluster(CamelModel):
+    size: int
+    accounts: int
+
+
+class Mention(CamelModel):
     id: str
+    company_id: str
     platform: Platform
-    author: str | None = None
+    author: str
+    handle: str
     text: str
-    url: str | None = None
-    published_at: str
-    sentiment: Sentiment | None = None
-    cluster_id: str | None = None
+    at: int  # Unix ms
+    severity: Severity
+    verdict: Verdict
+    reason: str
+    reach: int
+    cluster: Cluster | None = None
+    injection: bool = False  # hidden prompt injection detected and blocked
+    status: MentionStatus
 
 
-class FeedPage(BaseModel):
-    items: list[Mention]
-    next_cursor: str | None = None  # cursor semantics still to be fixed in the JSON contract
-
-
-class DashboardSummary(BaseModel):
-    overall_risk: RiskLevel
-    total_mentions_24h: int
-    active_incidents: int
-    active_clusters: int
-    pending_actions: int
-
-
-class TestQuery(BaseModel):
-    query: str
-
-
-class TestQueryResult(BaseModel):
-    count: int
-    sample: list[Mention] = []
+class MentionStatusUpdate(CamelModel):
+    status: MentionStatus
