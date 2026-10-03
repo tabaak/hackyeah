@@ -1,5 +1,5 @@
 # Local Supabase CLI config (`supabase start`). Hosted project: mirror these in the Dashboard.
-# Only the settings ProofGate depends on; everything else uses CLI defaults.
+# Only the settings Palladion depends on; everything else uses CLI defaults.
 project_id = "proofgate"
 
 [auth]

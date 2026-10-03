@@ -1,4 +1,4 @@
--- ProofGate initial schema. Matches Endpoints.md and backend/app/schemas.
+-- Palladion initial schema. Matches Endpoints.md and backend/app/schemas.
 -- Conventions (defence-reputation-mvp-plan.md §10): UUID ids, timestamptz UTC, statuses as text + CHECK.
 -- The API converts timestamptz <-> Unix ms (`at`, `createdAt`) at the edge.
 
