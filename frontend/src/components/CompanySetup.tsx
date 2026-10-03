@@ -1,0 +1,195 @@
+import { FileText, Trash, UploadSimple } from '@phosphor-icons/react'
+import { useState, type FormEvent } from 'react'
+import { COUNTRIES, SECTORS, uid, type Classification, type Company, type Doc } from '../lib/mock'
+import { Button, cx, Field, inputCls } from '../lib/ui'
+
+const split = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
+
+export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt'>
+
+export function CompanyForm({ onSubmit, submitLabel }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string }) {
+  const [sector, setSector] = useState('Banking')
+  const [topics, setTopics] = useState<string[]>(SECTORS.Banking.slice(0, 3))
+
+  function pickSector(s: string) {
+    setSector(s)
+    setTopics(SECTORS[s].slice(0, 3))
+  }
+
+  function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const f = new FormData(e.currentTarget)
+    const name = String(f.get('name')).trim()
+    onSubmit({
+      name,
+      website: String(f.get('website')).trim(),
+      aliases: split(String(f.get('aliases'))),
+      sector,
+      country: String(f.get('country')),
+      people: split(String(f.get('people'))),
+      topics,
+    })
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-5">
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Company name">
+          <input name="name" required autoFocus className={cx(inputCls, "w-full")} placeholder="Kestrel Bank" />
+        </Field>
+        <Field label="Website" optional hint="Helps tell your company apart from namesakes">
+          <input name="website" type="url" className={cx(inputCls, "w-full")} placeholder="https://kestrel.example" />
+        </Field>
+      </div>
+      <Field label="Other names people use" optional hint="Short names, brands, ticker, app name — comma separated">
+        <input name="aliases" className={cx(inputCls, "w-full")} placeholder="Kestrel, KSTL, Kestrel Pay" />
+      </Field>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Industry">
+          <select value={sector} onChange={e => pickSector(e.target.value)} className={cx(inputCls, "w-full")}>
+            {Object.keys(SECTORS).map(s => <option key={s}>{s}</option>)}
+          </select>
+        </Field>
+        <Field label="Main market" hint="Sets languages and regional sources">
+          <select name="country" defaultValue="Poland" className={cx(inputCls, "w-full")}>
+            {COUNTRIES.map(c => <option key={c}>{c}</option>)}
+          </select>
+        </Field>
+      </div>
+      <Field label="Key people" optional hint="Executives often targeted by name — comma separated">
+        <input name="people" className={cx(inputCls, "w-full")} placeholder="Jan Nowak (CEO), Ewa Lis (CFO)" />
+      </Field>
+      <fieldset>
+        <legend className="mb-1.5 text-sm font-medium">Risk topics to watch</legend>
+        <div className="flex flex-wrap gap-2">
+          {SECTORS[sector].map(t => {
+            const on = topics.includes(t)
+            return (
+              <label
+                key={t}
+                className={cx(
+                  'cursor-pointer rounded-full border px-3 py-1.5 text-sm transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-accent',
+                  on ? 'border-accent bg-selected text-fg' : 'border-line text-fg-2 hover:border-control',
+                )}
+              >
+                <input type="checkbox" className="sr-only" checked={on} onChange={() => setTopics(on ? topics.filter(x => x !== t) : [...topics, t])} />
+                {t}
+              </label>
+            )
+          })}
+        </div>
+      </fieldset>
+      <div className="flex justify-end pt-2">
+        <Button variant="primary" type="submit">{submitLabel}</Button>
+      </div>
+    </form>
+  )
+}
+
+const MAX_FILES = 8
+const MAX_BYTES = 5 * 1024 * 1024
+const CLASSES: Classification[] = ['public', 'internal', 'confidential', 'restricted']
+
+export function DocsUpload({ docs, onChange }: { docs: Doc[]; onChange: (d: Doc[]) => void }) {
+  const [error, setError] = useState('')
+  const [drag, setDrag] = useState(false)
+
+  function add(files: FileList | null) {
+    if (!files) return
+    const list = [...files]
+    const tooBig = list.filter(f => f.size > MAX_BYTES)
+    const ok = list.filter(f => f.size <= MAX_BYTES).slice(0, MAX_FILES - docs.length)
+    setError(tooBig.length ? `${tooBig.map(f => f.name).join(', ')}: larger than 5 MB` : list.length > ok.length ? `Up to ${MAX_FILES} documents` : '')
+    onChange([...docs, ...ok.map(f => ({ id: uid(), name: f.name, size: f.size, classification: 'internal' as const, status: 'processing' as const }))])
+  }
+
+  return (
+    <div className="space-y-4">
+      <label
+        onDragOver={e => { e.preventDefault(); setDrag(true) }}
+        onDragLeave={() => setDrag(false)}
+        onDrop={e => { e.preventDefault(); setDrag(false); add(e.dataTransfer.files) }}
+        className={cx(
+          'flex cursor-pointer flex-col items-center justify-center gap-2 rounded-panel border-2 border-dashed px-6 py-10 text-center transition-colors duration-150 has-focus-visible:outline-2 has-focus-visible:outline-accent',
+          drag ? 'border-accent bg-selected' : 'border-line hover:border-control',
+        )}
+      >
+        <UploadSimple size={24} className="text-accent" />
+        <span className="font-medium">Drop files or click to choose</span>
+        <span className="text-xs text-fg-3">PDF with a text layer or TXT · up to {MAX_FILES} files, 5 MB each</span>
+        <input type="file" multiple accept=".pdf,.txt" className="sr-only" onChange={e => { add(e.target.files); e.target.value = '' }} />
+      </label>
+      {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+      {docs.length > 0 && (
+        <ul className="divide-y divide-line rounded-panel border border-line">
+          {docs.map(d => (
+            <li key={d.id} className="flex flex-wrap items-center gap-3 px-3 py-2.5">
+              <FileText size={18} className="shrink-0 text-fg-3" />
+              <span className="min-w-0 flex-1 truncate text-sm">{d.name}</span>
+              <span className="font-mono text-xs text-fg-3">{(d.size / 1024).toFixed(0)} KB</span>
+              <select
+                aria-label={`Classification of ${d.name}`}
+                value={d.classification}
+                onChange={e => onChange(docs.map(x => (x.id === d.id ? { ...x, classification: e.target.value as Classification } : x)))}
+                className={cx(inputCls, 'h-8 w-36')}
+              >
+                {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <Button variant="ghost" className="h-8 w-8 px-0" aria-label={`Remove ${d.name}`} onClick={() => onChange(docs.filter(x => x.id !== d.id))}>
+                <Trash size={16} />
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="text-xs leading-5 text-fg-3">
+        Classification controls what the agent may quote publicly. <b className="font-medium text-fg-2">Confidential</b> facts need compliance approval;{' '}
+        <b className="font-medium text-fg-2">restricted</b> files are indexed but never shown to the agent.
+      </p>
+    </div>
+  )
+}
+
+// Two steps: profile → optional documents. Shared by onboarding and "Track another company".
+export function CompanyWizard({ onDone }: { onDone: (c: Company) => void }) {
+  const [draft, setDraft] = useState<CompanyDraft | null>(null)
+  const [docs, setDocs] = useState<Doc[]>([])
+
+  const finish = (d: Doc[]) =>
+    onDone({ ...draft!, id: uid(), createdAt: Date.now(), documents: d.map(x => ({ ...x, status: 'ready' })) })
+
+  return (
+    <div>
+      <ol className="mb-6 flex items-center gap-3 text-sm" aria-label="Setup progress">
+        {['Company', 'Documents'].map((s, i) => {
+          const active = (draft ? 1 : 0) === i
+          const done = i === 0 && draft
+          return (
+            <li key={s} className="flex items-center gap-2" aria-current={active ? 'step' : undefined}>
+              {i > 0 && <span className="h-px w-8 bg-line" />}
+              <span className={cx('flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs', active || done ? 'bg-accent text-on-accent' : 'bg-subtle text-fg-3')}>{i + 1}</span>
+              <span className={active ? 'font-medium text-fg' : 'text-fg-3'}>{s}{i === 1 && ' · optional'}</span>
+            </li>
+          )
+        })}
+      </ol>
+      {!draft ? (
+        <CompanyForm submitLabel="Continue" onSubmit={setDraft} />
+      ) : (
+        <div className="space-y-5">
+          <p className="text-[15px] leading-6 text-fg-2">
+            Upload documents the agent can use to check claims about <b className="text-fg">{draft.name}</b> — press releases, status reports, ops logs, FAQs. You can skip this and add them later.
+          </p>
+          <DocsUpload docs={docs} onChange={setDocs} />
+          <div className="flex justify-between gap-3 pt-2">
+            <Button variant="ghost" onClick={() => setDraft(null)}>Back</Button>
+            <div className="flex gap-3">
+              <Button variant="secondary" onClick={() => finish([])}>Skip for now</Button>
+              <Button variant="primary" disabled={!docs.length} onClick={() => finish(docs)}>Start monitoring</Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

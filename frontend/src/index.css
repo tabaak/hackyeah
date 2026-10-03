@@ -1,0 +1,149 @@
+@import "tailwindcss";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens from TEST_DESIGN.md §3.6 (light) + dark counterparts */
+:root {
+  --canvas: #f7f9fa;
+  --surface: #ffffff;
+  --surface-subtle: #f1f5f9;
+  --sidebar: #0f172a;
+  --sidebar-active: #1e293b;
+  --sidebar-text: #f8fafc;
+  --sidebar-muted: #94a3b8;
+  --sidebar-accent: #5eead4;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --control-border: #64748b;
+  --accent: #0f766e;
+  --accent-hover: #115e59;
+  --accent-foreground: #ffffff;
+  --selected: #eef6f5;
+  --danger-text: #b42318;
+  --danger-bg: #fef3f2;
+  --warning-text: #92400e;
+  --warning-bg: #fffbeb;
+  --info-text: #1d4ed8;
+  --info-bg: #eff6ff;
+  --success-text: #166534;
+  --success-bg: #f0fdf4;
+  --ready-text: #115e59;
+  --ready-bg: #f0fdfa;
+  --neutral-text: #334155;
+  color-scheme: light;
+}
+
+.dark {
+  --canvas: #0b1120;
+  --surface: #111827;
+  --surface-subtle: #1a2333;
+  --sidebar: #060a14;
+  --sidebar-active: #1a2333;
+  --sidebar-text: #f1f5f9;
+  --sidebar-muted: #94a3b8;
+  --sidebar-accent: #5eead4;
+  --text: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: #233046;
+  --control-border: #64748b;
+  --accent: #2dd4bf;
+  --accent-hover: #5eead4;
+  --accent-foreground: #042f2e;
+  --selected: #0f2b2a;
+  --danger-text: #fca5a5;
+  --danger-bg: #3a1214;
+  --warning-text: #fcd34d;
+  --warning-bg: #36270a;
+  --info-text: #93c5fd;
+  --info-bg: #142046;
+  --success-text: #86efac;
+  --success-bg: #0a2e1a;
+  --ready-text: #5eead4;
+  --ready-bg: #062a28;
+  --neutral-text: #cbd5e1;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-subtle: var(--surface-subtle);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-fg: var(--text);
+  --color-fg-2: var(--text-secondary);
+  --color-fg-3: var(--text-muted);
+  --color-line: var(--border);
+  --color-control: var(--control-border);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--accent-foreground);
+  --color-selected: var(--selected);
+  --color-danger: var(--danger-text);
+  --color-danger-bg: var(--danger-bg);
+  --color-warning: var(--warning-text);
+  --color-warning-bg: var(--warning-bg);
+  --color-info: var(--info-text);
+  --color-info-bg: var(--info-bg);
+  --color-success: var(--success-text);
+  --color-success-bg: var(--success-bg);
+  --color-ready: var(--ready-text);
+  --color-ready-bg: var(--ready-bg);
+  --color-neutral: var(--neutral-text);
+  --radius-control: 6px;
+  --radius-panel: 8px;
+  --radius-dialog: 10px;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+dialog::backdrop {
+  background: rgb(2 6 23 / 0.6);
+}
+
+/* Login: vertical post "reels" */
+@keyframes reel-up {
+  to { transform: translateY(-50%); }
+}
+@keyframes reel-down {
+  from { transform: translateY(-50%); }
+  to { transform: translateY(0); }
+}
+.reel-up { animation: reel-up var(--reel-speed, 60s) linear infinite; }
+.reel-down { animation: reel-down var(--reel-speed, 60s) linear infinite; }
+
+@keyframes scan {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+.threat-scan { animation: scan 4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reel-up, .reel-down, .threat-scan { animation: none; }
+  * { transition-duration: 0ms !important; }
+}
