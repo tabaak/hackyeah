@@ -1,4 +1,4 @@
-import { Archive, ArrowSquareOut, CaretDown, Lightning, Translate, UsersThree } from '@phosphor-icons/react'
+import { Archive, ArrowSquareOut, Lightning, Translate, UsersThree } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { sourceUrl, type Post } from '../lib/mock'
 import { googleTranslateUrl, languageName, useTranslation, type TranslationState } from '../lib/translate'
@@ -76,7 +76,6 @@ export function PostRow({ post: p, companyName, actionable, onDismiss, onRespond
   // News items are stored as "headline — excerpt"
   const [headline, ...rest] = open && p.platform === 'news' ? shown.split(' — ') : ['', shown]
   const text = rest.join(' — ')
-  const toggle = () => setOpen(o => !o)
 
   return (
     <li className={cx('motion-control', p.status !== 'new' && 'opacity-70')}>
@@ -97,7 +96,7 @@ export function PostRow({ post: p, companyName, actionable, onDismiss, onRespond
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
             <TranslateButton tr={tr} text={p.text} />
             {expandable && (
-              <button type="button" onClick={toggle} aria-expanded={open} aria-controls={bodyId}
+              <button type="button" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-controls={bodyId}
                 className="cursor-pointer text-xs text-fg-2 hover:text-fg">{open ? 'Show less' : 'Show more'}</button>
             )}
           </div>
@@ -116,14 +115,8 @@ export function PostRow({ post: p, companyName, actionable, onDismiss, onRespond
             </div>
           </div>
         </div>
-        <div className="flex w-full shrink-0 items-center gap-1 pl-11 sm:w-auto sm:self-center sm:pl-0">
+        <div className="flex w-full shrink-0 items-center gap-1 pl-11 sm:w-auto sm:self-start sm:pl-0">
           {actionable && <Button variant="ghost" className="w-9 px-0" aria-label="Dismiss" title="Dismiss" onClick={onDismiss}><Archive size={16} /></Button>}
-          {expandable && (
-            <Button variant="ghost" className="w-9 px-0" aria-label={open ? 'Collapse post' : 'Expand post'} title={open ? 'Collapse' : 'Expand'}
-              aria-expanded={open} aria-controls={bodyId} onClick={toggle}>
-              <CaretDown size={16} className={cx('motion-control', open && 'rotate-180')} />
-            </Button>
-          )}
           <a
             href={sourceUrl(p)}
             target="_blank"
