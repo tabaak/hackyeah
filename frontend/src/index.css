@@ -355,7 +355,44 @@ dialog[open]::backdrop {
 }
 .threat-scan { animation: scan 4s ease-in-out infinite; }
 
+/* Session error: staggered fade-in */
+@keyframes loader-in {
+  from { opacity: 0; transform: translateY(6px); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.loader-in { animation: loader-in 600ms var(--motion-ease) var(--loader-delay, 150ms) both; }
+
+/* Session loading skeleton. Opacity only on the wrapper (a transform or filter would break the
+   fixed sidebar), delayed so fast loads never flash it. */
+@keyframes skeleton-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.skeleton-in { animation: skeleton-in 300ms var(--motion-ease) 150ms both; }
+
+/* The highlight is fixed to the viewport, so one sweep crosses every bone in sync
+   instead of each block shimmering on its own */
+@keyframes skeleton-shimmer {
+  from { background-position: 100vw 0, 0 0; }
+  to { background-position: -100vw 0, 0 0; }
+}
+.skeleton {
+  --skeleton-base: var(--surface-subtle);
+  --skeleton-glow: color-mix(in srgb, var(--text) 7%, transparent);
+  background-color: var(--skeleton-base);
+  background-image: linear-gradient(100deg, transparent 30%, var(--skeleton-glow) 50%, transparent 70%);
+  background-size: 100vw 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+.skeleton-on-sidebar .skeleton {
+  --skeleton-base: var(--sidebar-active);
+  --skeleton-glow: color-mix(in srgb, var(--sidebar-text) 8%, transparent);
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .loader-in, .skeleton-in, .skeleton { animation: none; }
   .reel-up, .reel-down, .threat-scan, .motion-page,
   dialog[open], dialog[open]::backdrop { animation: none; }
   .motion-press:enabled:active { transform: none; }
