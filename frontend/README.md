@@ -1,4 +1,4 @@
-# ProofGate frontend
+# Palladion frontend
 
 React + Vite + TypeScript + Tailwind v4. Mock data and mock Google login for now (`src/lib/mock.ts`, `src/lib/store.tsx`).
 

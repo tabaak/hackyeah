@@ -1,4 +1,4 @@
-# ProofGate API (FastAPI / Supabase)
+# Palladion API (FastAPI / Supabase)
 
 Специфікація узгоджена з фронтендом (`frontend/src`). Типи та enum-значення відповідають `frontend/src/lib/mock.ts`.
 
