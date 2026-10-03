@@ -157,8 +157,9 @@ def _search(endpoint, key, company, company_id, queries, period, per_query, clie
 
 # Mock of what the frontend sends on company creation (see frontend CompanyForm / CompanyDraft).
 MOCK_COMPANY = CompanyDraft(
-    name="Bank Pekao", website="https://www.pekao.com.pl", aliases=["Pekao", "Pekao S.A."],
-    sector="Banking", country="Poland", people=[], topics=["Frozen withdrawals", "Data breach"],
+    name="Goldman Sachs", website="https://www.goldmansachs.com", aliases=["Goldman", "GS"],
+    sector="Banking", country="United States", people=["David Solomon"],
+    topics=["SEC investigation", "Trading losses", "Market manipulation", "Data breach", "Sanctions", "Layoffs"],
 )
 
 if __name__ == "__main__":

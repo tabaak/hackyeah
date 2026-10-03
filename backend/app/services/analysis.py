@@ -20,6 +20,8 @@ ALARM_WORDS = [
     "breaking", "frozen", "freeze", "withdraw", "bank run", "#bankrun", "collapse", "insolven", "bankrupt",
     "fraud", "scam", "leak", "breach", "hacked", "for sale", "investigation", "raid", "regulator",
     "sanction", "lawsuit", "outage", "down for", "closing", "layoff", "delay", "halted", "failure",
+    "trading loss", "market manipulation", "money laundering", "bribery", "whistleblower", "settlement",
+    "client data", "data breach", "probe", "fine", "sec investigation",
 ]
 
 SEVERITIES = ("high", "medium", "low")
@@ -41,8 +43,19 @@ def detect_injection(text: str) -> bool:
 
 def _alarm_hits(text: str, topics: list[str]) -> list[str]:
     t = text.lower()
-    words = ALARM_WORDS + [w for topic in topics for w in re.findall(r"[a-z]{5,}", topic.lower())]
-    return sorted({w for w in words if w in t})
+    words = set(ALARM_WORDS + [topic.lower() for topic in topics])
+    spans = []
+    for word in words:
+        start = 0
+        while (start := t.find(word, start)) >= 0:
+            spans.append((start, start + len(word), word))
+            start += 1
+    # Overlapping phrases such as “SEC investigation” and “investigation” describe one signal.
+    selected = []
+    for start, end, word in sorted(spans, key=lambda s: (-(s[1] - s[0]), s[0])):
+        if not any(start < other_end and end > other_start for other_start, other_end, _ in selected):
+            selected.append((start, end, word))
+    return sorted({word for _, _, word in selected})
 
 
 def heuristic(text: str, topics: list[str], reach: int, has_evidence: bool) -> Assessment:
@@ -89,7 +102,12 @@ def assess(company: dict, text: str, reach: int, evidence: list[dict]) -> Assess
     verdict = data["verdict"]
     if verdict in ("contradicted_by_documents", "supported_by_documents") and not evidence:
         verdict = "insufficient_evidence"  # the model cannot cite documents that were not retrieved
-    severity = "high" if base.injection else data["severity"]
+    # The model can raise the heuristic score, but must not dismiss a clear high-risk signal
+    # or a prompt injection as low severity.
+    rank = {"high": 0, "medium": 1, "low": 2}
+    severity = min((base.severity, data["severity"]), key=rank.__getitem__)
+    if base.injection:
+        severity = "high"
     reason = str(data.get("reason") or base.reason)[:500]
     if base.injection:
         reason = "Hidden instruction to AI assistants detected and ignored. " + reason
