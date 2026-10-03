@@ -13,9 +13,24 @@ INJECTION_PATTERNS = [
     r"\byou are now\b",
     r"\[/?inst\]|<\|im_start\|>|<\|system\|>",
     r"<!--.*?-->",
-    r"[​‌‍⁠﻿]",  # zero-width characters used to hide text
 ]
 _INJECTION_RE = re.compile("|".join(INJECTION_PATTERNS), re.I | re.S)
+
+# Hidden text. Single zero-width characters are everywhere in normal text (news markup, emoji joiners: 12 of 12 earlier
+# "AI manipulation" flags were news headlines and an emoji), so only these count: a run of several, Unicode tag
+# characters outside emoji flag sequences (invisible "ASCII smuggling"), or an instruction that only appears once
+# the invisible characters are removed.
+_ZERO_WIDTH = "[\u200b\u200c\u200d\u2060\ufeff]"
+_HIDDEN_RUN = re.compile(_ZERO_WIDTH + "{3,}")
+_TAGS = re.compile("[\U000E0000-\U000E007F]+")
+_FLAG_TAGS = re.compile("\U0001F3F4[\U000E0020-\U000E007E]+\U000E007F")  # e.g. the England flag emoji
+
+
+def _hidden_text(text: str) -> bool:
+    if _HIDDEN_RUN.search(text) or _TAGS.search(_FLAG_TAGS.sub("", text)):
+        return True
+    visible = re.sub(_ZERO_WIDTH, "", text)
+    return visible != text and bool(_INJECTION_RE.search(visible)) and not _INJECTION_RE.search(text)
 
 ALARM_WORDS = [
     "breaking", "frozen", "freeze", "withdraw", "bank run", "#bankrun", "collapse", "insolven", "bankrupt",
@@ -39,7 +54,7 @@ class Assessment:
 
 
 def detect_injection(text: str) -> bool:
-    return bool(_INJECTION_RE.search(text))
+    return bool(_INJECTION_RE.search(text)) or _hidden_text(text)
 
 
 def _alarm_hits(text: str, topics: list[str]) -> list[str]:

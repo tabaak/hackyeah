@@ -48,7 +48,7 @@ def test_actors_and_inputs():
 
 def test_maps_xquik_tweet():
     m = apify.to_mention(XQUIK_TWEET, Platform.x, "c1", NOW)
-    assert (m.handle, m.author, m.reach, m.url) == ("michelleKir10", "michelle Kirby", 3, XQUIK_TWEET["url"])
+    assert (m.handle, m.author, m.reach, m.url) == ("michelleKir10", "michelle Kirby", 40, XQUIK_TWEET["url"])  # reach = views
     assert m.at == 1_791_053_234_000
 
 

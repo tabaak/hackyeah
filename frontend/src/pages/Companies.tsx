@@ -1,8 +1,9 @@
 import { FileText, Globe, Sparkle } from '@phosphor-icons/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CompanyForm, CompanyWizard, DocsUpload, type PendingDoc } from '../components/CompanySetup'
 import CompanyLogo from '../components/CompanyLogo'
+import { api } from '../lib/api'
 import type { Classification, Company, CompanyDraft } from '../lib/mock'
 import { useStore } from '../lib/store'
 import { Badge, Button, ClassBadge, cx, Dialog, PageActions } from '../lib/ui'
@@ -65,12 +66,21 @@ function CompanyCard({ c }: { c: Company }) {
       setBusy(false)
     }
   }
+  // Totals come from the server: the feed only holds the newest page of mentions
+  const [totals, setTotals] = useState<{ total: number; openHigh: number } | null>(null)
+  useEffect(() => {
+    const controller = new AbortController()
+    api<{ total: number; openHigh: number }>(`/analytics/summary?range=all&company_id=${c.id}`, { signal: controller.signal })
+      .then(setTotals, () => {})
+    return () => controller.abort()
+  }, [c.id, posts]) // refreshed whenever the feed polls
   const mine = posts.filter(p => p.companyId === c.id)
-  const openHigh = mine.filter(p => p.severity === 'high' && p.status === 'new').length
+  const mentionCount = totals?.total ?? mine.length
+  const openHigh = totals?.openHigh ?? mine.filter(p => p.severity === 'high' && p.status === 'new').length
 
   const usable = c.documents.filter(d => d.classification !== 'restricted').length
   const metrics = [
-    { label: 'Mentions', value: mine.length, to: `/app/feed?company=${c.id}&status=all` },
+    { label: 'Mentions', value: mentionCount, to: `/app/feed?company=${c.id}&status=all` },
     { label: 'Open high priority', value: openHigh, to: `/app/feed?company=${c.id}&severity=high`, danger: openHigh > 0 },
     { label: 'Documents', value: c.documents.length },
     { label: 'Usable by agent', value: usable },

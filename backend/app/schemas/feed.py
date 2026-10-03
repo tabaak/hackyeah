@@ -26,5 +26,10 @@ class Mention(CamelModel):
     images: list[str] = []  # pictures attached to the post / article thumbnail
 
 
+class MentionImport(CamelModel):
+    url: str
+    company_id: str
+
+
 class MentionStatusUpdate(CamelModel):
     status: MentionStatus

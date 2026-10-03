@@ -2,15 +2,15 @@
 import asyncio
 import json
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from fastapi.responses import StreamingResponse
 
 from app.db import get_db, not_found
 from app.deps import get_current_user
 from app.schemas.auth import CurrentUser
 from app.schemas.common import MentionStatus, Platform, Severity
-from app.schemas.feed import Mention, MentionStatusUpdate
-from app.services import mappers
+from app.schemas.feed import Mention, MentionImport, MentionStatusUpdate
+from app.services import link_import, mappers
 from app.services.timeutil import from_ms, iso, now
 
 router = APIRouter(tags=["mentions"])
@@ -79,6 +79,27 @@ async def stream_mentions(request: Request, company_id: str | None = None, user:
                 yield ": keep-alive\n\n"
 
     return StreamingResponse(events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})
+
+
+@router.post("/mentions/import", response_model=Mention, status_code=201)
+def import_mention(body: MentionImport, response: Response, user: CurrentUser = Depends(get_current_user)):
+    """Add one mention from a link right away (X post by id, or any news/web page). 201 when new, 200 when already known."""
+    rows = get_db().table("companies").select("*").eq("id", body.company_id).eq("organization_id", user.organization_id).execute().data
+    if not rows:
+        raise not_found("Company")
+    try:
+        platform, external_id, created = link_import.import_link(rows[0], body.url)
+    except link_import.LinkImportError as e:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, str(e)) from e
+    found = (
+        get_db().table("mentions").select(mappers.MENTION_SELECT).eq("company_id", body.company_id)
+        .eq("platform", platform).eq("external_id", external_id).limit(1).execute().data
+    )
+    if not found:
+        raise HTTPException(status.HTTP_502_BAD_GATEWAY, "The mention could not be stored")
+    if not created:
+        response.status_code = status.HTTP_200_OK
+    return mappers.mention(found[0])
 
 
 @router.get("/mentions/{mention_id}", response_model=Mention)

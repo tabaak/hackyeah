@@ -123,12 +123,14 @@ def to_mention(item: dict, platform: Platform, company_id: str, now_ms: int) -> 
         return None
     handle = _first(item, "author.userName", "author.username", "user.username", "username", "user.id", "pageName.id") or ""
     author = _first(item, "author.name", "user.name", "user.fullName", "pageName.name", "display_name", "username") or handle or platform.value
-    reach = sum(
+    engagement = sum(
         int(_first(item, *keys) or 0)
         for keys in (("likeCount", "like_count", "likes", "likesCount"),
                      ("retweetCount", "shares", "sharesCount", "repostCount", "repost_count"),
                      ("replyCount", "reply_count", "comments", "commentsCount", "directReplyCount"))
     )
+    # Reach = views when the source reports them (X viewCount); brand-new posts report 0 views, so never below engagement
+    reach = max(int(_first(item, "viewCount", "view_count", "views", "viewsCount") or 0), engagement)
     ident = str(_first(item, "id", "postId", "post_id") or url or text)
     return Mention(
         id=f"{platform.value}_" + hashlib.sha1(f"{company_id}|{ident}".encode()).hexdigest()[:12],

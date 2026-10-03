@@ -107,14 +107,15 @@ export function CounterPost({ post, onDone }: { post: Post; onDone: () => void }
     <div className="flex flex-col gap-4">
       <div className="grid gap-5 md:grid-cols-2">
         {/* Grid rows stretch: the quote grows so both columns end at the same line */}
-        <section className="flex flex-col gap-2">
+        <section className="flex min-w-0 flex-col gap-2">
           <h3 className="text-sm font-medium">Original post</h3>
-          <blockquote className="flex-1 border-l-2 border-line pl-3">
-            <div className="mb-1 flex items-center gap-1.5 text-xs text-fg-3">
+          <blockquote className="min-w-0 flex-1 border-l-2 border-line pl-3">
+            <div className="mb-1 flex min-w-0 items-center gap-1.5 text-xs text-fg-3">
               <PlatformIcon p={post.platform} size={14} />
-              {post.handle} · {timeAgo(post.at)}
+              <span className="min-w-0 truncate" title={post.handle}>{post.author || post.handle}</span>
+              <span className="shrink-0">· {timeAgo(post.at)}</span>
             </div>
-            <p className="text-[15px] leading-6 text-fg-2">{post.text}</p>
+            <p className="text-[15px] leading-6 break-words text-fg-2">{post.text}</p>
           </blockquote>
           <p className="rounded-panel bg-subtle p-3 text-sm text-fg-2">
             <span className="font-medium text-fg">{VERDICT_LABEL[claim.verdict]}.</span> {claim.reason}

@@ -12,15 +12,14 @@ from app.schemas.common import Platform, Verdict
 from app.services.timeutil import iso, now
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
-RANGES = {"24h": timedelta(hours=24), "7d": timedelta(days=7), "30d": timedelta(days=30)}
-RangeParam = Query("24h", pattern="^(24h|7d|30d)$")
+RANGES = {"24h": timedelta(hours=24), "7d": timedelta(days=7), "30d": timedelta(days=30), "all": None}
+RangeParam = Query("24h", pattern="^(24h|7d|30d|all)$")  # all: every stored mention (e.g. company totals)
 
 
 def _mentions(user: CurrentUser, company_id: str | None, range_: str, fields: str) -> list[dict]:
-    q = (
-        get_db().table("mentions").select(fields).eq("organization_id", user.organization_id)
-        .gte("published_at", iso(now() - RANGES[range_]))
-    )
+    q = get_db().table("mentions").select(fields).eq("organization_id", user.organization_id)
+    if RANGES[range_] is not None:
+        q = q.gte("published_at", iso(now() - RANGES[range_]))
     if company_id:
         q = q.eq("company_id", company_id)
     return q.limit(10000).execute().data

@@ -1,16 +1,18 @@
 import { Archive, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
 import { useSearchParams } from 'react-router-dom'
+import { AddByLink } from '../components/AddByLink'
 import { CounterPost } from '../components/CounterPost'
 import { PostRow } from '../components/PostRow'
 import { PLATFORM_LABEL, type Platform, type Post } from '../lib/mock'
 import { useStore } from '../lib/store'
-import { Badge, Button, compact, cx, Dialog, PlatformIcon, timeAgo } from '../lib/ui'
+import { Badge, Button, compact, cx, Dialog, PageActions, PlatformIcon, timeAgo } from '../lib/ui'
 
 // Matches the severity segmented control
 const filterCls = 'h-[38px] min-w-0 flex-1 cursor-pointer sm:flex-none rounded-control border border-line bg-surface px-3 text-sm text-fg-2 motion-control hover:text-fg focus:outline-none focus-visible:border-accent'
 
 const SEVERITIES = ['all', 'high', 'medium', 'low'] as const
-const STATUSES = { open: 'Open', archive: 'Archive', responded: 'Responded', dismissed: 'Dismissed', all: 'All' } as const
+// Archive = dismissed mentions (the Dismiss button is the archive icon); responded ones have their own filter
+const STATUSES = { open: 'Open', responded: 'Responded', archive: 'Archive', all: 'All' } as const
 
 const actionable = (p: Post) => p.status === 'new' && p.severity !== 'low'
 
@@ -20,13 +22,15 @@ export default function LiveFeed() {
   const company = q.get('company') ?? 'all'
   const severity = q.get('severity') ?? 'all'
   const platform = q.get('platform') ?? 'all'
-  const status = (q.get('status') ?? 'open') as keyof typeof STATUSES
+  const rawStatus = q.get('status') === 'dismissed' ? 'archive' : q.get('status') // old links
+  const status = (rawStatus && rawStatus in STATUSES ? rawStatus : 'open') as keyof typeof STATUSES
   const respondId = q.get('respond')
 
   const set = (k: string, v: string | null) =>
     setQ(prev => {
       const n = new URLSearchParams(prev)
-      if (v == null || v === 'all' || (k === 'status' && v === 'open')) n.delete(k)
+      // A filter's default is left out of the URL: 'all' for most, but 'open' for status (status=all is a real choice)
+      if (v == null || (k === 'status' ? v === 'open' : v === 'all')) n.delete(k)
       else n.set(k, v)
       return n
     }, { replace: k === 'respond' })
@@ -43,12 +47,13 @@ export default function LiveFeed() {
     (company === 'all' || p.companyId === company) &&
     (severity === 'all' || p.severity === severity) &&
     (platform === 'all' || p.platform === platform) &&
-    (status === 'all' || (status === 'open' ? p.status === 'new' : status === 'archive' ? p.status !== 'new' : p.status === status)),
+    (status === 'all' || (status === 'open' ? p.status === 'new' : status === 'archive' ? p.status === 'dismissed' : p.status === status)),
   )
   const filtered = q.has('company') || q.has('severity') || q.has('platform') || q.has('status')
 
   return (
     <div className="motion-page space-y-6">
+      <PageActions><AddByLink defaultCompany={company} /></PageActions>
       {urgent.length > 0 && (
         <section aria-labelledby="urgent-h">
           <div className="mb-3 flex items-center gap-2">
