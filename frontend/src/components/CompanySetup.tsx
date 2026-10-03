@@ -1,5 +1,5 @@
 import { FileText, Trash, UploadSimple } from '@phosphor-icons/react'
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { COUNTRIES, SECTORS, uid, type Classification, type Company, type Doc } from '../lib/mock'
 import { Button, cx, Field, inputCls } from '../lib/ui'
 
@@ -7,7 +7,7 @@ const split = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
 
 export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt'>
 
-export function CompanyForm({ onSubmit, submitLabel }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string }) {
+export function CompanyForm({ onSubmit, submitLabel, aside }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string; aside?: ReactNode }) {
   const [sector, setSector] = useState('Banking')
   const [topics, setTopics] = useState<string[]>(SECTORS.Banking.slice(0, 3))
 
@@ -79,8 +79,9 @@ export function CompanyForm({ onSubmit, submitLabel }: { onSubmit: (c: CompanyDr
           })}
         </div>
       </fieldset>
-      <div className="flex justify-end pt-2">
-        <Button variant="primary" type="submit">{submitLabel}</Button>
+      <div className="flex items-center gap-3 pt-2">
+        {aside}
+        <Button variant="primary" type="submit" className="ml-auto">{submitLabel}</Button>
       </div>
     </form>
   )
@@ -151,7 +152,8 @@ export function DocsUpload({ docs, onChange }: { docs: Doc[]; onChange: (d: Doc[
 }
 
 // Two steps: profile → optional documents. Shared by onboarding and "Track another company".
-export function CompanyWizard({ onDone }: { onDone: (c: Company) => void }) {
+// `aside` renders next to Continue on the first step (e.g. sign out during onboarding).
+export function CompanyWizard({ onDone, aside }: { onDone: (c: Company) => void; aside?: ReactNode }) {
   const [draft, setDraft] = useState<CompanyDraft | null>(null)
   const [docs, setDocs] = useState<Doc[]>([])
 
@@ -174,7 +176,7 @@ export function CompanyWizard({ onDone }: { onDone: (c: Company) => void }) {
         })}
       </ol>
       {!draft ? (
-        <CompanyForm submitLabel="Continue" onSubmit={setDraft} />
+        <CompanyForm submitLabel="Continue" onSubmit={setDraft} aside={aside} />
       ) : (
         <div className="space-y-5">
           <p className="text-[15px] leading-6 text-fg-2">

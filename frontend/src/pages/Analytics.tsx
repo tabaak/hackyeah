@@ -6,8 +6,8 @@ import { compact, PlatformIcon, VerdictBadge } from '../lib/ui'
 
 // Severity is a status scale (validated with dataviz/validate_palette.js); low stays neutral on purpose.
 const SEV = {
-  light: { low: '#6b7fa8', medium: '#d97706', high: '#b91c1c', grid: '#e2e8f0', axis: '#64748b', surface: '#ffffff' },
-  dark: { low: '#7083ad', medium: '#e0a106', high: '#ef4444', grid: '#233046', axis: '#94a3b8', surface: '#111827' },
+  light: { low: '#6b7fa8', medium: '#d97706', high: '#b91c1c', grid: 'var(--border)', axis: 'var(--text-muted)', surface: 'var(--surface)' },
+  dark: { low: '#7083ad', medium: '#e0a106', high: '#ef4444', grid: 'var(--border)', axis: 'var(--text-muted)', surface: 'var(--surface)' },
 }
 
 function Panel({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
@@ -22,7 +22,7 @@ function Panel({ title, sub, children }: { title: string; sub?: string; children
 
 export default function Analytics() {
   const { posts, companies, theme } = useStore()
-  const c = SEV[theme]
+  const c = SEV[theme === 'light' ? 'light' : 'dark']
   const series = hourlySeries(companies)
   const total = series.reduce((s, h) => s + h.low + h.medium + h.high, 0)
   const openHigh = posts.filter(p => p.severity === 'high' && p.status === 'new').length
@@ -69,7 +69,7 @@ export default function Analytics() {
                 cursor={{ fill: c.grid, opacity: 0.5 }}
                 contentStyle={{ background: c.surface, border: `1px solid ${c.grid}`, borderRadius: 8, fontSize: 13 }}
                 labelStyle={{ color: c.axis }}
-                itemStyle={{ color: theme === 'dark' ? '#f1f5f9' : '#0f172a' }}
+                itemStyle={{ color: 'var(--text)' }}
               />
               <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 13 }} formatter={v => <span style={{ color: c.axis }}>{v}</span>} />
               <Bar dataKey="low" name="Low" stackId="s" fill={c.low} stroke={c.surface} strokeWidth={1} />

@@ -27,11 +27,11 @@ export function Button({ variant = 'secondary', className, ...p }: ButtonHTMLAtt
 }
 
 export const inputCls =
-  'h-9 rounded-control border border-control bg-surface px-3 text-sm text-fg placeholder:text-fg-3 focus:border-accent focus:outline-none'
+  'h-9 rounded-control border border-control bg-surface px-3 text-sm text-fg placeholder:text-fg-3 focus:border-accent focus:outline-none focus:ring-3 focus:ring-accent/20'
 
 export function Field({ label, hint, children, optional }: { label: string; hint?: string; children: ReactNode; optional?: boolean }) {
   return (
-    <label className="block space-y-1.5">
+    <label className="block space-y-2">
       <span className="text-sm font-medium text-fg">
         {label} {optional && <span className="font-normal text-fg-3">· optional</span>}
       </span>

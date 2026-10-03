@@ -1,9 +1,9 @@
-import { Bell, Buildings, ChartLine, Moon, Pulse, ShieldCheck, SignOut, Sun } from '@phosphor-icons/react'
+import { Bell, Buildings, ChartLine, Check, Palette, Pulse, SignOut } from '@phosphor-icons/react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { PLATFORM_LABEL } from '../lib/mock'
-import { useStore } from '../lib/store'
+import { THEMES, useStore, type Theme } from '../lib/store'
 import { cx, PlatformIcon, timeAgo } from '../lib/ui'
-import { PRODUCT_NAME } from './Login'
+import { LogoMark, PRODUCT_NAME } from './Login'
 
 const TABS = [
   { to: '/app/analytics', label: 'Analytics', icon: ChartLine },
@@ -62,16 +62,42 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
   )
 }
 
-function ThemeButton() {
-  const { theme, toggleTheme } = useStore()
+const THEME_META: Record<Theme, { label: string; swatch: [string, string] }> = {
+  graphite: { label: 'Graphite', swatch: ['#202020', '#2dd4bf'] },
+  navy: { label: 'Navy', swatch: ['#111827', '#2dd4bf'] },
+  laurel: { label: 'Laurel', swatch: ['#11241e', '#3cc9a6'] },
+  light: { label: 'Light', swatch: ['#ffffff', '#0f766e'] },
+}
+
+function ThemeMenu({ id, placement }: { id: string; placement: string }) {
+  const { theme, setTheme } = useStore()
   return (
-    <button
-      onClick={toggleTheme}
-      aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-      className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-active hover:text-sidebar-text"
-    >
-      {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-    </button>
+    <>
+      <button
+        popoverTarget={id}
+        aria-label="Change theme"
+        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-active hover:text-sidebar-text"
+      >
+        <Palette size={20} />
+      </button>
+      <div id={id} popover="auto" className={cx('m-0 w-44 rounded-dialog border border-line bg-surface p-1 text-fg shadow-2xl', placement)}>
+        {THEMES.map(t => (
+          <button
+            key={t}
+            onClick={() => { setTheme(t); document.getElementById(id)?.hidePopover() }}
+            aria-pressed={theme === t}
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-sm transition-colors duration-150 hover:bg-subtle"
+          >
+            <span
+              className="h-4 w-4 shrink-0 rounded-full ring-1 ring-line"
+              style={{ background: `linear-gradient(135deg, ${THEME_META[t].swatch[0]} 50%, ${THEME_META[t].swatch[1]} 50%)` }}
+            />
+            {THEME_META[t].label}
+            {theme === t && <Check size={14} className="ml-auto text-accent" />}
+          </button>
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -93,7 +119,7 @@ export default function AppShell() {
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 hidden w-[216px] flex-col bg-sidebar p-3 md:flex">
         <div className="mb-6 flex items-center gap-2 px-2 pt-2 text-sidebar-text">
-          <ShieldCheck size={22} weight="duotone" className="text-sidebar-accent" />
+          <LogoMark />
           <span className="font-semibold">{PRODUCT_NAME}</span>
         </div>
         <nav className="space-y-1" aria-label="Main">
@@ -106,7 +132,7 @@ export default function AppShell() {
         <div className="mt-auto space-y-2 border-t border-sidebar-active pt-3">
           <div className="flex items-center gap-1">
             <Notifications id="notif-desktop" placement="fixed bottom-4 left-[224px] top-auto" />
-            <ThemeButton />
+            <ThemeMenu id="theme-desktop" placement="fixed bottom-4 left-[224px] top-auto" />
             <button
               onClick={() => { signOut(); nav('/login') }}
               aria-label="Sign out"
@@ -128,11 +154,11 @@ export default function AppShell() {
       {/* Mobile header */}
       <header className="sticky top-0 z-20 bg-sidebar px-4 md:hidden">
         <div className="flex h-14 items-center gap-2">
-          <ShieldCheck size={22} weight="duotone" className="text-sidebar-accent" />
+          <LogoMark />
           <span className="font-semibold text-sidebar-text">{PRODUCT_NAME}</span>
           <div className="ml-auto flex items-center gap-1">
             <Notifications id="notif-mobile" placement="fixed top-14 right-4 left-auto" />
-            <ThemeButton />
+            <ThemeMenu id="theme-mobile" placement="fixed top-14 right-4 left-auto" />
             <button onClick={() => { signOut(); nav('/login') }} aria-label="Sign out" className="flex h-11 w-11 cursor-pointer items-center justify-center text-sidebar-muted">
               <SignOut size={20} />
             </button>
@@ -153,7 +179,6 @@ export default function AppShell() {
           <span className="h-2 w-2 rounded-full bg-[#22c55e]" aria-hidden />
           Sources active
         </span>
-        <span className="hidden rounded-full border border-line px-2 py-0.5 text-xs text-fg-3 sm:inline">Demo · fictional organizations</span>
       </div>
       <main className="p-4 md:p-6">
         <Outlet />

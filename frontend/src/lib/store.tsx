@@ -28,9 +28,12 @@ interface Store {
   updateCompany: (c: Company) => void
   posts: Post[]
   setPostStatus: (id: string, s: PostStatus) => void
-  theme: 'dark' | 'light'
-  toggleTheme: () => void
+  theme: Theme
+  setTheme: (t: Theme) => void
 }
+
+export const THEMES = ['graphite', 'navy', 'laurel', 'light'] as const
+export type Theme = (typeof THEMES)[number]
 
 const Ctx = createContext<Store | null>(null)
 
@@ -38,13 +41,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => load('pg.user', null))
   const [companies, setCompanies] = useState<Company[]>(() => load('pg.companies', []))
   const [posts, setPosts] = useState<Post[]>(() => companies.flatMap(seedPosts))
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => load('pg.theme', 'dark'))
+  // Older builds stored 'dark'; anything unknown falls back to graphite
+  const [theme, setTheme] = useState<Theme>(() => {
+    const t = load<string>('pg.theme', 'graphite')
+    return (THEMES as readonly string[]).includes(t) ? (t as Theme) : 'graphite'
+  })
 
   useEffect(() => save('pg.user', user), [user])
   useEffect(() => save('pg.companies', companies), [companies])
   useEffect(() => {
     save('pg.theme', theme)
-    document.documentElement.classList.toggle('dark', theme === 'dark')
+    document.documentElement.classList.toggle('dark', theme !== 'light')
+    document.documentElement.dataset.theme = theme
   }, [theme])
 
   // Simulated live feed: a new mention every 15 s
@@ -79,7 +87,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     posts,
     setPostStatus: (id, s) => setPosts(p => p.map(x => (x.id === id ? { ...x, status: s } : x))),
     theme,
-    toggleTheme: () => setTheme(t => (t === 'dark' ? 'light' : 'dark')),
+    setTheme,
   }
   return <Ctx value={value}>{children}</Ctx>
 }
