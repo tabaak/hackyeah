@@ -88,7 +88,7 @@ export default function Analytics() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="motion-page space-y-6">
       <PageActions>
         <div role="group" aria-label="Time range" className="flex w-fit rounded-control border border-line bg-surface p-0.5">
           {(Object.keys(RANGES) as Range[]).map(r => (
@@ -96,7 +96,7 @@ export default function Analytics() {
               key={r}
               aria-pressed={range === r}
               onClick={() => setQ(prev => { const n = new URLSearchParams(prev); if (r === '24h') n.delete('range'); else n.set('range', r); return n })}
-              className={cx('h-8 cursor-pointer rounded-[4px] px-3 text-sm transition-colors duration-150', range === r ? 'bg-selected font-medium text-fg' : 'text-fg-2 hover:text-fg')}
+              className={cx('h-8 cursor-pointer rounded-[4px] px-3 text-sm motion-control', range === r ? 'bg-selected font-medium text-fg' : 'text-fg-2 hover:text-fg')}
             >{RANGES[r].label}</button>
           ))}
         </div>
@@ -108,7 +108,7 @@ export default function Analytics() {
           <div key={m.label} className="p-4">
             <dt className="text-xs text-fg-3">{m.label}</dt>
             <dd className="mt-1 text-2xl font-semibold">
-              {m.to ? <Link to={m.to} className="hover:text-accent">{m.value}</Link> : m.value}
+              {m.to ? <Link to={m.to} className="motion-control hover:text-accent">{m.value}</Link> : m.value}
             </dd>
           </div>
         ))}
@@ -123,9 +123,9 @@ export default function Analytics() {
               <YAxis tick={tick(c)} tickLine={false} axisLine={false} />
               <Tooltip {...tip(c)} />
               <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 13 }} formatter={v => <span style={{ color: c.axis }}>{v}</span>} />
-              <Bar dataKey="low" name="Low" stackId="s" fill={c.low} stroke={c.surface} strokeWidth={1} />
-              <Bar dataKey="medium" name="Medium" stackId="s" fill={c.medium} stroke={c.surface} strokeWidth={1} />
-              <Bar dataKey="high" name="High" stackId="s" fill={c.high} stroke={c.surface} strokeWidth={1} radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="low" name="Low" stackId="s" fill={c.low} stroke={c.surface} strokeWidth={1} />
+              <Bar isAnimationActive={false} dataKey="medium" name="Medium" stackId="s" fill={c.medium} stroke={c.surface} strokeWidth={1} />
+              <Bar isAnimationActive={false} dataKey="high" name="High" stackId="s" fill={c.high} stroke={c.surface} strokeWidth={1} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -136,7 +136,7 @@ export default function Analytics() {
           <div className="relative h-56" role="img" aria-label={`Donut chart: ${mix.map(m => `${SEV_LABEL[m.k]} ${m.n}`).join(', ')}`}>
             <ResponsiveContainer>
               <PieChart>
-                <Pie data={mix} dataKey="n" nameKey="k" innerRadius="62%" outerRadius="88%" paddingAngle={2} stroke={c.surface} strokeWidth={2} cornerRadius={4}>
+                <Pie isAnimationActive={false} data={mix} dataKey="n" nameKey="k" innerRadius="62%" outerRadius="88%" paddingAngle={2} stroke={c.surface} strokeWidth={2} cornerRadius={4}>
                   {mix.map(m => <Cell key={m.k} fill={c[m.k]} />)}
                 </Pie>
                 <Tooltip {...tip(c)} formatter={(v, k) => [v, SEV_LABEL[k as Severity]]} />
@@ -172,7 +172,7 @@ export default function Analytics() {
                   <XAxis dataKey="label" tick={tick(c)} tickLine={false} axisLine={{ stroke: c.grid }} interval={tickEvery} />
                   <YAxis tick={tick(c)} tickLine={false} axisLine={false} unit="%" />
                   <Tooltip {...tip(c)} cursor={{ stroke: c.axis, strokeDasharray: '3 3' }} formatter={v => [`${v}%`, 'High priority']} />
-                  <Area type="monotone" dataKey="share" stroke={c.high} strokeWidth={2} fill="url(#hs)" activeDot={{ r: 4, stroke: c.surface, strokeWidth: 2 }} />
+                  <Area isAnimationActive={false} type="monotone" dataKey="share" stroke={c.high} strokeWidth={2} fill="url(#hs)" activeDot={{ r: 4, stroke: c.surface, strokeWidth: 2 }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

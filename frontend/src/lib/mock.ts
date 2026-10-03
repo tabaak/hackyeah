@@ -12,6 +12,7 @@ export interface Doc {
   size: number
   classification: Classification
   status: 'processing' | 'ready'
+  summary?: string | null // AI summary; null while processing, and for restricted unless compliance
 }
 
 export interface Company {
@@ -27,7 +28,9 @@ export interface Company {
   createdAt: number
 }
 
-export const DEMO_COMPANY_PROFILE: Omit<Company, 'id' | 'documents' | 'createdAt'> = {
+export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt'>
+
+export const DEMO_COMPANY_PROFILE: CompanyDraft = {
   name: 'Goldman Sachs',
   website: 'https://www.goldmansachs.com',
   aliases: ['Goldman', 'GS'],

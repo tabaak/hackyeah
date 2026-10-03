@@ -1,4 +1,3 @@
-import { SignOut } from '@phosphor-icons/react'
 import { useNavigate } from 'react-router-dom'
 import { CompanyWizard } from '../components/CompanySetup'
 import { useStore } from '../lib/store'
@@ -11,7 +10,7 @@ export default function Onboarding() {
   const nav = useNavigate()
   return (
     <main className="min-h-dvh bg-canvas px-4 py-10">
-      <div className="mx-auto max-w-2xl">
+      <div className="motion-page mx-auto max-w-2xl">
         <div className="mb-8 flex items-center gap-2 text-fg-2">
           <LogoMark />
           <span className="font-medium">{PRODUCT_NAME}</span>
@@ -21,10 +20,10 @@ export default function Onboarding() {
         <section className="rounded-panel border border-line bg-surface p-6">
           <CompanyWizard
             initialCompany={DEMO_COMPANY_PROFILE}
-            onDone={c => { addCompany(c); nav('/app/feed', { replace: true }) }}
+            onDone={async (c, docs) => { await addCompany(c, docs); nav('/app/feed', { replace: true }) }}
             aside={
               <Button type="button" variant="ghost" className="-ml-3" onClick={() => { signOut(); nav('/login', { replace: true }) }}>
-                <SignOut size={16} /> Sign out
+                Sign out
               </Button>
             }
           />

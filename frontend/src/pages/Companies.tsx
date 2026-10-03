@@ -1,8 +1,8 @@
 import { FileText, Globe, Plus, Sparkle, UploadSimple } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CompanyWizard, DocsUpload } from '../components/CompanySetup'
-import type { Classification, Company, Doc } from '../lib/mock'
+import { CompanyWizard, DocsUpload, type PendingDoc } from '../components/CompanySetup'
+import type { Classification, Company } from '../lib/mock'
 import { useStore } from '../lib/store'
 import { Badge, Button, ClassBadge, cx, Dialog, PageActions } from '../lib/ui'
 
@@ -22,9 +22,25 @@ function summarize(c: Company) {
 }
 
 function CompanyCard({ c }: { c: Company }) {
-  const { posts, updateCompany } = useStore()
+  const { posts, uploadDocuments } = useStore()
   const [uploading, setUploading] = useState(false)
-  const [docs, setDocs] = useState<Doc[]>([])
+  const [docs, setDocs] = useState<PendingDoc[]>([])
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const close = () => { setUploading(false); setDocs([]); setError('') }
+
+  async function upload() {
+    setBusy(true)
+    setError('')
+    try {
+      await uploadDocuments(c.id, docs)
+      close()
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
   const mine = posts.filter(p => p.companyId === c.id)
   const openHigh = mine.filter(p => p.severity === 'high' && p.status === 'new').length
 
@@ -60,7 +76,7 @@ function CompanyCard({ c }: { c: Company }) {
           <div key={m.label} className="px-4 py-3">
             <dt className="text-xs text-fg-3">{m.label}</dt>
             <dd className={cx('mt-1 text-2xl font-semibold', m.danger && 'text-danger')}>
-              {m.to ? <Link to={m.to} className="hover:text-accent">{m.value}</Link> : m.value}
+              {m.to ? <Link to={m.to} className="motion-control hover:text-accent">{m.value}</Link> : m.value}
             </dd>
           </div>
         ))}
@@ -94,10 +110,18 @@ function CompanyCard({ c }: { c: Company }) {
           {c.documents.length > 0 && (
             <ul className="mt-2 divide-y divide-line">
               {c.documents.map(d => (
-                <li key={d.id} className="flex items-center gap-2 py-2.5 text-sm">
-                  <FileText size={16} className="shrink-0 text-fg-3" />
-                  <span className="min-w-0 flex-1 truncate">{d.name}</span>
-                  <ClassBadge c={d.classification} />
+                <li key={d.id} className="py-2.5 text-sm">
+                  <div className="flex items-center gap-2">
+                    <FileText size={16} className="shrink-0 text-fg-3" />
+                    <span className="min-w-0 flex-1 truncate">{d.name}</span>
+                    {d.status === 'processing' && <Badge>Summarizing…</Badge>}
+                    <ClassBadge c={d.classification} />
+                  </div>
+                  {d.summary ? (
+                    <p className="mt-1 ml-6 text-xs leading-5 text-fg-2">{d.summary}</p>
+                  ) : d.status === 'ready' && d.classification === 'restricted' ? (
+                    <p className="mt-1 ml-6 text-xs text-fg-3">Summary visible to compliance only</p>
+                  ) : null}
                 </li>
               ))}
             </ul>
@@ -105,19 +129,14 @@ function CompanyCard({ c }: { c: Company }) {
         </section>
       </div>
 
-      <Dialog open={uploading} onClose={() => { setUploading(false); setDocs([]) }} title={`Add documents to ${c.name}`}>
+      <Dialog open={uploading} onClose={close} title={`Add documents to ${c.name}`}>
         <DocsUpload docs={docs} onChange={setDocs} />
+        {error && <p role="alert" className="mt-3 text-sm text-danger">{error}</p>}
         <div className="mt-5 flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => { setUploading(false); setDocs([]) }}>Cancel</Button>
-          <Button
-            variant="primary"
-            disabled={!docs.length}
-            onClick={() => {
-              updateCompany({ ...c, documents: [...c.documents, ...docs.map(d => ({ ...d, status: 'ready' as const }))] })
-              setUploading(false)
-              setDocs([])
-            }}
-          >Upload {docs.length || ''}</Button>
+          <Button variant="ghost" disabled={busy} onClick={close}>Cancel</Button>
+          <Button variant="primary" disabled={!docs.length || busy} onClick={upload}>
+            {busy ? 'Uploading…' : `Upload ${docs.length || ''}`}
+          </Button>
         </div>
       </Dialog>
     </article>
@@ -128,13 +147,13 @@ export default function Companies() {
   const { companies, addCompany } = useStore()
   const [adding, setAdding] = useState(false)
   return (
-    <div className="space-y-4">
+    <div className="motion-page space-y-4">
       <PageActions>
         <Button variant="primary" onClick={() => setAdding(true)}><Plus size={16} />Track another company</Button>
       </PageActions>
       {companies.map(c => <CompanyCard key={c.id} c={c} />)}
       <Dialog wide open={adding} onClose={() => setAdding(false)} title="Track another company">
-        <CompanyWizard onDone={c => { addCompany(c); setAdding(false) }} />
+        <CompanyWizard onDone={async (c, docs) => { await addCompany(c, docs); setAdding(false) }} />
       </Dialog>
     </div>
   )

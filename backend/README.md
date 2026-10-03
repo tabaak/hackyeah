@@ -17,6 +17,7 @@ Open http://localhost:8000/docs for the interactive API. Every `/api/v1` route n
 
 - **Auth.** The browser signs in with Google through Supabase Auth. The API verifies the Supabase JWT (`app/deps.py`), accepts Google tokens only, and reads `user_role` and `organization_id` from claims added by the `custom_access_token_hook`.
 - **Database.** The API uses the service-role key (`app/db.py`), which bypasses RLS, so every query filters by the caller's `organization_id`.
+- **Companies.** `POST /companies` assigns the organization from the verified JWT. Each new Google account receives its own organization through the database signup trigger. `GET /companies` restores that account's companies on every sign-in; ownership supplied in the request is ignored. Demo mentions are seeded after the profile has been saved.
 - **Documents.** Uploads go to the private `documents` bucket. A background task extracts text (PDF/TXT), chunks it, optionally embeds it, and stores `document_chunks`. `restricted` chunks are never used as evidence.
 - **Mentions.** New companies get 10 demo mentions (`DEMO_SEED`). Real news comes from Serper (`SERPER_API_KEY`), analysed for prompt injection, severity and verdict. High-severity mentions notify everyone in the organization.
 - **Counter-posts.** `GET /mentions/{id}/response` retrieves evidence, drafts a reply and runs the disclosure check. Drafts using `confidential` documents need compliance approval; editing a draft invalidates earlier approvals (database trigger).

@@ -7,6 +7,7 @@ class Doc(CamelModel):
     size: int
     classification: Classification
     status: DocumentStatus
+    summary: str | None = None  # AI summary; null while processing, and for restricted unless compliance
 
 
 class DocumentUpdate(CamelModel):

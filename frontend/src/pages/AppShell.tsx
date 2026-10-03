@@ -23,7 +23,7 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
       <button
         popoverTarget={id}
         aria-label={`Notifications, ${incidents.length} open incidents`}
-        className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-active hover:text-sidebar-text"
+        className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
       >
         <Bell size={20} />
         {incidents.length > 0 && (
@@ -44,7 +44,7 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
             {incidents.slice(0, 6).map(p => (
               <li key={p.id}>
                 <button
-                  className="block w-full cursor-pointer px-4 py-3 text-left transition-colors duration-150 hover:bg-subtle"
+                  className="block w-full cursor-pointer px-4 py-3 text-left motion-control hover:bg-subtle"
                   onClick={() => { document.getElementById(id)?.hidePopover(); nav(`/app/feed?respond=${p.id}`) }}
                 >
                   <div className="mb-1 flex items-center gap-2 text-xs text-fg-3">
@@ -77,7 +77,7 @@ function ThemeMenu({ id, placement }: { id: string; placement: string }) {
       <button
         popoverTarget={id}
         aria-label="Change theme"
-        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-active hover:text-sidebar-text"
+        className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
       >
         <Palette size={20} />
       </button>
@@ -87,7 +87,7 @@ function ThemeMenu({ id, placement }: { id: string; placement: string }) {
             key={t}
             onClick={() => { setTheme(t); document.getElementById(id)?.hidePopover() }}
             aria-pressed={theme === t}
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-sm transition-colors duration-150 hover:bg-subtle"
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-sm motion-control hover:bg-subtle"
           >
             <span
               aria-hidden="true"
@@ -113,7 +113,7 @@ export default function AppShell() {
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
     cx(
-      'relative flex h-10 items-center gap-3 rounded-control px-3 text-sm transition-colors duration-150',
+      'relative flex h-10 items-center gap-3 rounded-control px-3 text-sm motion-control',
       isActive ? 'bg-sidebar-active text-sidebar-text before:absolute before:inset-y-2 before:left-0 before:w-0.5 before:rounded-full before:bg-sidebar-accent' : 'text-sidebar-muted hover:bg-sidebar-active hover:text-sidebar-text',
     )
 
@@ -139,7 +139,7 @@ export default function AppShell() {
             <button
               onClick={() => { signOut(); nav('/login') }}
               aria-label="Sign out"
-              className="ml-auto flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-active hover:text-sidebar-text"
+              className="ml-auto flex h-9 w-9 cursor-pointer items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
             >
               <SignOut size={20} />
             </button>
@@ -162,7 +162,7 @@ export default function AppShell() {
           <div className="ml-auto flex items-center gap-1">
             <Notifications id="notif-mobile" placement="fixed top-14 right-4 left-auto" />
             <ThemeMenu id="theme-mobile" placement="fixed top-14 right-4 left-auto" />
-            <button onClick={() => { signOut(); nav('/login') }} aria-label="Sign out" className="flex h-11 w-11 cursor-pointer items-center justify-center text-sidebar-muted">
+            <button onClick={() => { signOut(); nav('/login') }} aria-label="Sign out" className="motion-control flex h-11 w-11 cursor-pointer items-center justify-center text-sidebar-muted hover:text-sidebar-text">
               <SignOut size={20} />
             </button>
           </div>
@@ -178,7 +178,7 @@ export default function AppShell() {
 
       <main className="p-4 md:p-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <h1 className="font-display text-2xl font-medium leading-none tracking-tight md:translate-y-px md:text-[28px]">{title}</h1>
+          <h1 key={pathname} className="motion-page font-display text-2xl font-medium leading-none tracking-tight md:translate-y-px md:text-[28px]">{title}</h1>
           <div ref={setActions} className="flex items-center gap-2 empty:hidden" />
         </div>
         <Outlet context={actions} />
