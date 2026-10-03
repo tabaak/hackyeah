@@ -1,9 +1,10 @@
-import { Archive, ArrowSquareOut, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
+import { Archive, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
 import { useSearchParams } from 'react-router-dom'
 import { CounterPost } from '../components/CounterPost'
-import { PLATFORM_LABEL, sourceUrl, type Platform, type Post } from '../lib/mock'
+import { PostRow } from '../components/PostRow'
+import { PLATFORM_LABEL, type Platform, type Post } from '../lib/mock'
 import { useStore } from '../lib/store'
-import { Badge, Button, compact, cx, Dialog, PlatformIcon, SeverityBadge, timeAgo, VerdictBadge } from '../lib/ui'
+import { Badge, Button, compact, cx, Dialog, PlatformIcon, timeAgo } from '../lib/ui'
 
 // Matches the severity segmented control
 const filterCls = 'h-[38px] cursor-pointer rounded-control border border-line bg-surface px-3 text-sm text-fg-2 motion-control hover:text-fg focus:outline-none focus-visible:border-accent'
@@ -122,42 +123,14 @@ export default function LiveFeed() {
         ) : (
           <ul className="divide-y divide-line">
             {list.map(p => (
-              <li key={p.id} className={cx('motion-control flex gap-3 p-4', p.status !== 'new' && 'opacity-70')}>
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-2"><PlatformIcon p={p.platform} size={16} /></span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="truncate font-semibold">{nameOf(p.companyId)}</span>
-                    <span className="truncate text-xs text-fg-3">{p.handle}</span>
-                    <span aria-hidden className="text-xs text-fg-3">·</span>
-                    <time className="shrink-0 text-xs text-fg-3" dateTime={new Date(p.at).toISOString()} title={new Date(p.at).toLocaleString()}>{timeAgo(p.at)}</time>
-                  </div>
-                  <p className="mt-1 text-[15px] leading-6">{p.text}</p>
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-                    <div className="flex flex-wrap gap-1.5">
-                      <SeverityBadge s={p.severity} />
-                      <VerdictBadge v={p.verdict} />
-                      {p.status === 'responded' && <Badge tone="success">Responded</Badge>}
-                      {p.status === 'dismissed' && <Badge><Archive size={14} />Dismissed</Badge>}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-fg-3">
-                      <span className="flex items-center gap-1"><Lightning size={14} /><span className="font-mono text-fg-2">{compact(p.reach)}</span> reach</span>
-                      {p.cluster && <span className="flex items-center gap-1"><UsersThree size={14} /><span className="font-mono text-fg-2">{p.cluster.size}</span> similar</span>}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex shrink-0 items-center gap-1 self-center">
-                  {actionable(p) && <Button variant="ghost" className="w-9 px-0" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>}
-                  <a
-                    href={sourceUrl(p)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Open source"
-                    title="Open source"
-                    className="inline-flex size-9 items-center justify-center rounded-control text-fg-2 motion-control hover:bg-subtle hover:text-fg"
-                  ><ArrowSquareOut size={16} /></a>
-                  {actionable(p) && <Button className="ml-1" onClick={() => set('respond', p.id)}>Counter-post</Button>}
-                </div>
-              </li>
+              <PostRow
+                key={p.id}
+                post={p}
+                companyName={nameOf(p.companyId)}
+                actionable={actionable(p)}
+                onDismiss={() => setPostStatus(p.id, 'dismissed')}
+                onRespond={() => set('respond', p.id)}
+              />
             ))}
           </ul>
         )}

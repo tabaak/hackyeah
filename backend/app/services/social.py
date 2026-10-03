@@ -4,7 +4,6 @@ Runs are slow (30-300 s, plus one LLM call per new post) and cost Apify credits,
 one at a time per organization and platform, and only when someone calls POST /feed/sources/{platform}/sync.
 """
 import logging
-import re
 import threading
 
 from app.config import settings
@@ -12,15 +11,16 @@ from app.db import get_db
 from app.schemas.common import Platform
 from app.schemas.companies import CompanyDraft
 from app.schemas.feed import Mention
-from app.services import news
+from app.services import news, relevance
 from app.services.ingest import analyse_and_insert
 from app.services.timeutil import from_ms
 from app.sources import apify
 
 log = logging.getLogger(__name__)
 
-PLATFORMS = (Platform.x, Platform.facebook, Platform.threads)
-MIN_ALIAS_CHARS = 3  # shorter aliases ("GS") match too many unrelated posts to prove relevance
+PLATFORMS = (Platform.x, Platform.facebook, Platform.threads)  # Apify
+BACKGROUND = (*PLATFORMS, Platform.news)  # everything that runs as a background job
+mentions_company = relevance.mentions_company
 
 _running: set[tuple[str, str]] = set()
 _lock = threading.Lock()
@@ -41,18 +41,20 @@ def finish(org_id: str, platform: Platform) -> None:
         _running.discard((org_id, platform.value))
 
 
-def mentions_company(text: str, company: dict) -> bool:
-    """Search engines return namesakes and loosely related posts: keep a post only if it names the company."""
-    names = [company["name"], *(a for a in company.get("aliases") or [] if len(a.strip()) >= MIN_ALIAS_CHARS)]
-    return any(re.search(rf"(?<!\w){re.escape(n.strip())}(?!\w)", text, re.I) for n in names if n.strip())
-
-
 def to_item(m: Mention) -> dict:
     """Mention (apify adapter) -> row shape expected by `analyse_and_insert`."""
     return {
         "platform": m.platform.value, "external_id": m.id, "url": m.url, "author": m.author, "handle": m.handle,
         "text": m.text, "published_at": from_ms(m.at), "reach": m.reach,
+        "avatar_url": m.avatar_url, "media_urls": m.images,
     }
+
+
+LIMITS = {  # read at call time so tests and env changes apply
+    Platform.x: lambda: settings.apify_limit_x,
+    Platform.facebook: lambda: settings.apify_limit_facebook,
+    Platform.threads: lambda: settings.apify_limit_threads,
+}
 
 
 def fetch(company: dict, platform: Platform) -> list[dict]:
@@ -62,7 +64,7 @@ def fetch(company: dict, platform: Platform) -> list[dict]:
     )
     posts = apify.search_posts(
         draft, company["id"], news.queries_for(company), platforms=(platform,),
-        limit=settings.apify_limit, max_age_days=settings.apify_max_age_days,
+        limit=LIMITS[platform](), max_age_days=settings.apify_max_age_days,
     )
     relevant = [m for m in posts if mentions_company(m.text, company)]
     log.info("Apify %s for %s: %d posts, %d name the company", platform.value, company["name"], len(posts), len(relevant))
@@ -70,6 +72,8 @@ def fetch(company: dict, platform: Platform) -> list[dict]:
 
 
 def sync_company(company: dict, platform: Platform) -> int:
+    if platform == Platform.news:
+        return news.sync_company(company)
     if not settings.apify_token:
         return 0
     try:

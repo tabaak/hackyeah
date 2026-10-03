@@ -2,6 +2,7 @@
 import re
 from dataclasses import dataclass
 
+from app.config import settings
 from app.services import llm
 
 INJECTION_PATTERNS = [
@@ -89,6 +90,8 @@ verdict: contradicted/supported only when an excerpt directly addresses the clai
 def assess(company: dict, text: str, reach: int, evidence: list[dict]) -> Assessment:
     """LLM assessment with heuristic fallback. `evidence` rows have name, classification, content."""
     base = heuristic(text, company.get("topics") or [], reach, bool(evidence))
+    if not settings.llm_analyse_all and not base.injection and (base.severity, base.verdict) == ("low", "opinion"):
+        return base  # no risk signal: the keyword score is enough and saves an LLM call (~6 s) per item
     excerpts = "\n".join(f"[{e['name']} · {e['classification']}] {e['content'][:600]}" for e in evidence[:5]) or "(none)"
     data = llm.chat_json(
         SYSTEM,

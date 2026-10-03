@@ -84,6 +84,36 @@ def _ms(value, now_ms: int) -> int:
     return now_ms
 
 
+MAX_IMAGES = 6
+
+
+def _http(value) -> str | None:
+    return value if isinstance(value, str) and value.startswith("http") else None
+
+
+def _avatar(item: dict) -> str | None:
+    url = _http(_first(item, "author.profilePicture", "author.profileImageUrl", "profile_pic_hd_url", "profile_pic_url",
+                       "user.profilePic", "pageName.profilePic", "author.avatar", "author.profilePic", "avatar"))
+    return url.replace("_normal.", "_400x400.") if url and "pbs.twimg.com/profile_images" in url else url  # sharper X avatar
+
+
+def _images(item: dict) -> list[str]:
+    """Pictures attached to a post, whatever the actor calls them; each URL once, at most MAX_IMAGES."""
+    urls: list[str | None] = []
+    for m in item.get("media") or []:
+        if isinstance(m, dict):  # first image-like field of each attachment ("url" is often a t.co link, not a picture)
+            urls.append(next((u for u in (_http(m.get(k)) for k in ("mediaUrl", "media_url", "photo_image", "image", "thumbnail")) if u), None))
+        else:
+            urls.append(_http(m))
+    urls += [_http(u) for u in item.get("media_urls") or []]
+    urls.append(_http(item.get("media_url")))
+    out: list[str] = []
+    for u in urls:
+        if u and u not in out:
+            out.append(u)
+    return out[:MAX_IMAGES]
+
+
 def to_mention(item: dict, platform: Platform, company_id: str, now_ms: int) -> Mention | None:
     if item.get("record_type") not in (None, "post"):  # Threads actor can also emit profile rows
         return None
@@ -116,6 +146,8 @@ def to_mention(item: dict, platform: Platform, company_id: str, now_ms: int) -> 
         injection=False,
         status=MentionStatus.new,
         url=str(url) if url else None,
+        avatar_url=_avatar(item),
+        images=_images(item),
     )
 
 

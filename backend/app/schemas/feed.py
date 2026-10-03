@@ -22,6 +22,8 @@ class Mention(CamelModel):
     injection: bool = False  # hidden prompt injection detected and blocked
     status: MentionStatus
     url: str | None = None  # link to the original post/article (news and Google results)
+    avatar_url: str | None = None  # author's picture (source's own link)
+    images: list[str] = []  # pictures attached to the post / article thumbnail
 
 
 class MentionStatusUpdate(CamelModel):

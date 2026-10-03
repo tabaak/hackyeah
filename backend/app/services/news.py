@@ -1,12 +1,15 @@
 """Google News via Serper (platform = news)."""
 import logging
 import re
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
 
 import httpx
 
 from app.config import settings
+from app.db import get_db
+from app.services import relevance, rss
 from app.services.ingest import analyse_and_insert
 from app.services.timeutil import iso, now
 
@@ -43,35 +46,79 @@ def query_for(company: dict) -> str:
     return queries_for(company)[0]
 
 
-def fetch(company: dict) -> list[dict]:
-    articles, seen = [], set()
+WINDOW_DAYS = {"h": 1, "d": 1, "w": 7, "m": 30}
+
+
+def _serper_items(company: dict) -> tuple[list[dict], set[str]]:
+    """Serper returns 10 articles per page whatever `num` says, so pages are requested one by one (1 credit each)."""
+    window = settings.news_window if settings.news_window in WINDOW_DAYS else "w"
+    items, titles, seen = [], set(), set()
     for q in queries_for(company):
-        body = {"q": q, "num": 20, "tbs": "qdr:d"}
-        if gl := COUNTRY_GL.get(company.get("country", "")):
-            body["gl"] = gl
-        r = httpx.post("https://google.serper.dev/news", headers={"X-API-KEY": settings.serper_api_key}, json=body, timeout=20)
-        r.raise_for_status()
-        for n in r.json().get("news", []):
-            if n.get("link") and n["link"] not in seen:
+        for page in range(1, max(1, settings.serper_pages) + 1):
+            body = {"q": q, "num": 10, "tbs": f"qdr:{window}", "page": page}
+            if gl := COUNTRY_GL.get(company.get("country", "")):
+                body["gl"] = gl
+            r = httpx.post("https://google.serper.dev/news", headers={"X-API-KEY": settings.serper_api_key}, json=body, timeout=20)
+            r.raise_for_status()
+            articles = r.json().get("news", [])
+            for n in articles:
+                if not n.get("link") or n["link"] in seen:
+                    continue
                 seen.add(n["link"])
-                articles.append(n)
-    items = []
-    for n in articles:
-        items.append({
-            "platform": "news",
-            "external_id": n["link"],
-            "url": n["link"],
-            "author": n.get("source") or "",
-            "handle": urlparse(n["link"]).netloc,
-            "text": " — ".join(x for x in (n.get("title"), n.get("snippet")) if x),
-            "published_at": parse_date(n.get("date")),
-            "reach": 0,  # Serper has no audience data
-        })
+                titles.add(relevance.title_key(n.get("title") or ""))
+                items.append({
+                    "platform": "news",
+                    "external_id": n["link"],
+                    "url": n["link"],
+                    "author": n.get("source") or "",
+                    "handle": urlparse(n["link"]).netloc,
+                    "text": " — ".join(x for x in (n.get("title"), n.get("snippet")) if x),
+                    "published_at": parse_date(n.get("date")),
+                    "reach": 0,  # Serper has no audience data
+                    "avatar_url": None,
+                    "media_urls": [n["imageUrl"]] if n.get("imageUrl") else [],
+                })
+            if len(articles) < 10:
+                break  # last page
+    return items, titles
+
+
+def _stored_titles(company_id: str) -> set[str]:
+    rows = (
+        get_db().table("mentions").select("text").eq("company_id", company_id).eq("platform", "news")
+        .order("published_at", desc=True).limit(2000).execute().data
+    )
+    return {relevance.title_key(r["text"].split(" — ")[0]) for r in rows}
+
+
+def _rss_items(company: dict, known_titles: set[str]) -> list[dict]:
+    """Free extra volume. The same article also arrives through Serper under another link, so skip known headlines."""
+    days = WINDOW_DAYS.get(settings.news_window, 7)
+    out, seen = [], set(known_titles)
+    for q in queries_for(company):
+        try:
+            rows = rss.fetch(q, company.get("country", ""), days)
+        except (httpx.HTTPError, ET.ParseError) as e:
+            log.warning("Google News RSS failed for %r: %s", q, e)
+            continue
+        for row in rows:
+            key = relevance.title_key(row["text"])
+            if key in seen or not relevance.mentions_company(row["text"], company):
+                continue
+            seen.add(key)
+            out.append({**row, "avatar_url": None, "media_urls": []})
+    return out
+
+
+def fetch(company: dict) -> list[dict]:
+    items, titles = _serper_items(company) if settings.serper_api_key else ([], set())
+    if settings.news_rss:
+        items += _rss_items(company, titles | _stored_titles(company["id"]))
     return items
 
 
 def sync_company(company: dict) -> int:
-    if not settings.serper_api_key:
+    if not settings.serper_api_key and not settings.news_rss:
         return 0
     try:
         return len(analyse_and_insert(company, fetch(company)))

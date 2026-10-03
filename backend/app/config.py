@@ -55,8 +55,18 @@ class Settings:
 
     serper_api_key: str = _env("SERPER_API_KEY")
     apify_token: str = _env("APIFY_TOKEN")
-    apify_limit: int = _int("APIFY_LIMIT", 20)  # posts per query and run: bounds Apify cost
+    # Posts per run, per platform: bounds Apify cost. X is almost free (~$0.00015/post), Facebook ~$0.006, Threads ~$0.01.
+    apify_limit_x: int = _int("APIFY_LIMIT_X", 200)
+    apify_limit_facebook: int = _int("APIFY_LIMIT_FACEBOOK", 30)
+    apify_limit_threads: int = _int("APIFY_LIMIT_THREADS", 10)
     apify_max_age_days: int = _int("APIFY_MAX_AGE_DAYS", 30)  # search results can be old; skip posts older than this
+
+    # News volume: Serper returns 10 articles per page (1 credit each); Google News RSS is free, up to 100 per request.
+    serper_pages: int = _int("SERPER_PAGES", 3)
+    news_window: str = _env("NEWS_WINDOW", "w")  # Serper time window: h | d | w | m
+    news_rss: bool = _env("NEWS_RSS", "true").lower() == "true"
+    # Analyse every item with the LLM (~6 s each). Default: only items with a risk signal; the rest keep the keyword score.
+    llm_analyse_all: bool = _env("LLM_ANALYSE_ALL", "false").lower() == "true"
 
     # Demo data: seed sample mentions for every new company, and optionally add one every N seconds.
     demo_seed: bool = _env("DEMO_SEED", "true").lower() == "true"
