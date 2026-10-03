@@ -1,4 +1,5 @@
 import { Bell, Broadcast, Buildings, ChartLine, Check, Palette, SignOut } from '@phosphor-icons/react'
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { PLATFORM_LABEL } from '../lib/mock'
 import { THEMES, useStore, type Theme } from '../lib/store'
@@ -107,6 +108,7 @@ export default function AppShell() {
   const nav = useNavigate()
   const { pathname } = useLocation()
   const title = TABS.find(t => pathname.startsWith(t.to))?.label
+  const [actions, setActions] = useState<HTMLElement | null>(null)
   const initials = user!.name.split(' ').map(w => w[0]).join('')
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
@@ -175,8 +177,11 @@ export default function AppShell() {
       </header>
 
       <main className="p-4 md:p-6">
-        <h1 className="mb-6 font-display text-2xl font-medium leading-none tracking-tight md:translate-y-px md:text-[28px]">{title}</h1>
-        <Outlet />
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-2xl font-medium leading-none tracking-tight md:translate-y-px md:text-[28px]">{title}</h1>
+          <div ref={setActions} className="flex items-center gap-2 empty:hidden" />
+        </div>
+        <Outlet context={actions} />
       </main>
     </div>
   )
