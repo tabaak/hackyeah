@@ -168,7 +168,6 @@ export default function LiveFeed() {
           <CounterPost
             key={responding.id}
             post={responding}
-            company={respondingCompany}
             onDone={() => set('respond', null)}
           />
         )}

@@ -38,6 +38,11 @@ class DraftUpdate(CamelModel):
     text: str = Field(max_length=10_000)
 
 
+class DraftRevision(CamelModel):
+    text: str = Field(max_length=10_000)  # current text, possibly unsaved
+    instruction: str = Field(max_length=500)
+
+
 class Decision(CamelModel):
     approve: bool
     comment: str | None = Field(None, max_length=2_000)

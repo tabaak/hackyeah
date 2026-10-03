@@ -6,7 +6,7 @@ from app.deps import get_current_user, require_compliance
 from app.routers.feed import load_mention
 from app.schemas.auth import CurrentUser
 from app.schemas.common import Role
-from app.schemas.response import Approval, ClaimCheck, Decision, Disclosure, DraftUpdate, EvidenceItem, MentionResponse
+from app.schemas.response import Approval, ClaimCheck, Decision, Disclosure, DraftRevision, DraftUpdate, EvidenceItem, MentionResponse
 from app.services import analysis, responses, retrieval
 from app.services.notifications import notify
 from app.services.timeutil import iso, now, to_ms
@@ -111,13 +111,30 @@ def update_draft(mention_id: str, body: DraftUpdate, user: CurrentUser = Depends
     text = body.text.strip()
     if not text:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Draft is empty")
-    hits = retrieval.search(mention["company_id"], mention["text"])
+    return _build(mention, _save_draft(mention, text, retrieval.search(mention["company_id"], mention["text"])))
+
+
+def _save_draft(mention: dict, text: str, hits: list[dict]) -> dict:
     needs, why, findings = responses.disclosure_check(text, hits)
-    row = get_db().table("mention_responses").update({
+    return get_db().table("mention_responses").update({
         "draft": text, "draft_hash": responses.draft_hash(text),
         "needs_compliance": needs, "disclosure_reason": why, "disclosure_findings": findings,
-    }).eq("mention_id", mention_id).execute().data[0]
-    return _build(mention, row)
+    }).eq("mention_id", mention["id"]).execute().data[0]
+
+
+@router.post("/revise", response_model=MentionResponse)
+def revise(mention_id: str, body: DraftRevision, user: CurrentUser = Depends(get_current_user)):
+    """AI rewrite of the current text per the editor's instruction (tone, length, main point); saved like a manual edit."""
+    mention = load_mention(mention_id, user, MENTION_FIELDS)
+    _require_row(mention_id)
+    text, instruction = body.text.strip(), body.instruction.strip()
+    if not text or not instruction:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Draft and instruction are required")
+    hits = retrieval.search(mention["company_id"], mention["text"])
+    revised = responses.revise_draft(_company(mention["company_id"]), mention, text, instruction, hits)
+    if not revised:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "The AI model is unavailable. Edit the text manually or try again.")
+    return _build(mention, _save_draft(mention, revised, hits))
 
 
 @router.post("/approve", response_model=MentionResponse)

@@ -198,6 +198,7 @@ VALID_REQUEST = {
     ("PATCH", "/documents/{document_id}"): {"json": {"classification": "internal"}},
     ("PATCH", "/mentions/{mention_id}/status"): {"json": {"status": "dismissed"}},
     ("PATCH", "/mentions/{mention_id}/response/draft"): {"json": {"text": "Withdrawals work normally."}},
+    ("POST", "/mentions/{mention_id}/response/revise"): {"json": {"text": "Draft.", "instruction": "Shorter."}},
     ("POST", "/mentions/{mention_id}/response/decision"): {"json": {"approve": True}},
 }
 ANALYST_STATUS = {("GET", "/me"): 200, ("POST", "/mentions/{mention_id}/response/decision"): 403}

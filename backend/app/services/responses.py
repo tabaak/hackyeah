@@ -72,3 +72,21 @@ def disclosure_check(draft: str, hits: list[dict]) -> tuple[bool, str, list[dict
             reason = "Quotes confidential text verbatim. Compliance must approve before publishing."
         return True, reason, findings
     return False, "No confidential details found. Analyst approval is enough.", []
+
+
+REVISE = SYSTEM.replace("You write short", "You revise short") + """
+You get the current draft and an editor's instruction (tone, length, wording or main point). Apply the instruction,
+but the rules above still win: never add facts that are not in the evidence excerpts."""
+
+
+def revise_draft(company: dict, mention: dict, draft: str, instruction: str, hits: list[dict]) -> str | None:
+    """Rewrite the current draft per the editor's instruction; None when no model is reachable."""
+    excerpts = "\n".join(f"[{h['name']} · {h['classification']}] {h['content'][:700]}" for h in hits[:5]) or "(none)"
+    data = llm.chat_json(
+        REVISE,
+        f"Company: {company['name']}. Official channel: {company.get('website') or 'official channels'}\n\n"
+        f"<post platform=\"{mention['platform']}\">\n{mention['text']}\n</post>\n\n"
+        f"Evidence excerpts:\n{excerpts}\n\n<draft>\n{draft}\n</draft>\n\nEditor's instruction: {instruction}",
+    )
+    revised = str((data or {}).get("draft") or "").strip()
+    return revised[:2000] or None
