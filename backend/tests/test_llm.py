@@ -68,9 +68,23 @@ def test_force_local(test_settings, monkeypatch):
     assert pick_provider(["public"]) == "local"
 
 
-def test_force_cannot_send_closed_data_to_cloud(test_settings, monkeypatch):
+@pytest.mark.parametrize("labels", [["public"], ["internal"], ["confidential"], ["restricted"]])
+def test_force_cloud_is_a_dev_override_for_every_label(test_settings, monkeypatch, labels):
     monkeypatch.setattr(test_settings, "llm_force", "cloud")
+    assert pick_provider(labels) == "cloud"
+
+
+@pytest.mark.parametrize("field", ["openai_api_key", "openai_model"])
+def test_force_cloud_without_key_or_model_stays_local(test_settings, monkeypatch, field):
+    monkeypatch.setattr(test_settings, "llm_force", "cloud")
+    monkeypatch.setattr(test_settings, field, "")
     assert pick_provider(["confidential"]) == "local"
+
+
+def test_force_cloud_still_rejects_unknown_labels(test_settings, monkeypatch):
+    monkeypatch.setattr(test_settings, "llm_force", "cloud")
+    with pytest.raises(ValueError):
+        pick_provider(["top-secret"])
 
 
 # --- chat() with fake clients -----------------------------------------------------------------------

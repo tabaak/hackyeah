@@ -50,6 +50,7 @@ class Settings:
     local_llm_model: str = _env("LOCAL_LLM_MODEL", llm_model)
     local_llm_api_key: str = _env("LOCAL_LLM_API_KEY", llm_api_key or "not-needed")
     # Set to "local" to send everything (including public) to the local model, e.g. with no cloud key.
+    # "cloud" (development only) sends everything, closed data included, to the OPENAI_* model.
     llm_force: str = _env("LLM_FORCE")
 
     serper_api_key: str = _env("SERPER_API_KEY")

@@ -1,4 +1,11 @@
-from app.services import analysis, documents, llm, news, responses
+from types import SimpleNamespace
+
+import pytest
+
+from app import llm as routed_llm
+from app.llm import LLMUnavailable
+from app.schemas.common import Role
+from app.services import analysis, documents, llm, mappers, news, responses
 from app.services.timeutil import from_ms, to_ms
 from app.sources.serper import DEMO_COMPANY
 
@@ -103,6 +110,110 @@ def test_storage_path_and_types():
     assert documents.content_type_for("a.PDF") == "application/pdf"
     assert documents.content_type_for("a.docx") is None
     assert documents.extract_text("a.txt", "zażółć".encode()) == "zażółć"
+
+
+def _completion(content):
+    return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=content))])
+
+
+def test_summary_is_routed_by_the_document_classification(monkeypatch):
+    calls = []
+
+    def chat(messages, classifications, **kw):
+        calls.append((messages, list(classifications)))
+        return _completion("  The Q3 report states liquidity of 4.2bn zloty.  "), "local"
+
+    monkeypatch.setattr(routed_llm, "chat", chat)
+    assert documents.summarize("x" * 20_000, "confidential") == "The Q3 report states liquidity of 4.2bn zloty."
+    (messages, labels), = calls
+    assert labels == ["confidential"]
+    assert len(messages[1]["content"]) < documents.SUMMARY_INPUT_CHARS + 50  # only the head is sent
+
+
+@pytest.mark.parametrize("failure", [LLMUnavailable("local LLM unreachable"), RuntimeError("401"), None])
+def test_summary_falls_back_to_an_excerpt(monkeypatch, failure):
+    def chat(*a, **k):
+        if failure:
+            raise failure
+        return _completion(""), "cloud"
+
+    monkeypatch.setattr(routed_llm, "chat", chat)
+    text = "First sentence. Second one! Third? Fourth is dropped."
+    assert documents.summarize(text, "public") == "First sentence. Second one! Third?"
+
+
+def test_excerpt_caps_long_text():
+    assert documents.excerpt("word " * 500).endswith("…") and len(documents.excerpt("word " * 500)) <= 501
+    assert documents.excerpt("  ") == ""
+
+
+class FakeDB:
+    """Records (table, op, payload) for the supabase calls process_document makes."""
+
+    def __init__(self, doc):
+        self.doc, self.ops = doc, []
+
+    def table(self, name):
+        db = self
+
+        class Query:
+            def __init__(self):
+                self.op = self.payload = None
+
+            def select(self, *a):
+                self.op = "select"
+                return self
+
+            def update(self, payload):
+                self.op, self.payload = "update", payload
+                return self
+
+            def insert(self, payload):
+                self.op, self.payload = "insert", payload
+                return self
+
+            def delete(self):
+                self.op = "delete"
+                return self
+
+            def eq(self, *a):
+                return self
+
+            def single(self):
+                return self
+
+            def execute(self):
+                db.ops.append((name, self.op, self.payload))
+                return SimpleNamespace(data=db.doc if self.op == "select" else [])
+
+        return Query()
+
+
+def test_process_document_stores_the_summary(monkeypatch):
+    db = FakeDB({"id": "d1", "name": "memo.txt", "organization_id": "o", "classification": "internal"})
+    monkeypatch.setattr(documents, "get_db", lambda: db)
+    monkeypatch.setattr(documents, "summarize", lambda text, cls: f"{cls}: {text[:5]}")
+    documents.process_document("d1", b"Hello world. Liquidity is fine.")
+    final = [p for t, op, p in db.ops if t == "documents" and op == "update"][-1]
+    assert final["status"] == "ready" and final["summary"] == "internal: Hello" and final["summarized_at"]
+    assert any(t == "document_chunks" and op == "insert" for t, op, _ in db.ops)
+
+
+def test_process_document_without_text_fails_without_a_summary(monkeypatch):
+    db = FakeDB({"id": "d1", "name": "scan.txt", "organization_id": "o", "classification": "public"})
+    monkeypatch.setattr(documents, "get_db", lambda: db)
+    monkeypatch.setattr(documents, "summarize", lambda *a: pytest.fail("no text, nothing to summarize"))
+    documents.process_document("d1", b"   ")
+    final = [p for t, op, p in db.ops if t == "documents" and op == "update"][-1]
+    assert final["status"] == "failed" and "summary" not in final
+
+
+def test_restricted_summary_is_compliance_only():
+    row = {"id": "d", "name": "n.pdf", "size": 1, "status": "ready", "summary": "secret facts"}
+    assert mappers.doc(row | {"classification": "restricted"}, Role.analyst).summary is None
+    assert mappers.doc(row | {"classification": "restricted"}, Role.compliance).summary == "secret facts"
+    assert mappers.doc(row | {"classification": "confidential"}, Role.analyst).summary == "secret facts"
+    assert mappers.doc(row | {"classification": "public", "summary": None}, Role.analyst).summary is None
 
 
 def test_disclosure_check():

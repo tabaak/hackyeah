@@ -12,6 +12,7 @@ export interface Doc {
   size: number
   classification: Classification
   status: 'processing' | 'ready'
+  summary?: string | null // AI summary; null while processing, and for restricted unless compliance
 }
 
 export interface Company {

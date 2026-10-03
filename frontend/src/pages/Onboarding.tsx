@@ -21,7 +21,7 @@ export default function Onboarding() {
         <section className="rounded-panel border border-line bg-surface p-6">
           <CompanyWizard
             initialCompany={DEMO_COMPANY_PROFILE}
-            onDone={c => { addCompany(c); nav('/app/feed', { replace: true }) }}
+            onDone={async (c, docs) => { await addCompany(c, docs); nav('/app/feed', { replace: true }) }}
             aside={
               <Button type="button" variant="ghost" className="-ml-3" onClick={() => { signOut(); nav('/login', { replace: true }) }}>
                 <SignOut size={16} /> Sign out
