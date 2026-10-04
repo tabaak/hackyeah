@@ -56,14 +56,15 @@ class Settings:
     serper_api_key: str = _env("SERPER_API_KEY")
     apify_token: str = _env("APIFY_TOKEN")
     # Posts per run, per platform: bounds Apify cost. X is almost free (~$0.00015/post), Facebook ~$0.006.
-    apify_limit_x: int = _int("APIFY_LIMIT_X", 200)
+    apify_limit_x: int = _int("APIFY_LIMIT_X", 50)
     apify_limit_facebook: int = _int("APIFY_LIMIT_FACEBOOK", 30)
+    apify_limit_reddit: int = _int("APIFY_LIMIT_REDDIT", 30)  # per query, ~$0.001/post
     apify_max_age_days: int = _int("APIFY_MAX_AGE_DAYS", 30)  # search results can be old; skip posts older than this
 
     # News volume: Serper returns 10 articles per page (1 credit each); Google News RSS is free, up to 100 per request.
     # Regular runs only look for what is new (cheap); a company's history is loaded once by a deeper "backfill" run.
     serper_pages: int = _int("SERPER_PAGES", 1)
-    news_window: str = _env("NEWS_WINDOW", "d")  # Serper window of regular runs: h | d | w | m
+    news_window: str = _env("NEWS_WINDOW", "h")  # Serper window of regular runs: h | d | w | m
     news_backfill_days: int = _int("NEWS_BACKFILL_DAYS", 60)  # how far back the one-time history run goes (RSS, free)
     news_backfill_pages: int = _int("NEWS_BACKFILL_PAGES", 5)  # Serper pages per query over the last month (1 credit each)
     news_rss: bool = _env("NEWS_RSS", "true").lower() == "true"
@@ -74,11 +75,14 @@ class Settings:
     expo_access_token: str = _env("EXPO_ACCESS_TOKEN")
 
     # Scheduler: repeats the collection in the background. Minutes between runs per source, 0 = never.
-    # Costs: news ~2 Serper credits per company and run; X ~$0.03 per 200 posts; Facebook ~$0.2 per 30 posts.
+    # Live defaults; costs per company and run: news ~2 Serper credits (~300/day at 10 min), X ~$0.008 (50 posts, ~$1.1/day),
+    # Reddit ~$0.001/post of the last hour, Facebook ~$0.2 (30 posts), Bluesky and Google News RSS free.
     sync_enabled: bool = _env("SYNC_ENABLED", "true").lower() == "true"
-    sync_news_minutes: int = _int("SYNC_NEWS_MINUTES", 60)
-    sync_x_minutes: int = _int("SYNC_X_MINUTES", 180)
+    sync_news_minutes: int = _int("SYNC_NEWS_MINUTES", 10)
+    sync_x_minutes: int = _int("SYNC_X_MINUTES", 10)
     sync_facebook_minutes: int = _int("SYNC_FACEBOOK_MINUTES", 720)
+    sync_reddit_minutes: int = _int("SYNC_REDDIT_MINUTES", 15)
+    sync_bluesky_minutes: int = _int("SYNC_BLUESKY_MINUTES", 2)  # free
     sync_startup_delay_s: int = _int("SYNC_STARTUP_DELAY_SECONDS", 120)
     # Critical notifications (and phone pushes) only for mentions this recent: loaded history must not alarm anyone.
     notify_max_age_hours: int = _int("NOTIFY_MAX_AGE_HOURS", 72)

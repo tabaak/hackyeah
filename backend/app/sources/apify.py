@@ -1,4 +1,4 @@
-"""Social posts (X, Facebook) through Apify actors -> `Mention` objects.
+"""Social posts (X, Facebook, Reddit) through Apify actors -> `Mention` objects.
 
 Each platform is one Apify actor run; its dataset items are mapped to `Mention` with tolerant field lookups,
 because actor output schemas differ and change. Actor ids and input fields are defaults: check the actor page in
@@ -28,6 +28,8 @@ ACTORS = {
     # ("Monthly run limit exceeded per user") and returns only `noResults` rows.
     Platform.x: "xquik/x-tweet-scraper",
     Platform.facebook: "apify/facebook-search-scraper",  # keyword search; alternative: danek/facebook-search-ppr
+    # ~$0.001/post. Reddit's own API needs an approved app (Responsible Builder Policy); anonymous search gets 403/429.
+    Platform.reddit: "clearpath/reddit-search-scraper",
 }
 
 
@@ -46,7 +48,21 @@ def facebook_input(company: CompanyDraft, queries: list[str], limit: int) -> lis
     return [{"categories": queries, "searchType": "posts", "resultsLimit": limit}]
 
 
-INPUTS = {Platform.x: x_input, Platform.facebook: facebook_input}
+def reddit_input(company: CompanyDraft, queries: list[str], limit: int) -> list[dict]:
+    # one query per run; no subreddit auto-discovery = site-wide search. Billed per post: the last hour only, runs are
+    # every SYNC_REDDIT_MINUTES (ponytail: posts older than an hour are missed after downtime; widen if that matters)
+    return [{"query": f'"{q}"', "maxResults": limit, "sort": "new", "timeFilter": "hour", "contentType": "posts",
+             "autoDiscoverSubreddits": False} for q in queries]
+
+
+INPUTS = {Platform.x: x_input, Platform.facebook: facebook_input, Platform.reddit: reddit_input}
+
+
+def reddit_item(item: dict) -> dict:
+    """clearpath/reddit-search-scraper post -> the field names `to_mention` looks for."""
+    return {**item, "text": " — ".join(x for x in (item.get("title"), (item.get("body") or "")[:1000]) if x),
+            "display_name": f"r/{item.get('subreddit', '')}", "username": f"u/{item.get('author', '')}",
+            "likes": item.get("score"), "comments": item.get("commentCount"), "avatar": item.get("authorIconUrl")}
 
 
 def _first(item: dict, *paths: str):
@@ -180,7 +196,7 @@ def search_posts(
             print(f"[apify] {platform.value} skipped: {e}", file=sys.stderr)
             continue
         for item in items:
-            m = to_mention(item, platform, company_id, now_ms)
+            m = to_mention(reddit_item(item) if platform == Platform.reddit else item, platform, company_id, now_ms)
             if m and m.id not in seen and m.at >= now_ms - max_age_days * 86400_000:
                 seen.add(m.id)
                 out.append(m)

@@ -26,12 +26,16 @@ def intervals() -> dict[Platform, int]:
         Platform.news: settings.sync_news_minutes,
         Platform.x: settings.sync_x_minutes,
         Platform.facebook: settings.sync_facebook_minutes,
+        Platform.reddit: settings.sync_reddit_minutes,
+        Platform.bluesky: settings.sync_bluesky_minutes,
     }
 
 
 def has_credentials(platform: Platform) -> bool:
     if platform == Platform.news:
         return bool(settings.serper_api_key or settings.news_rss)
+    if platform == Platform.bluesky:
+        return True  # no key
     return bool(settings.apify_token)
 
 

@@ -1,6 +1,7 @@
 """Google News via Serper (platform = news)."""
 import logging
 import re
+import time
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
@@ -46,6 +47,7 @@ def query_for(company: dict) -> str:
     return queries_for(company)[0]
 
 
+RSS_PAUSE_S = 1.5  # between Google News requests: a burst (the 60-day history run) gets the IP blocked
 WINDOW_DAYS = {"h": 1, "d": 1, "w": 7, "m": 30}
 HISTORY_DAYS = 14  # a company whose oldest stored article is newer than this gets one deep history run
 _backfilled: set[str] = set()  # companies whose history run was attempted since this process started
@@ -102,6 +104,12 @@ def _rss_items(company: dict, known_titles: set[str], *, days: int = 2, history_
         for rng in ranges:
             try:
                 rows = rss.fetch(q, company.get("country", ""), days, after=rng[0] if rng else None, before=rng[1] if rng else None)
+            except httpx.HTTPStatusError as e:
+                if e.response.status_code in (429, 503):  # Google's "unusual traffic" block: more requests extend it
+                    log.warning("Google News RSS rate-limited us (%s); skipping the rest of this run", e.response.status_code)
+                    return out
+                log.warning("Google News RSS failed for %r: %s", q, e)
+                continue
             except (httpx.HTTPError, ET.ParseError) as e:
                 log.warning("Google News RSS failed for %r: %s", q, e)
                 continue
@@ -111,6 +119,7 @@ def _rss_items(company: dict, known_titles: set[str], *, days: int = 2, history_
                     continue
                 seen.add(key)
                 out.append({**row, "avatar_url": None, "media_urls": []})
+            time.sleep(RSS_PAUSE_S)
     return out
 
 

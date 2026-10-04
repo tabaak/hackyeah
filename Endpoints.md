@@ -52,7 +52,7 @@ supabase-js сам оновлює токен; беріть його з `getSessi
 
 | Поле | Значення |
 |---|---|
-| `platform` | `x`, `facebook`, `reddit`, `telegram`, `tiktok`, `linkedin`, `news` |
+| `platform` | `x`, `facebook`, `reddit`, `telegram`, `tiktok`, `linkedin`, `bluesky`, `news` |
 | `severity` | `high`, `medium`, `low` |
 | `verdict` | `contradicted_by_documents`, `supported_by_documents`, `insufficient_evidence`, `opinion` |
 | `status` (згадка) | `new`, `responded`, `dismissed` |
@@ -166,7 +166,7 @@ UI для ролей: аналітик бачить «Approve response», якщ
 
 ### 6. Аналітика (Analytics)
 
-Параметри: `company_id` (необовʼязково, за замовчуванням усі), `range` = `24h` | `7d` | `30d` (за замовчуванням `24h`; `mentions-by-hour` завжди 24 год). Рахуються згадки, опубліковані в межах `range`.
+Параметри: `company_id` (необовʼязково, за замовчуванням усі), `range` = `24h` | `7d` | `30d` | `all` (за замовчуванням `24h`; `all` = за весь час; `mentions-by-hour` завжди 24 год). Рахуються згадки, опубліковані в межах `range`.
 
 * `GET /analytics/summary` — `{ total, high, medium, low, openHigh, responded, dismissed, clusters, injectionsBlocked }`. Плитки: «Mentions · 24h» = `total`, «High priority · open» = `openHigh`, «Coordinated clusters» = `clusters`, «Responses approved» = `responded`.
 * `GET /analytics/mentions-by-hour` — 24 погодинні бакети від найстаршого `{ hour: "HH:00", low, medium, high }`; `hour` — **UTC**, переведіть у локальний час для підписів.

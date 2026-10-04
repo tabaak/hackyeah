@@ -92,8 +92,14 @@ def _require_row(mention_id: str) -> dict:
 def get_response(mention_id: str, user: CurrentUser = Depends(get_current_user)):
     """Claim check, evidence, draft, disclosure check, approval state. Generates the first draft on first open."""
     mention = load_mention(mention_id, user, MENTION_FIELDS)
-    row = _row(mention_id) or _generate(mention)
+    row = _row(mention_id)
+    if not row or (_is_fallback(row, mention) and not _latest_approval(mention_id)):
+        row = _generate(mention)  # an untouched template from a time without a model: try the model again
     return _build(mention, row)
+
+
+def _is_fallback(row: dict, mention: dict) -> bool:
+    return row["draft"] == responses.template_draft(mention["verdict"], _company(mention["company_id"]))
 
 
 @router.post("/generate", response_model=MentionResponse)

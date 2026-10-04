@@ -83,6 +83,7 @@ interface Store {
   loadOlder: () => Promise<void>
   notifications: Notifications
   markNotificationRead: (id: string) => void
+  markAllNotificationsRead: () => Promise<void>
   theme: Theme
   setTheme: (t: Theme) => void
 }
@@ -107,6 +108,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [loadingOlder, setLoadingOlder] = useState(false)
   const resetPosts = () => { setPosts([]); setNewestFull(false); setOlderDone(false) }
   const [notifications, setNotifications] = useState<Notifications>(NO_NOTIFICATIONS)
+  const notificationRevision = useRef(0)
   const pendingStatus = useRef(new Map<string, PostStatus>()) // optimistic changes the server has not confirmed yet
   // Older builds stored 'dark'; anything unknown falls back to graphite
   const [theme, setTheme] = useState<Theme>(() => {
@@ -221,6 +223,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const refreshFeed = async () => {
     const acct = account.current
     if (!acct) return
+    const readRevision = notificationRevision.current
     try {
       const [page, ns] = await Promise.all([fetchPage(), fetchNotifications()])
       if (account.current !== acct) return // signed out or switched account meanwhile
@@ -231,8 +234,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return [...page.items, ...(page.full ? prev.filter(p => p.at < oldest) : [])].map(pending)
       })
       setNewestFull(page.full)
-      alertNewCritical(notifications, ns)
-      setNotifications(ns)
+      if (readRevision === notificationRevision.current) {
+        alertNewCritical(notifications, ns)
+        setNotifications(ns)
+      }
     } catch { /* keep what is shown; the next poll retries */ }
   }
   const refreshRef = useRef(refreshFeed)
@@ -360,12 +365,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     notifications,
     markNotificationRead: id => {
+      notificationRevision.current++
       setNotifications(n => {
         const item = n.items.find(x => x.id === id)
         if (!item || item.read) return n
         return { items: n.items.map(x => (x.id === id ? { ...x, read: true } : x)), openCount: Math.max(0, n.openCount - 1) }
       })
       void api(`/notifications/${id}/read`, { method: 'PATCH' }).catch(() => {})
+    },
+    markAllNotificationsRead: async () => {
+      const owner = account.current
+      const revision = sessionRevision.current
+      const token = accessToken.current
+      if (!owner || !token) throw new Error('Please sign in before marking notifications as seen.')
+      await api<void>('/notifications/mark-all-read', { method: 'POST' }, token)
+      if (owner !== account.current || revision !== sessionRevision.current) return
+      notificationRevision.current++
+      setNotifications(n => ({ items: n.items.map(item => ({ ...item, read: true })), openCount: 0 }))
+      void refreshFeed()
     },
     theme,
     setTheme,

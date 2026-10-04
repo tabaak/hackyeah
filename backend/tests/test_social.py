@@ -166,7 +166,7 @@ def test_sync_without_token_is_503_and_starts_nothing(signed_in, runs, monkeypat
     assert runs == [] and social.try_start(ORG_ID, Platform.facebook)  # no slot was taken
 
 
-@pytest.mark.parametrize("platform", ["reddit", "telegram", "tiktok", "linkedin"])
+@pytest.mark.parametrize("platform", ["telegram", "tiktok", "linkedin"])
 def test_other_platforms_are_still_501(signed_in, runs, monkeypatch, platform):
     monkeypatch.setattr(social.settings, "apify_token", "t")
     assert signed_in.post(f"{API}/feed/sources/{platform}/sync").status_code == 501 and runs == []
@@ -192,3 +192,41 @@ def test_status_reflects_the_token(signed_in, monkeypatch, token, healthy):
     body = signed_in.get(f"{API}/feed/sources/x/status").json()
     assert body["healthy"] is healthy and body["lastSyncAt"] is None
     assert ("APIFY_TOKEN" in (body["detail"] or "")) is (not healthy)
+
+
+
+def test_reddit_actor_item_maps_to_mention():
+    from app.sources import apify
+
+    item = {"id": "t3_1wwyb1f", "title": "Goldman Sachs background check", "body": "Pending with First Advantage",
+            "author": "No_Pianist2387", "subreddit": "BackgroundProof", "score": 40, "commentCount": 2,
+            "createdAt": "2026-10-03T21:19:01.857000+0000", "authorIconUrl": "https://preview.redd.it/a.png",
+            "url": "https://www.reddit.com/r/BackgroundProof/comments/1wwyb1f/x/"}
+    m = apify.to_mention(apify.reddit_item(item), Platform.reddit, "c1", 0)
+    assert m.text == "Goldman Sachs background check — Pending with First Advantage"
+    assert (m.author, m.handle, m.reach) == ("r/BackgroundProof", "u/No_Pianist2387", 42)
+    assert m.url == item["url"] and m.avatar_url == item["authorIconUrl"]
+    assert m.at == 1_791_062_341_857
+
+
+def test_bluesky_post_maps_and_filters():
+    import httpx
+    from app.services import bluesky
+
+    post = {"uri": "at://did:plc:a/app.bsky.feed.post/3mwz", "indexedAt": "2026-10-03T23:30:04.502Z",
+            "author": {"handle": "rwa.bsky.social", "displayName": "RWA", "avatar": "https://cdn.bsky.app/a"},
+            "record": {"text": "Goldman Sachs tokenizes a fund", "createdAt": "2026-10-03T23:30:00Z"},
+            "likeCount": 3, "repostCount": 1, "replyCount": 1, "quoteCount": 0,
+            "embed": {"images": [{"fullsize": "https://cdn.bsky.app/i.jpg"}]}}
+    other = {**post, "uri": "at://did:plc:a/app.bsky.feed.post/zzz", "record": {"text": "William Goldman wrote it"}}
+    seen = {}
+
+    def handler(req):
+        seen["q"] = req.url.params["q"]
+        return httpx.Response(200, json={"posts": [post, other, post]})
+
+    items = bluesky.fetch({"name": "Goldman Sachs"}, ["Goldman Sachs"], client=httpx.Client(transport=httpx.MockTransport(handler)))
+    assert seen["q"] == "Goldman Sachs" and [i["external_id"] for i in items] == [post["uri"]]
+    i = items[0]
+    assert i["url"] == "https://bsky.app/profile/rwa.bsky.social/post/3mwz" and i["reach"] == 5
+    assert (i["author"], i["handle"], i["media_urls"]) == ("RWA", "rwa.bsky.social", ["https://cdn.bsky.app/i.jpg"])

@@ -2,7 +2,7 @@
 
 export type Severity = 'high' | 'medium' | 'low'
 export type Classification = 'public' | 'internal' | 'confidential' | 'restricted'
-export type Platform = 'x' | 'facebook' | 'news'
+export type Platform = 'x' | 'facebook' | 'reddit' | 'bluesky' | 'news'
 export type Verdict = 'contradicted_by_documents' | 'supported_by_documents' | 'insufficient_evidence' | 'opinion'
 export type PostStatus = 'new' | 'responded' | 'dismissed'
 
@@ -72,7 +72,7 @@ export const SECTORS: Record<string, string[]> = {
 export const COUNTRIES = ['Poland', 'Germany', 'Ukraine', 'Lithuania', 'Czechia', 'United Kingdom', 'United States', 'Global']
 
 export const PLATFORM_LABEL: Record<Platform, string> = {
-  x: 'X', facebook: 'Facebook', news: 'News',
+  x: 'X', facebook: 'Facebook', reddit: 'Reddit', bluesky: 'Bluesky', news: 'News',
 }
 
 // The post's own link when the API has one; otherwise a profile URL derived from the handle

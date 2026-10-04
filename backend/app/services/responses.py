@@ -44,6 +44,7 @@ def generate_draft(company: dict, mention: dict, verdict: str, reason: str, hits
         f"Company: {company['name']}. Official channel: {company.get('website') or 'official channels'}\n"
         f"Claim check: {verdict} — {reason}\n\n<post platform=\"{mention['platform']}\">\n{mention['text']}\n</post>\n\n"
         f"Evidence excerpts:\n{excerpts}",
+        classifications=[h["classification"] for h in hits[:5]],  # confidential evidence never reaches the cloud model
     )
     draft = str((data or {}).get("draft") or "").strip()
     return draft[:2000] if draft else template_draft(verdict, company)
@@ -87,6 +88,7 @@ def revise_draft(company: dict, mention: dict, draft: str, instruction: str, hit
         f"Company: {company['name']}. Official channel: {company.get('website') or 'official channels'}\n\n"
         f"<post platform=\"{mention['platform']}\">\n{mention['text']}\n</post>\n\n"
         f"Evidence excerpts:\n{excerpts}\n\n<draft>\n{draft}\n</draft>\n\nEditor's instruction: {instruction}",
+        classifications=[h["classification"] for h in hits[:5]],
     )
     revised = str((data or {}).get("draft") or "").strip()
     return revised[:2000] or None

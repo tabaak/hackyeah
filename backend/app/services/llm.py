@@ -5,6 +5,7 @@ import re
 
 import httpx
 
+from app import llm as routed_llm
 from app.config import settings
 
 log = logging.getLogger(__name__)
@@ -15,25 +16,20 @@ def _headers(key: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {key}"} if key else {}
 
 
-def chat_json(system: str, user: str, max_tokens: int = 800) -> dict | None:
-    """One chat completion that must return a JSON object. Returns None on any failure."""
-    if not settings.llm_base_url:
-        return None
+def chat_json(system: str, user: str, max_tokens: int = 800, classifications: list[str] | None = None) -> dict | None:
+    """One chat completion that must return a JSON object. Returns None on any failure.
+    With `classifications` (labels of every document in the prompt) the call is routed by app/llm.py: OPENAI_* only
+    when all of them are public, the local model otherwise. Without it: the LLM_* server."""
+    messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
     try:
-        r = httpx.post(
-            f"{settings.llm_base_url}/chat/completions",
-            headers=_headers(settings.llm_api_key),
-            json={
-                "model": settings.llm_model,
-                "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-                "temperature": 0.2,
-                "max_tokens": max_tokens,
-            },
-            timeout=settings.llm_timeout_s,
-        )
-        r.raise_for_status()
-        content = r.json()["choices"][0]["message"]["content"] or ""
-    except Exception as e:  # network, HTTP, or unexpected shape
+        if classifications is not None:
+            response, _ = routed_llm.chat(messages, classifications, temperature=0.2, max_tokens=max_tokens)
+            content = response.choices[0].message.content or ""
+        elif not settings.llm_base_url:
+            return None
+        else:
+            content = _plain_chat(messages, max_tokens)
+    except Exception as e:  # network, HTTP, auth, or unexpected shape
         log.warning("LLM unavailable, using fallback: %s", e)
         return None
     # Models often wrap JSON in prose or ``` fences: take the outermost object.
@@ -45,6 +41,17 @@ def chat_json(system: str, user: str, max_tokens: int = 800) -> dict | None:
     except json.JSONDecodeError:
         return None
     return data if isinstance(data, dict) else None
+
+
+def _plain_chat(messages: list[dict], max_tokens: int) -> str:
+    r = httpx.post(
+        f"{settings.llm_base_url}/chat/completions",
+        headers=_headers(settings.llm_api_key),
+        json={"model": settings.llm_model, "messages": messages, "temperature": 0.2, "max_tokens": max_tokens},
+        timeout=settings.llm_timeout_s,
+    )
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"] or ""
 
 
 def embed(texts: list[str]) -> list[list[float]] | None:

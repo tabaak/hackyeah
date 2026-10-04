@@ -22,13 +22,13 @@ async def facebook_webhook(request: Request):
 
 @router.post("/{platform}/sync", response_model=SyncRequested, status_code=202)
 def sync(platform: Platform, background: BackgroundTasks, user: CurrentUser = Depends(get_current_user)):
-    """Collection run for every company of the caller's organization. news (Serper + Google News RSS) and x / facebook
-    (Apify) take minutes (one LLM call per risky item) and cost credits, so they run in the background:
+    """Collection run for every company of the caller's organization. news (Serper + Google News RSS) and x / facebook /
+    reddit (Apify) take minutes (one LLM call per risky item) and cost credits, so they run in the background:
     `added` is 0, watch the feed and `status`; 409 while a run of the same platform is in progress."""
     if platform in social.BACKGROUND:
         if platform == Platform.news and not (settings.serper_api_key or settings.news_rss):
             raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "SERPER_API_KEY is not set and NEWS_RSS is off")
-        if platform != Platform.news and not settings.apify_token:
+        if platform in social.PLATFORMS and not settings.apify_token:
             raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "APIFY_TOKEN is not set")
         if not social.try_start(user.organization_id, platform):
             raise HTTPException(status.HTTP_409_CONFLICT, f"A {platform.value} sync is already running")
@@ -49,6 +49,8 @@ def source_status(platform: Platform, user: CurrentUser = Depends(get_current_us
     if platform == Platform.news:
         ok = bool(settings.serper_api_key or settings.news_rss)
         return SourceStatus(healthy=ok, last_sync_at=last, detail=None if ok else "SERPER_API_KEY is not set and NEWS_RSS is off")
+    if platform == Platform.bluesky:
+        return SourceStatus(healthy=True, last_sync_at=last, detail=None)
     if platform in social.PLATFORMS:
         ok = bool(settings.apify_token)
         return SourceStatus(healthy=ok, last_sync_at=last, detail=None if ok else "APIFY_TOKEN is not set")

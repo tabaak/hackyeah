@@ -231,12 +231,13 @@ export default function Analytics() {
         <Panel title="Reach by platform" sub="Estimated views of tracked mentions">
           <ul className="space-y-3">
             {byPlatform.map(x => (
-              <li key={x.p} className="grid grid-cols-[110px_1fr_56px] items-center gap-3 text-sm">
+              <li key={x.p} className="grid grid-cols-[110px_1fr_72px] items-center gap-3 text-sm">
                 <span className="flex items-center gap-2 text-fg-2"><PlatformIcon p={x.p} />{PLATFORM_LABEL[x.p]}</span>
                 <span className="h-2 rounded-full bg-subtle" title={`${x.n} mentions`}>
                   <span className="block h-2 rounded-full bg-accent" style={{ width: `${(x.reach / maxReach) * 100}%` }} />
                 </span>
-                <span className="text-right font-mono text-xs text-fg-2">{compact(x.reach)}</span>
+                {/* News sources report no audience: show how many items arrived instead of a bare 0 */}
+                <span className="text-right font-mono text-xs text-fg-2">{x.reach || !x.n ? compact(x.reach) : `${compact(x.n)} items`}</span>
               </li>
             ))}
           </ul>
