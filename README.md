@@ -103,6 +103,20 @@ Open <http://localhost:5173>. The API is at <http://localhost:8000> and the inte
 
 Optional keys in `.env` turn on more of the pipeline: `OPENAI_*` / `LOCAL_LLM_*` (models), `EMBEDDING_*` (vector search), `SERPER_API_KEY` (news), `APIFY_TOKEN` (X, Facebook, Reddit). `SUPABASE_JWT_SECRET` is needed only for projects that still use legacy HS256 tokens. To reach a model running on the host from Docker, use `http://host.docker.internal:<port>/v1`.
 
+### Cloud or fully local LLM
+
+The public deployment uses cloud LLMs (`OPENAI_*`) for speed and quality. All model access goes through one module, `backend/app/llm.py`, which also talks to any OpenAI-compatible local server (vLLM, Ollama, llama.cpp, LM Studio). For an on-premises install on the company's own servers, point it at a local model and force every call there. No mention, document or draft then leaves the company's infrastructure:
+
+```sh
+LLM_BASE_URL=http://<your-llm-host>:8001/v1   # local OpenAI-compatible server
+LLM_MODEL=<local-model-name>
+LLM_FORCE=local                               # every call goes to the local model, public data included
+EMBEDDING_BASE_URL=http://<your-embedding-host>/v1   # optional: local embeddings too
+# leave OPENAI_API_KEY empty
+```
+
+Without `LLM_FORCE`, the hybrid mode stays on: public context may go to the cloud model, while anything internal, confidential or restricted is always processed locally.
+
 ```sh
 make logs    # follow API and frontend logs
 make ps      # container status
