@@ -152,11 +152,14 @@ def sync_company(company: dict) -> int:
     if not settings.serper_api_key and not settings.news_rss:
         return 0
     try:
-        backfill = needs_backfill(company)
-        if backfill:
+        added = 0
+        if needs_backfill(company):
             _backfilled.add(company["id"])
+            # The history run takes minutes; the latest news first so a new company's feed is not empty meanwhile.
+            added = len(analyse_and_insert(company, fetch(company)))
             log.info("Loading news history (%d days) for %s", settings.news_backfill_days, company["name"])
-        return len(analyse_and_insert(company, fetch(company, backfill=backfill)))
+            return added + len(analyse_and_insert(company, fetch(company, backfill=True)))
+        return len(analyse_and_insert(company, fetch(company)))
     except Exception:
         log.exception("News sync failed for %s", company["id"])
         return 0

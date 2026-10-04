@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 MEDIA_COLUMNS = ("avatar_url", "media_urls")  # added by migration 20261003210000_mention_media.sql
 LOOKUP_CHUNK = 20  # external ids per "already stored?" query: they travel in the URL, and article links are long
 INSERT_CHUNK = 100  # rows per upsert request
+FLUSH_EVERY = 10  # analysed rows saved at a time, so a long run fills the feed as it goes
 
 
 def _upsert(rows: list[dict]) -> list[dict]:
@@ -53,11 +54,15 @@ def analyse_and_insert(company: dict, items: list[dict]) -> list[dict]:
             .in_("external_id", ids[start:start + LOOKUP_CHUNK]).execute().data
         )
         existing |= {(r["platform"], r["external_id"]) for r in found}
-    rows = []
-    for item in items:
+    rows, inserted = [], []
+    # Newest first: they top the feed, so the first saved batch is what the user sees.
+    for item in sorted(items, key=lambda i: str(i["published_at"]), reverse=True):
         if (item["platform"], item["external_id"]) in existing:
             continue  # skip the LLM call for known mentions
         hits = retrieval.search(company["id"], item["text"], limit=5)
         a = analysis.assess(company, item["text"], item.get("reach", 0), hits)
         rows.append({**item, "severity": a.severity, "verdict": a.verdict, "reason": a.reason, "injection_suspected": a.injection})
-    return insert_mentions(company, rows)
+        if len(rows) >= FLUSH_EVERY:
+            inserted += insert_mentions(company, rows)
+            rows = []
+    return inserted + insert_mentions(company, rows)

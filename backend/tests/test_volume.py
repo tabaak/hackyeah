@@ -338,7 +338,7 @@ def test_large_batches_are_looked_up_and_written_in_chunks(monkeypatch):
     out = ingest.analyse_and_insert(COMPANY, items)
     assert len(out) == 248  # the two stored articles are skipped
     assert db.lookups and max(db.lookups) <= ingest.LOOKUP_CHUNK and sum(db.lookups) == 250
-    assert db.upserts == [100, 100, 48]
+    assert db.upserts == [ingest.FLUSH_EVERY] * 24 + [8]  # saved as analysed, not all at the end
 
 
 def test_small_batch_is_one_request(monkeypatch):

@@ -5,6 +5,7 @@ one at a time per organization and platform, and only when someone calls POST /f
 """
 import logging
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 from app.config import settings
 from app.db import get_db
@@ -99,3 +100,9 @@ def sync_org(org_id: str, platform: Platform) -> None:
         log.exception("%s sync failed for organization %s", platform.value, org_id)
     finally:
         finish(org_id, platform)
+
+
+def fill_feed(company: dict, platforms: list[Platform]) -> None:
+    """Background task for a new company: the given sources at once, instead of waiting for the scheduler's next pass."""
+    with ThreadPoolExecutor(len(platforms) or 1) as pool:
+        list(pool.map(lambda p: sync_company(company, p), platforms))

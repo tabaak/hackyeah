@@ -43,7 +43,7 @@ def workspace(monkeypatch):
     monkeypatch.setattr(routes, "get_db", lambda: db)
     monkeypatch.setattr(logos, "get_db", lambda: db)
     monkeypatch.setattr(settings, "demo_seed", False)
-    monkeypatch.setattr(routes.news, "sync_company", lambda _: None)
+    monkeypatch.setattr(routes.social, "fill_feed", lambda *_: None)
     with TestClient(app) as client:
         cid = client.post("/api/v1/companies", json=BODY, headers=headers()).json()["id"]
         yield client, cid, bucket

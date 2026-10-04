@@ -78,7 +78,7 @@ def client(monkeypatch):
     db = MemoryDB()
     monkeypatch.setattr(routes, "get_db", lambda: db)
     monkeypatch.setattr(settings, "demo_seed", False)
-    monkeypatch.setattr(routes.news, "sync_company", lambda _: None)
+    monkeypatch.setattr(routes.social, "fill_feed", lambda *_: None)
     monkeypatch.setattr(routes.logos, "signed_urls", lambda _: {})
     monkeypatch.setattr(routes.logos, "remove", lambda _: None)
     with TestClient(app) as client:

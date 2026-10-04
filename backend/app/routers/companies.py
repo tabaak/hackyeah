@@ -8,10 +8,10 @@ from app.config import settings
 from app.db import get_db, not_found
 from app.deps import get_current_user
 from app.schemas.auth import CurrentUser
-from app.schemas.common import Classification
+from app.schemas.common import Classification, Platform
 from app.schemas.companies import CompaniesMeta, Company, CompanyDraft, CompanyLogo
 from app.schemas.documents import Doc
-from app.services import demo, documents, logos, mappers, news
+from app.services import demo, documents, logos, mappers, scheduler, social
 
 router = APIRouter(tags=["companies"])
 
@@ -62,7 +62,10 @@ def create_company(body: CompanyDraft, background: BackgroundTasks, user: Curren
     row = get_db().table("companies").insert({**_clean(body), "organization_id": user.organization_id}).execute().data[0]
     if settings.demo_seed:
         background.add_task(demo.seed_company, row)
-    background.add_task(news.sync_company, row)  # no-op without SERPER_API_KEY
+    # News always (no-op without a source); the rest when the scheduler would collect them anyway.
+    platforms = [p for p, minutes in scheduler.intervals().items()
+                 if scheduler.has_credentials(p) and (p == Platform.news or (settings.sync_enabled and minutes > 0))]
+    background.add_task(social.fill_feed, row, platforms)
     return mappers.company(row, user.role)
 
 

@@ -206,7 +206,7 @@ def test_sync_runs_one_deep_pass_then_regular_ones(monkeypatch):
     monkeypatch.setattr(news, "analyse_and_insert", lambda c, items: items)
     news.sync_company(COMPANY)
     news.sync_company(COMPANY)
-    assert modes == [True, False]
+    assert modes == [False, True, False]  # latest news first, then the history run
 
 
 def test_failed_history_run_is_not_retried_every_pass(monkeypatch):
@@ -220,7 +220,7 @@ def test_failed_history_run_is_not_retried_every_pass(monkeypatch):
 
     monkeypatch.setattr(news, "fetch", boom)
     assert news.sync_company(COMPANY) == 0 and news.sync_company(COMPANY) == 0
-    assert calls == [True, False]
+    assert calls == [False, False]  # the history run was claimed by the first pass, not retried
 
 
 def fetch_spy(monkeypatch):
