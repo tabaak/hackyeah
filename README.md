@@ -1,5 +1,13 @@
 # Palladion
 
+## AI Control Layer — judge quick start
+
+Run `make control-demo` for five explicitly **fictional**, reproducible cases with no API keys, model weights, Supabase or frontend. Run `make control-test` for the isolated gateway/privacy/policy test suite. Both commands use [uv](https://docs.astral.sh/uv/) and a separate locked Python environment.
+
+The local module provides Jev/OpenJev filtering, a Qwen3.8-27B adapter, private document processing, evidence-linked company risk assessments, policy review and sector summaries. High risk triggers compliance review and permitted remediation, not automatic client rejection. Fixture success is separate from live model readiness.
+
+See the [control-layer guide](backend/app/control_layer/README.md) for architecture, live setup, API examples and privacy boundaries, and [validation results](backend/app/control_layer/VALIDATION.md) for what was actually tested. The control API runs separately on `127.0.0.1:8002`; the existing application below retains its original storage and model behavior.
+
 ## Run the app with Docker
 
 Requirements: Docker Desktop with Compose v2, Make, and credentials for the configured Supabase project.

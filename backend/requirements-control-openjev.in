@@ -1,0 +1,3 @@
+-r requirements-control.in
+# MIT upstream: pin reviewed source, not an unversioned branch.
+openjev[hf] @ git+https://github.com/GPT-AGI/OpenJev.git@0e7bb990211df139da13dc67aa2a7aceca311af7

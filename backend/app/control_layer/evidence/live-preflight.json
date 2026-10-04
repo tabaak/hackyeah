@@ -1,0 +1,28 @@
+{
+  "mode": "live",
+  "data": "fictional",
+  "providers": [
+    {
+      "provider": "qwen",
+      "model": "Qwen3.8-27B",
+      "status": "unavailable",
+      "mode": "live",
+      "checkpointStatus": "not_configured"
+    },
+    {
+      "provider": "openjev",
+      "model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "status": "available",
+      "mode": "live"
+    },
+    {
+      "provider": "jev",
+      "model": "jev-latest",
+      "status": "not_configured",
+      "mode": "live"
+    }
+  ],
+  "cases": [],
+  "notice": "Fixture timings/decisions are not model benchmarks. Energy savings are not measured.",
+  "ready": false
+}

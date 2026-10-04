@@ -66,3 +66,8 @@ coverage/
 
 # Local pipeline runs (raw scraper output + analysis)
 backend/results/
+
+# Local control-layer documents, policies, evidence, SQLite and private reports
+.control-data/
+.control-*/
+backend/control-live-report.json

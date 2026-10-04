@@ -1,0 +1,23 @@
+{
+  "baseline": {
+    "tests": "557",
+    "failures": "76",
+    "errors": "10",
+    "skipped": "4"
+  },
+  "current": {
+    "tests": "616",
+    "failures": "75",
+    "errors": "10",
+    "skipped": "4"
+  },
+  "newFailureIds": [],
+  "archiveOnlyFailureIds": [
+    [
+      "tests.test_config",
+      "test_secrets_file_is_git_ignored"
+    ]
+  ],
+  "note": "Current comparison run included 59 control tests; later isolated suite expanded to 67. Archive-only git-ignore test has no Git metadata.",
+  "baseCommit": "9ccbadad05ec8e725502168dfa90eac89f709a23"
+}

@@ -1,0 +1,352 @@
+{
+  "mode": "fixture",
+  "data": "fictional",
+  "providers": [
+    {
+      "provider": "qwen",
+      "model": "fixture",
+      "status": "fixture",
+      "mode": "fixture"
+    },
+    {
+      "provider": "openjev",
+      "model": "fixture",
+      "status": "fixture",
+      "mode": "fixture"
+    },
+    {
+      "provider": "jev",
+      "model": "fixture",
+      "status": "fixture",
+      "mode": "fixture"
+    }
+  ],
+  "cases": [
+    {
+      "baseline": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 2,
+        "classification": "confidential",
+        "policyStatus": "review_required",
+        "events": [
+          "kestrel-deal"
+        ],
+        "metrics": {
+          "qwenCalls": 3,
+          "gateCalls": 0,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 3.37,
+        "privateProbe": null
+      },
+      "gated": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 2,
+        "classification": "confidential",
+        "policyStatus": "review_required",
+        "events": [
+          "kestrel-deal"
+        ],
+        "metrics": {
+          "qwenCalls": 2,
+          "gateCalls": 4,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 4.55,
+        "privateProbe": null
+      },
+      "missedMaterialEvents": [],
+      "case": "namesake",
+      "passed": true
+    },
+    {
+      "baseline": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 2,
+        "classification": "confidential",
+        "policyStatus": "review_required",
+        "events": [
+          "kestrel-deal"
+        ],
+        "metrics": {
+          "qwenCalls": 3,
+          "gateCalls": 0,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 3.25,
+        "privateProbe": null
+      },
+      "gated": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 2,
+        "classification": "confidential",
+        "policyStatus": "review_required",
+        "events": [
+          "kestrel-deal"
+        ],
+        "metrics": {
+          "qwenCalls": 2,
+          "gateCalls": 4,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 4.85,
+        "privateProbe": null
+      },
+      "missedMaterialEvents": [],
+      "case": "deal",
+      "passed": true
+    },
+    {
+      "baseline": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 8,
+        "classification": "confidential",
+        "policyStatus": "conditional_path_proposed",
+        "events": [
+          "kestrel-breach"
+        ],
+        "metrics": {
+          "qwenCalls": 4,
+          "gateCalls": 0,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 3.16,
+        "privateProbe": null
+      },
+      "gated": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 8,
+        "classification": "confidential",
+        "policyStatus": "conditional_path_proposed",
+        "events": [
+          "kestrel-breach"
+        ],
+        "metrics": {
+          "qwenCalls": 3,
+          "gateCalls": 4,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 5.76,
+        "privateProbe": null
+      },
+      "missedMaterialEvents": [],
+      "case": "conditional",
+      "passed": true
+    },
+    {
+      "baseline": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 8,
+        "classification": "confidential",
+        "policyStatus": "remediation_required",
+        "events": [
+          "kestrel-breach"
+        ],
+        "metrics": {
+          "qwenCalls": 4,
+          "gateCalls": 0,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 3.62,
+        "privateProbe": null
+      },
+      "gated": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 8,
+        "classification": "confidential",
+        "policyStatus": "remediation_required",
+        "events": [
+          "kestrel-breach"
+        ],
+        "metrics": {
+          "qwenCalls": 3,
+          "gateCalls": 4,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 5.02,
+        "privateProbe": null
+      },
+      "missedMaterialEvents": [],
+      "case": "remediation",
+      "passed": true
+    },
+    {
+      "baseline": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 8,
+        "classification": "restricted",
+        "policyStatus": "conditional_path_proposed",
+        "events": [
+          "kestrel-breach"
+        ],
+        "metrics": {
+          "qwenCalls": 4,
+          "gateCalls": 0,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 3.74,
+        "privateProbe": {
+          "blocked": true,
+          "audit": [
+            {
+              "at": "2026-10-04T01:55:26.641640+00:00",
+              "operation": "egress",
+              "status": "blocked",
+              "provider": "jev",
+              "reason": "non_public_or_uncertain"
+            },
+            {
+              "at": "2026-10-04T01:55:26.641919+00:00",
+              "provider": "openjev",
+              "model": "fixture/openjev",
+              "operation": "relevance_gate",
+              "status": "fixture",
+              "decision": "allow",
+              "durationMs": 0,
+              "usage": null
+            },
+            {
+              "at": "2026-10-04T01:55:26.642178+00:00",
+              "operation": "filter",
+              "provider": "openjev",
+              "status": "passed",
+              "reason": "material_or_uncertain",
+              "evidenceId": "private-probe"
+            }
+          ]
+        }
+      },
+      "gated": {
+        "state": "succeeded",
+        "error": null,
+        "riskScore": 8,
+        "classification": "restricted",
+        "policyStatus": "conditional_path_proposed",
+        "events": [
+          "kestrel-breach"
+        ],
+        "metrics": {
+          "qwenCalls": 3,
+          "gateCalls": 4,
+          "inputTokens": null,
+          "outputTokens": null,
+          "usageComplete": false,
+          "inferenceDurationMs": 0,
+          "blockedExternalRequests": 0,
+          "cost": "unknown",
+          "costCurrency": null,
+          "energy": "not_measured"
+        },
+        "durationMs": 8.43,
+        "privateProbe": {
+          "blocked": true,
+          "audit": [
+            {
+              "at": "2026-10-04T01:55:26.657957+00:00",
+              "operation": "egress",
+              "status": "blocked",
+              "provider": "jev",
+              "reason": "non_public_or_uncertain"
+            },
+            {
+              "at": "2026-10-04T01:55:26.658284+00:00",
+              "provider": "openjev",
+              "model": "fixture/openjev",
+              "operation": "relevance_gate",
+              "status": "fixture",
+              "decision": "allow",
+              "durationMs": 0,
+              "usage": null
+            },
+            {
+              "at": "2026-10-04T01:55:26.659375+00:00",
+              "operation": "filter",
+              "provider": "openjev",
+              "status": "passed",
+              "reason": "material_or_uncertain",
+              "evidenceId": "private-probe"
+            }
+          ]
+        }
+      },
+      "missedMaterialEvents": [],
+      "case": "secret_injection",
+      "passed": true
+    }
+  ],
+  "notice": "Fixture timings/decisions are not model benchmarks. Energy savings are not measured.",
+  "ready": true,
+  "passed": true
+}
