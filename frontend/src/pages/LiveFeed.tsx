@@ -1,4 +1,4 @@
-import { Archive, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
+import { Archive, CircleNotch, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AddByLink } from '../components/AddByLink'
@@ -120,6 +120,14 @@ export default function LiveFeed() {
         </section>
       )}
 
+      {posts.length === 0 ? (
+        // First visit: sources and analysis run in the background; the poll swaps this out once mentions land
+        <section role="status" className="rounded-panel border border-line bg-surface px-4 py-16 text-center max-sm:-mx-4 max-sm:rounded-none max-sm:border-x-0">
+          <CircleNotch size={28} className="mx-auto text-accent motion-safe:animate-spin" />
+          <p className="mt-4 font-medium">Collecting mentions…</p>
+          <p className="mx-auto mt-1 max-w-sm text-sm text-fg-2">We're scanning news and social media and checking each mention. The first ones usually show up within a minute.</p>
+        </section>
+      ) : (
       <section aria-labelledby="feed-h" className="rounded-panel border border-line bg-surface max-sm:-mx-4 max-sm:rounded-none max-sm:border-x-0">
         <div className="flex flex-wrap items-center gap-3 rounded-t-panel border-b max-sm:rounded-none border-line bg-surface p-4 lg:sticky lg:top-0 lg:z-10">
           <h2 id="feed-h" className="mr-auto text-lg font-semibold">All mentions <span className="font-mono text-sm font-normal text-fg-3">{list.length}</span></h2>
@@ -171,6 +179,7 @@ export default function LiveFeed() {
           {hasMore && <Button onClick={() => void loadOlder()} disabled={loadingOlder}>{loadingOlder ? 'Loading…' : 'Load older mentions'}</Button>}
         </div>
       </section>
+      )}
 
       <Dialog wide open={!!responding && !!respondingCompany} onClose={() => set('respond', null)} title="Create counter-post">
         {responding && respondingCompany && (
