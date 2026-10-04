@@ -1,4 +1,4 @@
-"""End-to-end flow against a real Supabase project. Skipped unless backend/.env has
+"""End-to-end flow against a real Supabase project. Skipped unless the repo-root .env has
 SUPABASE_SERVICE_ROLE_KEY and INTEGRATION_USER_EMAIL (a user who signed in once).
 Creates a company in that user's organization and deletes it afterwards."""
 import os
@@ -8,10 +8,10 @@ import pytest
 from dotenv import dotenv_values
 from fastapi.testclient import TestClient
 
-ENV = dotenv_values(os.path.join(os.path.dirname(__file__), "..", ".env"))
+ENV = dotenv_values(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
 pytestmark = pytest.mark.skipif(
     not (ENV.get("SUPABASE_SERVICE_ROLE_KEY") and ENV.get("INTEGRATION_USER_EMAIL")),
-    reason="needs backend/.env with SUPABASE_SERVICE_ROLE_KEY and INTEGRATION_USER_EMAIL",
+    reason="needs the repo-root .env with SUPABASE_SERVICE_ROLE_KEY and INTEGRATION_USER_EMAIL",
 )
 
 

@@ -3,10 +3,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# backend/.env first, then the repo-root .env (both gitignored); real environment variables take precedence.
-BACKEND_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BACKEND_DIR / ".env")
-load_dotenv(BACKEND_DIR.parent / ".env")
+# The repo-root .env (gitignored) is the only env file; real environment variables take precedence.
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
 def _env(name: str, default: str = "") -> str:
@@ -34,7 +32,7 @@ class Settings:
     llm_base_url: str = os.getenv("LLM_BASE_URL", "http://localhost:8001/v1").rstrip("/")
     llm_model: str = _env("LLM_MODEL", "bonsai-2-27b")
     llm_api_key: str = _env("LLM_API_KEY")
-    llm_timeout_s: float = float(_env("LLM_TIMEOUT_SECONDS") or _env("LLM_TIMEOUT_S", "30"))
+    llm_timeout_s: float = float(_env("LLM_TIMEOUT_SECONDS", "30"))
 
     # OpenAI-compatible embeddings; must return 1536 dims (document_chunks.embedding). Unset -> keyword retrieval.
     embedding_base_url: str = _env("EMBEDDING_BASE_URL").rstrip("/")
@@ -42,7 +40,7 @@ class Settings:
     embedding_api_key: str = _env("EMBEDDING_API_KEY")
 
     # Classification-routed chat (app/llm.py): only `public` context may use the cloud model.
-    openai_api_key: str = _env("OPENAI_API_KEY") or _env("OPENAI_KEY")
+    openai_api_key: str = _env("OPENAI_API_KEY")
     openai_base_url: str = _env("OPENAI_BASE_URL", "https://api.openai.com/v1")
     openai_model: str = _env("OPENAI_MODEL")
     # Local model for internal/confidential/restricted context; defaults to the LLM_* server above.

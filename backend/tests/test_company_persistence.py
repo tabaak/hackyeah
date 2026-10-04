@@ -10,10 +10,10 @@ import pytest
 from dotenv import dotenv_values
 from fastapi.testclient import TestClient
 
-ENV = dotenv_values(Path(__file__).resolve().parents[1] / ".env")
+ENV = dotenv_values(Path(__file__).resolve().parents[2] / ".env")
 pytestmark = pytest.mark.skipif(
     os.getenv("RUN_COMPANY_INTEGRATION") != "1" or not ENV.get("SUPABASE_SERVICE_ROLE_KEY"),
-    reason="opt-in: RUN_COMPANY_INTEGRATION=1 and backend/.env Supabase credentials required",
+    reason="opt-in: RUN_COMPANY_INTEGRATION=1 and the repo-root .env Supabase credentials required",
 )
 
 
