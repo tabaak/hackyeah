@@ -2,7 +2,7 @@
 
 export type Severity = 'high' | 'medium' | 'low'
 export type Classification = 'public' | 'internal' | 'confidential' | 'restricted'
-export type Platform = 'x' | 'facebook' | 'threads' | 'news'
+export type Platform = 'x' | 'facebook' | 'reddit' | 'bluesky' | 'news'
 export type Verdict = 'contradicted_by_documents' | 'supported_by_documents' | 'insufficient_evidence' | 'opinion'
 export type PostStatus = 'new' | 'responded' | 'dismissed'
 
@@ -72,7 +72,7 @@ export const SECTORS: Record<string, string[]> = {
 export const COUNTRIES = ['Poland', 'Germany', 'Ukraine', 'Lithuania', 'Czechia', 'United Kingdom', 'United States', 'Global']
 
 export const PLATFORM_LABEL: Record<Platform, string> = {
-  x: 'X', facebook: 'Facebook', threads: 'Threads', news: 'News',
+  x: 'X', facebook: 'Facebook', reddit: 'Reddit', bluesky: 'Bluesky', news: 'News',
 }
 
 // The post's own link when the API has one; otherwise a profile URL derived from the handle
@@ -80,7 +80,6 @@ export function sourceUrl(p: Pick<Post, 'platform' | 'handle' | 'url'>) {
   if (p.url) return p.url
   const h = p.handle.replace(/^@/, '')
   if (p.platform === 'x') return `https://x.com/${h}`
-  if (p.platform === 'threads') return `https://www.threads.net/@${h}`
   return `https://${h}`
 }
 
@@ -103,14 +102,14 @@ export const RANGES: Record<Range, { label: string; ms: number }> = {
 // Social posts for the login reels — static, illustrative
 export const REEL_POSTS: { platform: Platform; handle: string; text: string; threat?: boolean }[] = [
   { platform: 'x', handle: '@mkt_insider', text: 'BREAKING: bank froze all withdrawals. Get your money out now!', threat: true },
-  { platform: 'threads', handle: '@personalfinance', text: 'Their app works fine for me, transfer went through in seconds.' },
-  { platform: 'threads', handle: '@insider_news', text: 'Sources: regulator raid tomorrow morning. Share before deleted.', threat: true },
+  { platform: 'x', handle: '@personalfinance', text: 'Their app works fine for me, transfer went through in seconds.' },
+  { platform: 'facebook', handle: '@insider_news', text: 'Sources: regulator raid tomorrow morning. Share before deleted.', threat: true },
   { platform: 'facebook', handle: 'Anna K.', text: 'Proud of our team shipping the new payments platform today.' },
   { platform: 'facebook', handle: 'moneytok', text: 'POV: the ATM says NO 😱 #bankrun', threat: true },
   { platform: 'news', handle: 'Daily Ledger', text: 'Quarterly results beat expectations as deposits grow 4%.' },
   { platform: 'facebook', handle: 'Savers Group', text: 'Anyone know if branches are open on Saturday?' },
   { platform: 'x', handle: '@defence_watch', text: 'Supplier halted ALL June deliveries — army left without ammo.', threat: true },
-  { platform: 'threads', handle: '@europe_daily', text: 'Good thread on how disinformation campaigns get amplified.' },
+  { platform: 'x', handle: '@europe_daily', text: 'Good thread on how disinformation campaigns get amplified.' },
   { platform: 'x', handle: '@leaks_eu', text: 'Customer database of 2M accounts for sale. Proof inside.', threat: true },
   { platform: 'news', handle: 'EuroWire', text: 'Bank confirms brief ATM maintenance in one region.' },
   { platform: 'facebook', handle: 'Piotr N.', text: 'Hiring: risk analysts for our Warsaw office.' },

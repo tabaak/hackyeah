@@ -1,10 +1,9 @@
-import { FileText, Globe, Sparkle } from '@phosphor-icons/react'
-import { useEffect, useState } from 'react'
+import { FileText, Globe, Sparkle, Trash } from '@phosphor-icons/react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CompanyForm, CompanyWizard, DocsUpload, type PendingDoc } from '../components/CompanySetup'
 import CompanyLogo from '../components/CompanyLogo'
-import { api } from '../lib/api'
-import type { Classification, Company, CompanyDraft } from '../lib/mock'
+import type { Classification, Company, CompanyDraft, Doc } from '../lib/mock'
 import { useStore } from '../lib/store'
 import { Badge, Button, ClassBadge, cx, Dialog, PageActions } from '../lib/ui'
 
@@ -24,7 +23,7 @@ function summarize(c: Company) {
 }
 
 function CompanyCard({ c }: { c: Company }) {
-  const { posts, uploadDocuments, updateCompany } = useStore()
+  const { posts, uploadDocuments, deleteDocument, updateCompany } = useStore()
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [editError, setEditError] = useState('')
@@ -33,6 +32,29 @@ function CompanyCard({ c }: { c: Company }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const close = () => { setUploading(false); setDocs([]); setError('') }
+  const [removing, setRemoving] = useState<Doc | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
+
+  function closeRemove() {
+    if (deleting) return
+    setRemoving(null)
+    setDeleteError('')
+  }
+
+  async function remove() {
+    if (!removing || deleting) return
+    setDeleting(true)
+    setDeleteError('')
+    try {
+      await deleteDocument(c.id, removing.id)
+      setRemoving(null)
+    } catch (e) {
+      setDeleteError(e instanceof Error ? e.message : 'The document could not be deleted. Please try again.')
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   function closeEdit() {
     if (saving) return
@@ -151,6 +173,9 @@ function CompanyCard({ c }: { c: Company }) {
                     {d.status === 'processing' && <Badge>Summarizing…</Badge>}
                     {d.status === 'failed' && <Badge tone="danger">Processing failed</Badge>}
                     <ClassBadge c={d.classification} />
+                    <Button variant="ghost" className="h-8 w-8 px-0!" aria-label={`Delete ${d.name}`} onClick={() => { setDeleteError(''); setRemoving(d) }}>
+                      <Trash size={18} />
+                    </Button>
                   </div>
                   {d.summary ? (
                     <p className="mt-1 ml-6 text-xs leading-5 text-fg-2">{d.summary}</p>
@@ -179,6 +204,17 @@ function CompanyCard({ c }: { c: Company }) {
           <Button variant="primary" disabled={!docs.length || busy} onClick={upload}>
             {busy ? 'Uploading…' : `Upload ${docs.length || ''}`}
           </Button>
+        </div>
+      </Dialog>
+
+      <Dialog open={!!removing} onClose={closeRemove} title="Delete document">
+        <p className="text-sm text-fg-2">
+          Delete <b className="text-fg">{removing?.name}</b>? The file and its index are removed, and the agent will no longer use it to check claims about {c.name}. This can't be undone.
+        </p>
+        {deleteError && <p role="alert" className="mt-3 text-sm text-danger">{deleteError}</p>}
+        <div className="mt-5 flex justify-end gap-2">
+          <Button variant="ghost" disabled={deleting} onClick={closeRemove}>Cancel</Button>
+          <Button variant="danger" disabled={deleting} onClick={remove}>{deleting ? 'Deleting…' : 'Delete'}</Button>
         </div>
       </Dialog>
     </article>

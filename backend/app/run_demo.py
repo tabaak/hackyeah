@@ -1,7 +1,6 @@
 """End-to-end run on a real company, saving everything to backend/results/<slug>/ (git-ignored).
 
     python -m app.run_demo --company Boeing --sector Defence      # news + web + X + Facebook (Serper + Apify credits)
-    python -m app.run_demo --company Boeing --threads             # also Threads (~$0.7 per run)
     python -m app.run_demo --company Boeing --reuse               # re-analyze saved raw files, no scraper calls
     python -m app.run_demo --company Boeing --no-x --no-facebook  # skip sources
 
@@ -38,13 +37,10 @@ def main() -> None:
     ap.add_argument("--country", default="United States", help="Global = no geo bias (international companies)")
     ap.add_argument("--local", action="store_true", help="also add local-language risk words for the country")
     ap.add_argument("--days", type=int, default=90)
-    ap.add_argument("--threads", action="store_true", help="include Threads (expensive); off by default")
-    ap.add_argument("--threads-raw", help="saved Threads actor response (JSON list) to use instead of a paid run")
     ap.add_argument("--no-web", action="store_true")
     ap.add_argument("--no-news", action="store_true")
     ap.add_argument("--no-x", action="store_true")
     ap.add_argument("--no-facebook", action="store_true")
-    ap.add_argument("--no-threads", action="store_true")
     ap.add_argument("--limit", type=int, default=20)
     ap.add_argument("--reuse", action="store_true", help="re-analyze the raw_*.json already saved, no scraper calls")
     args = ap.parse_args()
@@ -65,7 +61,7 @@ def main() -> None:
     out = RESULTS / slug
     out.mkdir(parents=True, exist_ok=True)
     queries = negative_queries(company, 12, local=args.local)
-    social = {Platform.x: queries[:8], Platform.facebook: queries[:3], Platform.threads: queries[:1]}
+    social = {Platform.x: queries[:8], Platform.facebook: queries[:3]}
     print("news queries:", queries)
     print("web queries:", web_queries(company))
 
@@ -78,13 +74,12 @@ def main() -> None:
         for name in ("raw_news.json", "raw_web.json"):
             if (out / name).exists():
                 mentions += [Mention.model_validate(m) for m in json.loads((out / name).read_text())]
-        for platform in (Platform.x, Platform.facebook, Platform.threads):
+        for platform in (Platform.x, Platform.facebook):
             f = out / f"raw_{platform.value}.json"
             if f.exists():
                 mentions += [m for i in json.loads(f.read_text()) if (m := apify.to_mention(i, platform, cid, now_ms))]
         print(f"reused saved raw data: {len(mentions)} mentions")
         args.no_news = args.no_web = args.no_x = args.no_facebook = True
-        args.threads = args.threads_raw = False
     if not args.no_news:
         found = search_news(company, cid, period="3m", queries=queries)
         save("raw_news.json", [m.model_dump(mode="json") for m in found])  # already mapped to Mention
@@ -102,14 +97,6 @@ def main() -> None:
         save(f"raw_{platform.value}.json", items)
         mentions += [m for i in items if (m := apify.to_mention(i, platform, cid, now))]
         print(f"{platform.value}: {len(items)} raw items")
-    if args.threads or args.threads_raw:
-        if args.threads_raw:
-            items = json.loads(Path(args.threads_raw).read_text())
-        else:
-            items = [i for inp in apify.INPUTS[Platform.threads](company, social[Platform.threads], args.limit) for i in apify.run_actor(Platform.threads, inp)]
-        save("raw_threads.json", items)
-        mentions += [m for i in items if (m := apify.to_mention(i, Platform.threads, cid, now))]
-        print(f"threads: {len(items)} raw items")
 
     # drop duplicates and old posts, then analyze
     seen, fresh = set(), []

@@ -173,9 +173,11 @@ def sql_tables():
 
 
 def sql_check(table, column):
+    """The newest definition: a later migration's `alter table ... add constraint` wins over `create table`."""
+    altered = re.findall(rf"alter table public\.{table}\s+add constraint \w+\s+check \({column} in \(([^)]*)\)\)", SQL)
     m = re.search(rf"check \({column} in \(([^)]*)\)\)", sql_tables()[table])
-    assert m, f"no CHECK on {table}.{column}"
-    return set(re.findall(r"'([^']+)'", m[1]))
+    assert altered or m, f"no CHECK on {table}.{column}"
+    return set(re.findall(r"'([^']+)'", altered[-1] if altered else m[1]))
 
 
 @pytest.mark.parametrize("table,column,expected", [

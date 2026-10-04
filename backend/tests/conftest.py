@@ -69,6 +69,8 @@ def pytest_collection_modifyitems(config, items):
 def test_settings(request, monkeypatch):
     for cached in _CACHED:
         cached.cache_clear()
+    from app.services import news
+    monkeypatch.setattr(news, "RSS_PAUSE_S", 0)  # no real Google News requests in tests
     if "live" not in request.keywords:
         # Every setting is pinned; ones not listed (e.g. a newly added token) become "" so no real secret leaks in.
         for name, default in vars(type(settings)).items():

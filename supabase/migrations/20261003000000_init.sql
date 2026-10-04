@@ -190,7 +190,7 @@ create table public.mentions (
   id                   uuid primary key default gen_random_uuid(),
   organization_id      uuid not null references public.organizations (id) on delete cascade,
   company_id           uuid not null references public.companies (id) on delete cascade,
-  platform             text not null check (platform in ('x', 'facebook', 'reddit', 'telegram', 'tiktok', 'linkedin', 'threads', 'news')),
+  platform             text not null check (platform in ('x', 'facebook', 'reddit', 'telegram', 'tiktok', 'linkedin', 'news')),
   external_id          text not null,
   url                  text,
   author               text not null default '',

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { PLATFORM_LABEL } from '../lib/mock'
 import { THEMES, useStore, type Theme } from '../lib/store'
-import { cx, timeAgo } from '../lib/ui'
+import { Button, cx, timeAgo } from '../lib/ui'
 import { LogoMark, PRODUCT_NAME } from './Login'
 
 const TABS = [
@@ -13,16 +13,31 @@ const TABS = [
 ]
 
 function Notifications({ id, placement }: { id: string; placement: string }) {
-  const { posts, companies, notifications, markNotificationRead } = useStore()
+  const { posts, companies, notifications, markNotificationRead, markAllNotificationsRead } = useStore()
+  const [markingSeen, setMarkingSeen] = useState(false)
+  const [seenError, setSeenError] = useState<string | null>(null)
   const nav = useNavigate()
   const incidents = notifications.items.filter(n => n.mentionId)
   const name = (cid: string) => companies.find(c => c.id === cid)?.name
+  const markSeen = async () => {
+    if (markingSeen || notifications.openCount === 0) return
+    setMarkingSeen(true)
+    setSeenError(null)
+    try {
+      await markAllNotificationsRead()
+    } catch (error) {
+      setSeenError(error instanceof Error ? error.message : 'Could not mark notifications as seen.')
+    } finally {
+      setMarkingSeen(false)
+    }
+  }
 
   return (
     <>
       <button
         popoverTarget={id}
-        aria-label={`Notifications, ${notifications.openCount} open incidents`}
+        onClick={() => { if (typeof Notification !== 'undefined' && Notification.permission === 'default') void Notification.requestPermission() }}
+        aria-label={`Notifications, ${notifications.openCount} unread`}
         className="relative flex h-11 w-11 cursor-pointer md:h-9 md:w-9 items-center justify-center rounded-control text-sidebar-muted motion-control hover:bg-sidebar-active hover:text-sidebar-text"
       >
         <Bell size={20} />
@@ -35,10 +50,18 @@ function Notifications({ id, placement }: { id: string; placement: string }) {
       <div id={id} popover="auto" className={cx('m-0 w-[min(360px,calc(100vw-32px))] rounded-dialog border border-line bg-surface p-0 text-fg shadow-2xl', placement)}>
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
           <h2 className="font-semibold">Latest incidents</h2>
-          <span className="text-xs text-fg-3">High priority · open</span>
+          <Button
+            variant="ghost"
+            className="h-7 px-2 text-xs"
+            onClick={() => void markSeen()}
+            disabled={markingSeen || notifications.openCount === 0}
+            aria-label="Mark all notifications as seen"
+            aria-busy={markingSeen}
+          >Seen</Button>
         </div>
+        {seenError && <p role="alert" className="px-4 pt-3 text-xs text-danger">{seenError}</p>}
         {incidents.length === 0 ? (
-          <p className="px-4 py-6 text-center text-sm text-fg-3">No open high-priority incidents.</p>
+          <p className="px-4 py-6 text-center text-sm text-fg-3">No incidents yet.</p>
         ) : (
           <ul className="max-h-96 divide-y divide-line overflow-y-auto">
             {incidents.slice(0, 6).map(n => {

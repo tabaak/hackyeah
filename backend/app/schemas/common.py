@@ -22,7 +22,7 @@ class Platform(str, Enum):
     telegram = "telegram"
     tiktok = "tiktok"
     linkedin = "linkedin"
-    threads = "threads"
+    bluesky = "bluesky"
     news = "news"
 
 

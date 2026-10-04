@@ -168,11 +168,11 @@ def test_analyse_all_switch(llm_calls, monkeypatch):
 def test_per_platform_limits(monkeypatch):
     seen = {}
     monkeypatch.setattr(apify, "search_posts", lambda draft, cid, queries, **kw: seen.setdefault(kw["platforms"][0], kw["limit"]) and [])
-    for name, value in (("apify_limit_x", 111), ("apify_limit_facebook", 22), ("apify_limit_threads", 12)):
+    for name, value in (("apify_limit_x", 111), ("apify_limit_facebook", 22), ("apify_limit_reddit", 33)):
         monkeypatch.setattr(social.settings, name, value)
     for p in social.PLATFORMS:
         social.fetch(COMPANY, p)
-    assert seen == {Platform.x: 111, Platform.facebook: 22, Platform.threads: 12}
+    assert seen == {Platform.x: 111, Platform.facebook: 22, Platform.reddit: 33}
 
 
 def test_x_item_gets_avatar_and_images():
@@ -185,11 +185,7 @@ def test_x_item_gets_avatar_and_images():
     assert m.images == ["https://pbs.twimg.com/media/a.jpg", "https://pbs.twimg.com/media/b.jpg"]  # t.co link is not a picture; no duplicates
 
 
-def test_threads_and_facebook_media_fields():
-    t = apify.to_mention({"record_type": "post", "post_url": "https://threads.com/x", "text_content": "Goldman", "created_at": "2026-10-03T18:45:43+00:00",
-                          "profile_pic_hd_url": "https://cdn.example/hd.jpg", "profile_pic_url": "https://cdn.example/sd.jpg",
-                          "media_urls": ["https://cdn.example/1.jpg", "not-a-url"], "media_url": "https://cdn.example/1.jpg"}, Platform.threads, "c1", NOW)
-    assert t.avatar_url == "https://cdn.example/hd.jpg" and t.images == ["https://cdn.example/1.jpg"]
+def test_facebook_media_fields():
     f = apify.to_mention({"id": "9", "text": "Goldman", "url": "https://fb.example/p", "user": {"profilePic": "https://fb.example/a.jpg"},
                           "media": [{"thumbnail": "https://fb.example/t.png"}]}, Platform.facebook, "c1", NOW)
     assert f.avatar_url == "https://fb.example/a.jpg" and f.images == ["https://fb.example/t.png"]

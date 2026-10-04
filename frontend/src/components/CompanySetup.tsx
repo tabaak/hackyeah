@@ -140,7 +140,7 @@ export function DocsUpload({ docs, onChange }: { docs: PendingDoc[]; onChange: (
               >
                 {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
-              <Button variant="ghost" className="h-8 w-8 px-0" aria-label={`Remove ${d.name}`} onClick={() => onChange(docs.filter(x => x.id !== d.id))}>
+              <Button variant="ghost" className="h-8 w-8 px-0!" aria-label={`Remove ${d.name}`} onClick={() => onChange(docs.filter(x => x.id !== d.id))}>
                 <Trash size={16} />
               </Button>
             </li>

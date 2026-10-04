@@ -258,3 +258,22 @@ def test_revise_draft_follows_instruction_under_the_same_rules(monkeypatch):
     assert "never add facts" in seen["system"] and "UNTRUSTED DATA" in seen["system"]
     monkeypatch.setattr(llm, "chat_json", lambda *a, **k: None)
     assert responses.revise_draft(company, mention, "Long draft.", "shorter", []) is None  # no template overwrite
+
+
+def test_draft_is_routed_by_evidence_classification(monkeypatch):
+    for name, value in (("openai_api_key", "sk"), ("openai_model", "m"), ("llm_force", "")):
+        monkeypatch.setattr(routed_llm.settings, name, value)
+    providers = []
+
+    def fake_create(provider):
+        def create(**kw):
+            providers.append(provider)
+            return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content='{"draft": "Hi"}'))])
+        return SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+
+    monkeypatch.setattr(routed_llm, "_client", fake_create)
+    company, mention = {"name": "Kestrel"}, {"platform": "x", "text": "Bank is collapsing"}
+    hit = {"name": "faq.pdf", "classification": "public", "content": "All fine"}
+    assert responses.generate_draft(company, mention, "opinion", "r", [hit]) == "Hi"
+    responses.generate_draft(company, mention, "opinion", "r", [hit, {**hit, "classification": "confidential"}])
+    assert providers == ["cloud", "local"]  # confidential evidence stays on the local model

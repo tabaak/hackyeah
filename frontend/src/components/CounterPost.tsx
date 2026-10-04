@@ -1,7 +1,7 @@
 import { Sparkle } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
-import { VERDICT_LABEL, type Classification, type Post, type Verdict } from '../lib/mock'
+import { PLATFORM_LABEL, sourceUrl, VERDICT_LABEL, type Classification, type Post, type Verdict } from '../lib/mock'
 import { useStore } from '../lib/store'
 import { Button, cx, Field, inputCls, PlatformIcon, timeAgo } from '../lib/ui'
 
@@ -23,6 +23,14 @@ const PRESETS = [
   ['Lead with facts', 'Open with the key verified fact, then the rest.'],
   ['Simpler', 'Use plain, simple words a general audience understands.'],
 ] as const
+
+// Composer link with the text pre-filled; X also threads it as a reply to the original tweet.
+// Facebook's sharer ignores pre-filled text by policy, so there we copy the text and open the post.
+function composeUrl(post: Post, text: string): string | null {
+  if (post.platform !== 'x') return null
+  const id = post.url?.match(/status\/(\d+)/)?.[1]
+  return `https://x.com/intent/post?text=${encodeURIComponent(text)}${id ? `&in_reply_to=${id}` : ''}`
+}
 
 export function CounterPost({ post, onDone }: { post: Post; onDone: () => void }) {
   const { user, refreshFeed } = useStore()
@@ -60,6 +68,15 @@ export function CounterPost({ post, onDone }: { post: Post; onDone: () => void }
     } catch { /* user can select manually */ }
   }
 
+  // Only the approved text goes out: unsaved edits would bypass the approval recorded for the saved hash.
+  async function publish() {
+    const url = composeUrl(post, text)
+    if (url) return void window.open(url, '_blank', 'noopener')
+    const tab = window.open(sourceUrl(post), '_blank', 'noopener') // open before await, or popup blockers kick in
+    await copy()
+    if (!tab) setActionError('Allow pop-ups to open the original post')
+  }
+
   // Saving re-runs the disclosure check and drops any earlier approval on the server.
   async function saveDraft(): Promise<MentionResponse | null> {
     if (!data || text === data.draft) return data
@@ -91,9 +108,11 @@ export function CounterPost({ post, onDone }: { post: Post; onDone: () => void }
       const current = await saveDraft()
       if (!current) return
       const request = current.disclosure.needsCompliance && user?.role !== 'compliance'
-      await api(`/mentions/${post.id}/response/${request ? 'request-approval' : 'approve'}`, { method: 'POST' })
+      const r = await api<MentionResponse>(`/mentions/${post.id}/response/${request ? 'request-approval' : 'approve'}`, { method: 'POST' })
       await refreshFeed()
-      onDone()
+      // Approved right away: stay open so it can be published
+      if (r.approval.state === 'approved') setData(r)
+      else onDone()
     } catch (e) {
       setActionError((e as Error).message)
     } finally {
@@ -171,6 +190,12 @@ export function CounterPost({ post, onDone }: { post: Post; onDone: () => void }
       <div className="flex justify-end gap-2">
         {loadError && <Button onClick={() => setAttempt(n => n + 1)}>Retry</Button>}
         <Button onClick={copy} disabled={!data}>{copied ? 'Copied' : 'Copy'}</Button>
+        {approval === 'approved' && post.platform !== 'news' && (
+          <Button onClick={publish} disabled={text !== data?.draft}>
+            <PlatformIcon p={post.platform} size={14} />
+            {composeUrl(post, text) ? `Post to ${PLATFORM_LABEL[post.platform]}` : `Copy & open ${PLATFORM_LABEL[post.platform]}`}
+          </Button>
+        )}
         <Button variant="primary" onClick={submit} disabled={!data || busy || rewriting || approval !== 'none'}>
           {approval === 'approved' ? 'Approved' : approval === 'pending' ? 'Approval requested' : requestOnly ? 'Request approval' : 'Approve'}
         </Button>

@@ -1,7 +1,8 @@
 import { ChatsCircle, CheckCircle, GitDiff, Question, Warning, X as XIcon } from '@phosphor-icons/react'
+import blueskyIcon from '../assets/platforms/bluesky.svg'
 import facebookIcon from '../assets/platforms/facebook.svg'
 import newsIcon from '../assets/platforms/news.svg'
-import threadsIcon from '../assets/platforms/threads.svg'
+import redditIcon from '../assets/platforms/reddit.svg'
 import xIcon from '../assets/platforms/x.svg'
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
@@ -80,7 +81,7 @@ export function ClassBadge({ c }: { c: Classification }) {
 }
 
 // Simple Icons brand marks (news: Phosphor fill); painted via mask so they take currentColor
-const PLATFORM_ICON: Record<Platform, string> = { x: xIcon, facebook: facebookIcon, threads: threadsIcon, news: newsIcon }
+const PLATFORM_ICON: Record<Platform, string> = { x: xIcon, facebook: facebookIcon, reddit: redditIcon, bluesky: blueskyIcon, news: newsIcon }
 export function PlatformIcon({ p, size = 16 }: { p: Platform; size?: number }) {
   const mask = `url("${PLATFORM_ICON[p]}") center / contain no-repeat`
   return <span role="img" aria-label={PLATFORM_LABEL[p]} className="inline-block shrink-0 bg-current" style={{ width: size, height: size, mask, WebkitMask: mask }} />
@@ -116,7 +117,7 @@ export function Dialog({ open, onClose, title, children, wide }: { open: boolean
         <div className="flex max-h-[90dvh] flex-col">
           <div className="flex items-center justify-between border-b border-line px-4 py-3 sm:px-5 sm:py-4">
             <h2 className="text-lg font-semibold">{title}</h2>
-            <Button variant="ghost" className="w-9 px-0" onClick={onClose} aria-label="Close"><XIcon size={18} /></Button>
+            <Button variant="ghost" className="w-9 px-0!" onClick={onClose} aria-label="Close"><XIcon size={18} /></Button>
           </div>
           <div className="overflow-y-auto p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-5">{children}</div>
         </div>

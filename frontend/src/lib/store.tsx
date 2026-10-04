@@ -30,6 +30,17 @@ const fetchPage = (before?: number, signal?: AbortSignal): Promise<Page> =>
     .then(ps => ({ items: ps.filter(knownPlatform), full: ps.length >= PAGE }))
 const fetchNotifications = (signal?: AbortSignal) => api<Notifications>('/notifications', { signal })
 
+// Desktop alert for high-risk mentions that arrived since the last poll (permission is asked from the bell).
+function alertNewCritical(prev: Notifications, next: Notifications) {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return
+  const known = new Set(prev.items.map(n => n.id))
+  for (const n of next.items) {
+    if (n.kind !== 'critical_mention' || n.read || known.has(n.id)) continue
+    const alert = new Notification('High-risk mention', { body: n.title, tag: n.id })
+    alert.onclick = () => { window.focus(); location.assign(`/app/feed?respond=${n.mentionId}`) }
+  }
+}
+
 function uploadDocs(companyId: string, docs: PendingDoc[], token: string) {
   const form = new FormData()
   docs.forEach(({ file, classification }) => { form.append('files', file); form.append('classifications', classification) })
@@ -62,6 +73,7 @@ interface Store {
   addCompany: (draft: CompanyDraft, docs: PendingDoc[], logo?: File | null) => Promise<void>
   updateCompany: (companyId: string, draft: CompanyDraft) => Promise<void>
   uploadDocuments: (companyId: string, docs: PendingDoc[]) => Promise<void>
+  deleteDocument: (companyId: string, documentId: string) => Promise<void>
   setCompanyLogo: (companyId: string, file: File | null) => Promise<void>
   posts: Post[]
   setPostStatus: (id: string, s: PostStatus) => void
@@ -71,6 +83,7 @@ interface Store {
   loadOlder: () => Promise<void>
   notifications: Notifications
   markNotificationRead: (id: string) => void
+  markAllNotificationsRead: () => Promise<void>
   theme: Theme
   setTheme: (t: Theme) => void
 }
@@ -95,6 +108,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [loadingOlder, setLoadingOlder] = useState(false)
   const resetPosts = () => { setPosts([]); setNewestFull(false); setOlderDone(false) }
   const [notifications, setNotifications] = useState<Notifications>(NO_NOTIFICATIONS)
+  const notificationRevision = useRef(0)
   const pendingStatus = useRef(new Map<string, PostStatus>()) // optimistic changes the server has not confirmed yet
   // Older builds stored 'dark'; anything unknown falls back to graphite
   const [theme, setTheme] = useState<Theme>(() => {
@@ -209,6 +223,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const refreshFeed = async () => {
     const acct = account.current
     if (!acct) return
+    const readRevision = notificationRevision.current
     try {
       const [page, ns] = await Promise.all([fetchPage(), fetchNotifications()])
       if (account.current !== acct) return // signed out or switched account meanwhile
@@ -219,7 +234,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return [...page.items, ...(page.full ? prev.filter(p => p.at < oldest) : [])].map(pending)
       })
       setNewestFull(page.full)
-      setNotifications(ns)
+      if (readRevision === notificationRevision.current) {
+        alertNewCritical(notifications, ns)
+        setNotifications(ns)
+      }
     } catch { /* keep what is shown; the next poll retries */ }
   }
   const refreshRef = useRef(refreshFeed)
@@ -297,6 +315,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (owner !== account.current || revision !== sessionRevision.current) return
       setCompanies(cs => cs.map(c => (c.id === companyId ? { ...c, documents: [...c.documents, ...added] } : c)))
     },
+    deleteDocument: async (companyId, documentId) => {
+      const owner = account.current
+      const revision = sessionRevision.current
+      const token = accessToken.current
+      if (!owner || !token) throw new Error('Please sign in before deleting documents.')
+      await api(`/documents/${documentId}`, { method: 'DELETE' }, token)
+      if (owner !== account.current || revision !== sessionRevision.current) return
+      setCompanies(cs => cs.map(c => (c.id === companyId ? { ...c, documents: c.documents.filter(d => d.id !== documentId) } : c)))
+    },
     setCompanyLogo: async (companyId, file) => {
       const owner = account.current
       const revision = sessionRevision.current
@@ -338,12 +365,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     notifications,
     markNotificationRead: id => {
+      notificationRevision.current++
       setNotifications(n => {
         const item = n.items.find(x => x.id === id)
         if (!item || item.read) return n
         return { items: n.items.map(x => (x.id === id ? { ...x, read: true } : x)), openCount: Math.max(0, n.openCount - 1) }
       })
       void api(`/notifications/${id}/read`, { method: 'PATCH' }).catch(() => {})
+    },
+    markAllNotificationsRead: async () => {
+      const owner = account.current
+      const revision = sessionRevision.current
+      const token = accessToken.current
+      if (!owner || !token) throw new Error('Please sign in before marking notifications as seen.')
+      await api<void>('/notifications/mark-all-read', { method: 'POST' }, token)
+      if (owner !== account.current || revision !== sessionRevision.current) return
+      notificationRevision.current++
+      setNotifications(n => ({ items: n.items.map(item => ({ ...item, read: true })), openCount: 0 }))
+      void refreshFeed()
     },
     theme,
     setTheme,

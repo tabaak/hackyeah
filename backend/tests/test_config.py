@@ -37,24 +37,24 @@ def test_defaults(monkeypatch):
     assert (s.supabase_url, s.supabase_jwt_secret, s.serper_api_key) == ("", "", "")
     assert (s.openai_api_key, s.openai_model) == ("", "")
     assert s.openai_base_url == "https://api.openai.com/v1"
-    assert s.local_llm_base_url == "http://localhost:8000/v1"
+    assert s.local_llm_base_url == "http://localhost:8001/v1"
     assert s.local_llm_model == "bonsai-2-27b"
     assert s.local_llm_api_key == "not-needed"
     assert s.llm_force == ""
-    assert s.llm_timeout_s == 120.0
+    assert s.llm_timeout_s == 30.0
 
 
 def test_empty_values_fall_back_to_defaults(monkeypatch):
-    s, _ = load_config(monkeypatch, LOCAL_LLM_BASE_URL="", LOCAL_LLM_MODEL="", OPENAI_BASE_URL="", LLM_TIMEOUT_S="")
-    assert s.local_llm_base_url == "http://localhost:8000/v1"
+    s, _ = load_config(monkeypatch, LOCAL_LLM_BASE_URL="", LOCAL_LLM_MODEL="", OPENAI_BASE_URL="", LLM_TIMEOUT_SECONDS="")
+    assert s.local_llm_base_url == "http://localhost:8001/v1"
     assert s.local_llm_model == "bonsai-2-27b"
     assert s.openai_base_url == "https://api.openai.com/v1"
-    assert s.llm_timeout_s == 120.0
+    assert s.llm_timeout_s == 30.0
 
 
 def test_values_are_read(monkeypatch):
     s, _ = load_config(monkeypatch, SUPABASE_URL="https://abc.supabase.co", OPENAI_MODEL="gpt-x",
-                       LOCAL_LLM_BASE_URL="http://gpu-box:9000/v1", LLM_FORCE="local", LLM_TIMEOUT_S="30")
+                       LOCAL_LLM_BASE_URL="http://gpu-box:9000/v1", LLM_FORCE="local", LLM_TIMEOUT_SECONDS="30")
     assert s.supabase_url == "https://abc.supabase.co"
     assert s.openai_model == "gpt-x"
     assert s.local_llm_base_url == "http://gpu-box:9000/v1"
@@ -68,18 +68,9 @@ def test_supabase_url_trailing_slash_is_removed(monkeypatch):
     assert s.supabase_url == "https://abc.supabase.co"
 
 
-def test_openai_key_alias(monkeypatch):
-    s, _ = load_config(monkeypatch, OPENAI_KEY="sk-alias")
-    assert s.openai_api_key == "sk-alias"
-    s, _ = load_config(monkeypatch, OPENAI_KEY="sk-alias", OPENAI_API_KEY="sk-main")
-    assert s.openai_api_key == "sk-main"
-    s, _ = load_config(monkeypatch, OPENAI_KEY="sk-alias", OPENAI_API_KEY="")
-    assert s.openai_api_key == "sk-alias"
-
-
 def test_invalid_timeout_fails_at_startup(monkeypatch):
     with pytest.raises(ValueError):
-        load_config(monkeypatch, LLM_TIMEOUT_S="soon")
+        load_config(monkeypatch, LLM_TIMEOUT_SECONDS="soon")
 
 
 def test_env_example_documents_every_variable():

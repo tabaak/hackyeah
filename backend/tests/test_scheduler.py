@@ -18,14 +18,14 @@ COMPANY = {"id": "c1", "organization_id": "o1", "name": "Goldman Sachs", "aliase
 @pytest.fixture
 def cfg(monkeypatch):
     s = scheduler.settings
-    for name, value in (("sync_enabled", True), ("sync_news_minutes", 60), ("sync_x_minutes", 180), ("sync_facebook_minutes", 720),
-                        ("sync_threads_minutes", 0), ("sync_startup_delay_s", 120), ("serper_api_key", "k"), ("apify_token", "t")):
+    for name, value in (("sync_enabled", True), ("sync_news_minutes", 60), ("sync_x_minutes", 180), ("sync_facebook_minutes", 720), ("sync_reddit_minutes", 0), ("sync_bluesky_minutes", 0),
+                        ("sync_startup_delay_s", 120), ("serper_api_key", "k"), ("apify_token", "t")):
         monkeypatch.setattr(s, name, value)
     return s
 
 
 def test_intervals_follow_settings(cfg):
-    assert scheduler.intervals() == {Platform.news: 60, Platform.x: 180, Platform.facebook: 720, Platform.threads: 0}
+    assert scheduler.intervals() == {Platform.news: 60, Platform.x: 180, Platform.facebook: 720, Platform.reddit: 0, Platform.bluesky: 0}
 
 
 def run_start(monkeypatch):
@@ -50,7 +50,7 @@ def run_start(monkeypatch):
 
 def test_start_creates_a_staggered_loop_per_enabled_source(cfg, monkeypatch):
     names, started = run_start(monkeypatch)
-    assert names == ["sync-facebook", "sync-news", "sync-x"]  # threads is 0 = off
+    assert names == ["sync-facebook", "sync-news", "sync-x"]
     assert started == [("news", 60, 120), ("x", 180, 180), ("facebook", 720, 240)]  # first pass staggered by a minute each
 
 

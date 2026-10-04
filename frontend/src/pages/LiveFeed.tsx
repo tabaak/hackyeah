@@ -1,8 +1,10 @@
 import { Archive, Lightning, UsersThree, Warning } from '@phosphor-icons/react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AddByLink } from '../components/AddByLink'
 import { CounterPost } from '../components/CounterPost'
 import { PostRow } from '../components/PostRow'
+import { api } from '../lib/api'
 import { PLATFORM_LABEL, type Platform, type Post } from '../lib/mock'
 import { useStore } from '../lib/store'
 import { Badge, Button, compact, cx, Dialog, PageActions, PlatformIcon, timeAgo } from '../lib/ui'
@@ -25,6 +27,29 @@ export default function LiveFeed() {
   const rawStatus = q.get('status') === 'dismissed' ? 'archive' : q.get('status') // old links
   const status = (rawStatus && rawStatus in STATUSES ? rawStatus : 'open') as keyof typeof STATUSES
   const respondId = q.get('respond')
+  const [total, setTotal] = useState<number | null>(null)
+  const sentinel = useRef<HTMLDivElement>(null)
+  const loadOlderRef = useRef(loadOlder)
+  useEffect(() => { loadOlderRef.current = loadOlder })
+  const loaded = posts.filter(p => company === 'all' || p.companyId === company).length
+
+  // Total in the database for the counter; refreshed whenever the loaded set changes
+  useEffect(() => {
+    const ac = new AbortController()
+    api<{ total: number }>(`/analytics/summary?range=all${company === 'all' ? '' : `&company_id=${company}`}`, { signal: ac.signal })
+      .then(s => setTotal(s.total)).catch(() => {})
+    return () => ac.abort()
+  }, [company, posts.length])
+
+  // Infinite scroll: load the next page when the end of the list comes near. Re-observing after each page fires
+  // again if the end is still visible (e.g. filters hide most rows).
+  useEffect(() => {
+    const el = sentinel.current
+    if (!el || !hasMore) return
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) void loadOlderRef.current() }, { rootMargin: '600px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [hasMore, posts.length])
 
   const set = (k: string, v: string | null) =>
     setQ(prev => {
@@ -87,7 +112,7 @@ export default function LiveFeed() {
 
                 <div className="mt-auto flex gap-2">
                   <Button variant="primary" className="flex-1" onClick={() => set('respond', p.id)}>Create counter-post</Button>
-                  <Button variant="ghost" className="w-9 px-0" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
+                  <Button variant="ghost" className="w-9 px-0!" aria-label="Dismiss" title="Dismiss" onClick={() => setPostStatus(p.id, 'dismissed')}><Archive size={16} /></Button>
                 </div>
               </article>
             ))}
@@ -141,11 +166,10 @@ export default function LiveFeed() {
             ))}
           </ul>
         )}
-        {hasMore && (
-          <div className="border-t border-line p-3 text-center">
-            <Button onClick={() => void loadOlder()} disabled={loadingOlder}>{loadingOlder ? 'Loading…' : 'Load older mentions'}</Button>
-          </div>
-        )}
+        <div ref={sentinel} className="space-y-2 border-t border-line p-3 text-center">
+          {total != null && <p className="text-sm text-fg-3">Loaded <span className="font-mono text-fg-2">{loaded}</span> of <span className="font-mono text-fg-2">{total}</span> mentions</p>}
+          {hasMore && <Button onClick={() => void loadOlder()} disabled={loadingOlder}>{loadingOlder ? 'Loading…' : 'Load older mentions'}</Button>}
+        </div>
       </section>
 
       <Dialog wide open={!!responding && !!respondingCompany} onClose={() => set('respond', null)} title="Create counter-post">
