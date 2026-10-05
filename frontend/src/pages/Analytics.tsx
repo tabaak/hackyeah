@@ -142,7 +142,7 @@ export default function Analytics() {
               key={r}
               aria-pressed={range === r}
               onClick={() => setQ(prev => { const n = new URLSearchParams(prev); if (r === '24h') n.delete('range'); else n.set('range', r); return n })}
-              className={cx('h-8 cursor-pointer rounded-[4px] px-3 text-sm motion-control', range === r ? 'bg-selected font-medium text-fg' : 'text-fg-2 hover:text-fg')}
+              className={cx('h-8 cursor-pointer rounded-[4px] px-3 text-sm motion-control', range === r ? 'bg-accent font-medium text-on-accent' : 'text-fg-2 hover:text-fg')}
             >{RANGES[r].label}</button>
           ))}
         </div>

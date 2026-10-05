@@ -1,4 +1,3 @@
-import { LinkSimple } from '@phosphor-icons/react'
 import { useState, type FormEvent } from 'react'
 import { api } from '../lib/api'
 import type { Post } from '../lib/mock'
@@ -35,7 +34,7 @@ export function AddByLink({ defaultCompany }: { defaultCompany?: string }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} disabled={!companies.length}><LinkSimple size={16} />Add by link</Button>
+      <Button onClick={() => setOpen(true)} disabled={!companies.length}>Add by link</Button>
       <Dialog open={open} onClose={close} title="Add a post by link">
         {added ? (
           <div className="space-y-4">

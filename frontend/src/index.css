@@ -19,16 +19,16 @@
   --sidebar-active: #262626;
   --sidebar-text: #f5f5f5;
   --sidebar-muted: #a3a3a3;
-  --sidebar-accent: #5eead4;
+  --sidebar-accent: #d6a76f;
   --text: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
   --border: #e2e8f0;
   --control-border: #64748b;
-  --accent: #0f766e;
-  --accent-hover: #115e59;
+  --accent: #8a5a2c;
+  --accent-hover: #6e4520;
   --accent-foreground: #ffffff;
-  --selected: #eef6f5;
+  --selected: #f5efe8;
   --danger-text: #b42318;
   --danger-bg: #fef3f2;
   --warning-text: #92400e;
@@ -37,8 +37,8 @@
   --info-bg: #eff6ff;
   --success-text: #166534;
   --success-bg: #f0fdf4;
-  --ready-text: #115e59;
-  --ready-bg: #f0fdfa;
+  --ready-text: #6e4520;
+  --ready-bg: #f8f2ea;
   --neutral-text: #334155;
   color-scheme: light;
 }
@@ -51,16 +51,16 @@
   --sidebar-active: #292929;
   --sidebar-text: #f5f5f5;
   --sidebar-muted: #a3a3a3;
-  --sidebar-accent: #5eead4;
+  --sidebar-accent: #d6a76f;
   --text: #f5f5f5;
   --text-secondary: #d4d4d4;
   --text-muted: #a3a3a3;
   --border: #363636;
   --control-border: #737373;
-  --accent: #2dd4bf;
-  --accent-hover: #5eead4;
-  --accent-foreground: #042f2e;
-  --selected: #0f2b2a;
+  --accent: #d1a374;
+  --accent-hover: #e2bd92;
+  --accent-foreground: #2a1a0b;
+  --selected: #2d241b;
   --danger-text: #fca5a5;
   --danger-bg: #3a1214;
   --warning-text: #fcd34d;
@@ -69,8 +69,8 @@
   --info-bg: #142046;
   --success-text: #86efac;
   --success-bg: #0a2e1a;
-  --ready-text: #5eead4;
-  --ready-bg: #062a28;
+  --ready-text: #e2bd92;
+  --ready-bg: #2a2016;
   --neutral-text: #d4d4d4;
   color-scheme: dark;
 }
@@ -92,7 +92,7 @@
   --neutral-text: #cbd5e1;
 }
 
-/* Laurel: deep green-black around the brand's statue green */
+/* Laurel: deep green-black with the brand's bronze accent */
 .dark[data-theme="laurel"] {
   --canvas: #0b1a16;
   --surface: #11241e;
@@ -101,17 +101,17 @@
   --sidebar-active: #183129;
   --sidebar-text: #eef3f0;
   --sidebar-muted: #8fb0a4;
-  --sidebar-accent: #6ee0c2;
+  --sidebar-accent: #d6a76f;
   --text: #eef3f0;
   --text-secondary: #c6dbd3;
   --text-muted: #8fb0a4;
   --border: #21403a;
   --control-border: #5a8075;
-  --accent: #3cc9a6;
-  --accent-hover: #6ee0c2;
-  --accent-foreground: #04261d;
+  --accent: #d1a374;
+  --accent-hover: #e2bd92;
+  --accent-foreground: #2a1a0b;
   --selected: #123a31;
-  --ready-text: #6ee0c2;
+  --ready-text: #e2bd92;
   --ready-bg: #0b2b24;
   --neutral-text: #c6dbd3;
 }
