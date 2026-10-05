@@ -1,4 +1,4 @@
-# Palladion frontend
+# Palladion web
 
 React + Vite + TypeScript + Tailwind v4. Google sign-in uses Supabase Auth. Company profiles are created through the FastAPI backend and stored in Supabase, scoped to the account's organization.
 

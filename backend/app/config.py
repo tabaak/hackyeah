@@ -56,7 +56,6 @@ class Settings:
     # Posts per run, per platform: bounds Apify cost. X is almost free (~$0.00015/post), Facebook ~$0.006.
     apify_limit_x: int = _int("APIFY_LIMIT_X", 50)
     apify_limit_facebook: int = _int("APIFY_LIMIT_FACEBOOK", 30)
-    apify_limit_reddit: int = _int("APIFY_LIMIT_REDDIT", 30)  # per query, ~$0.001/post
     apify_max_age_days: int = _int("APIFY_MAX_AGE_DAYS", 30)  # search results can be old; skip posts older than this
 
     # News volume: Serper returns 10 articles per page (1 credit each); Google News RSS is free, up to 100 per request.
@@ -74,12 +73,12 @@ class Settings:
 
     # Scheduler: repeats the collection in the background. Minutes between runs per source, 0 = never.
     # Live defaults; costs per company and run: news ~2 Serper credits (~300/day at 10 min), X ~$0.008 (50 posts, ~$1.1/day),
-    # Reddit ~$0.001/post of the last hour, Facebook ~$0.2 (30 posts), Bluesky and Google News RSS free.
+    # Facebook ~$0.2 (30 posts); Bluesky, Reddit (PullPush, about a day behind) and Google News RSS free.
     sync_enabled: bool = _env("SYNC_ENABLED", "true").lower() == "true"
     sync_news_minutes: int = _int("SYNC_NEWS_MINUTES", 10)
     sync_x_minutes: int = _int("SYNC_X_MINUTES", 10)
     sync_facebook_minutes: int = _int("SYNC_FACEBOOK_MINUTES", 720)
-    sync_reddit_minutes: int = _int("SYNC_REDDIT_MINUTES", 15)
+    sync_reddit_minutes: int = _int("SYNC_REDDIT_MINUTES", 60)  # the archive lags a day: more often finds nothing new
     sync_bluesky_minutes: int = _int("SYNC_BLUESKY_MINUTES", 2)  # free
     sync_startup_delay_s: int = _int("SYNC_STARTUP_DELAY_SECONDS", 120)
     # Critical notifications (and phone pushes) only for mentions this recent: loaded history must not alarm anyone.

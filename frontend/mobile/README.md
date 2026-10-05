@@ -1,10 +1,10 @@
 # Palladion mobile
 
-Expo (SDK 57) + Expo Router app for critical notifications. It uses the same design as `frontend/`.
+Expo (SDK 57) + Expo Router app for critical notifications. It uses the same design as the web app in `frontend/web/`.
 
 ```bash
 cd mobile
-cp .env.example .env.local   # same Supabase values as frontend/.env.local
+cp .env.example .env.local   # same Supabase values as frontend/web/.env.local
 npm install
 npm start          # then press i / a / w, or scan the QR code with Expo Go
 npm run typecheck
@@ -14,7 +14,7 @@ npm run typecheck
 
 The iOS Bundle Identifier is `com.mshupeikin.palladion`, with Apple team `368P9H47N6`.
 
-Generate the native project and install CocoaPods from `mobile/`:
+Generate the native project and install CocoaPods from `frontend/mobile/`:
 
 ```bash
 npx expo prebuild --platform ios
@@ -36,12 +36,12 @@ A 401 or 403 from the API (expired token, profile not provisioned) signs the use
 
 ## Layout
 
-- `src/app/login.tsx`: Google sign-in, ported from `frontend/src/pages/Login.tsx`
+- `src/app/login.tsx`: Google sign-in, ported from `frontend/web/src/pages/Login.tsx`
 - `src/app/index.tsx`: notifications inbox. Live from `/notifications`: polls every 12 s in the foreground, plus pull to refresh, mark read and mark all read
 - `src/app/settings.tsx`: theme picker (Graphite, Navy, Laurel, Light)
 - `src/lib/session.tsx`, `src/lib/supabase.ts`: session state and the OAuth flow
-- `src/lib/theme.ts`: design tokens ported from `frontend/src/index.css`. **Keep these in sync.**
-- `src/components/ui.tsx`: Button, Badge, SeverityBadge and LogoMark, matching `frontend/src/lib/ui.tsx`
+- `src/lib/theme.ts`: design tokens ported from `frontend/web/src/index.css`. **Keep these in sync.**
+- `src/components/ui.tsx`: Button, Badge, SeverityBadge and LogoMark, matching `frontend/web/src/lib/ui.tsx`
 - `src/lib/notifications.ts`: types mirroring `backend/app/schemas/notifications.py`, plus the API calls
 
 `EXPO_PUBLIC_API_URL=http://localhost:8000/api/v1` works in the iOS Simulator. On a physical phone, use your Mac's LAN IP and run the backend with `--host 0.0.0.0`.

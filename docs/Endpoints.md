@@ -1,6 +1,6 @@
 # Palladion API (FastAPI / Supabase)
 
-Специфікація узгоджена з фронтендом (`frontend/src`). Типи та enum-значення відповідають `frontend/src/lib/mock.ts`.
+Специфікація узгоджена з фронтендом (`frontend/web/src`). Типи та enum-значення відповідають `frontend/web/src/lib/domain.ts`.
 Інтерактивна документація з усіма схемами: `http://localhost:8000/docs` (запуск бекенду — `backend/README.md`).
 
 * Базовий шлях: `/api/v1` (локально `http://localhost:8000/api/v1`; CORS дозволено для `http://localhost:5173`, налаштовується `CORS_ORIGINS`).

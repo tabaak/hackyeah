@@ -34,7 +34,7 @@ def intervals() -> dict[Platform, int]:
 def has_credentials(platform: Platform) -> bool:
     if platform == Platform.news:
         return bool(settings.serper_api_key or settings.news_rss)
-    if platform == Platform.bluesky:
+    if platform in social.FREE:
         return True  # no key
     return bool(settings.apify_token)
 

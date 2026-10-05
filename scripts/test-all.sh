@@ -38,11 +38,11 @@ else
 fi
 
 step "Frontend: lint, typecheck, build"
-if [ -d "$ROOT/frontend/node_modules" ]; then
-  (cd "$ROOT/frontend" && npm run --silent lint); record "frontend lint" $?
-  (cd "$ROOT/frontend" && npm run --silent build); record "frontend typecheck + build" $?
+if [ -d "$ROOT/frontend/web/node_modules" ]; then
+  (cd "$ROOT/frontend/web" && npm run --silent lint); record "frontend lint" $?
+  (cd "$ROOT/frontend/web" && npm run --silent build); record "frontend typecheck + build" $?
 else
-  echo "missing frontend/node_modules: (cd frontend && npm ci)"
+  echo "missing frontend/web/node_modules: (cd frontend/web && npm ci)"
   record "frontend (no node_modules)" 1
 fi
 

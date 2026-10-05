@@ -21,8 +21,8 @@ from app.schemas.response import Approval, ClaimCheck, Decision, Disclosure, Evi
 from app.sources.serper import COUNTRY_GL, MOCK_COMPANY, to_mention
 from tests.conftest import REPO
 
-MOCK_TS = (REPO / "frontend/src/lib/domain.ts").read_text()
-COMPANY_SETUP_TSX = (REPO / "frontend/src/components/CompanySetup.tsx").read_text()
+MOCK_TS = (REPO / "frontend/web/src/lib/domain.ts").read_text()
+COMPANY_SETUP_TSX = (REPO / "frontend/web/src/components/CompanySetup.tsx").read_text()
 ENDPOINTS_MD = (REPO / "docs/Endpoints.md").read_text()
 SQL = "\n".join(p.read_text() for p in sorted((REPO / "supabase/migrations").glob("*.sql")))
 SUPABASE_CONFIG = tomllib.loads((REPO / "supabase/config.toml").read_text())
@@ -52,7 +52,7 @@ def sketch(text):
     return names(re.sub(r"\[?\{[^{}]*\}\]?", "", inner)), nested
 
 
-# --- frontend (frontend/src/lib/domain.ts) ------------------------------------------------------------
+# --- frontend (frontend/web/src/lib/domain.ts) ------------------------------------------------------------
 
 def ts_union(name):
     m = re.search(rf"export type {name} = ([^\n]+)", MOCK_TS)

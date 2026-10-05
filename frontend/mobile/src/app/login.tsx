@@ -6,7 +6,7 @@ import { LogoMark, PRODUCT_NAME, T } from '../components/ui'
 import { useSession } from '../lib/session'
 import { font, radius, useTheme } from '../lib/theme'
 
-// Same mark and copy as frontend/src/pages/Login.tsx
+// Same mark and copy as frontend/web/src/pages/Login.tsx
 function GoogleIcon() {
   return (
     <Svg width={20} height={20} viewBox="0 0 48 48">

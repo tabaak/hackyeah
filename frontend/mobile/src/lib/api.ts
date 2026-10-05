@@ -13,7 +13,7 @@ export class ApiError extends Error {
   }
 }
 
-// Same contract as frontend/src/lib/api.ts: Supabase access token as the bearer
+// Same contract as frontend/web/src/lib/api.ts: Supabase access token as the bearer
 export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const { data } = await supabase.auth.getSession()
   // A backend that accepts the connection but never answers would otherwise spin forever

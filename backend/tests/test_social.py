@@ -195,18 +195,34 @@ def test_status_reflects_the_token(signed_in, monkeypatch, token, healthy):
 
 
 
-def test_reddit_actor_item_maps_to_mention():
-    from app.sources import apify
+def test_pullpush_reddit_posts_and_comments_map_and_filter():
+    import httpx
+    from app.services import reddit
 
-    item = {"id": "t3_1wwyb1f", "title": "Goldman Sachs background check", "body": "Pending with First Advantage",
-            "author": "No_Pianist2387", "subreddit": "BackgroundProof", "score": 40, "commentCount": 2,
-            "createdAt": "2026-10-03T21:19:01.857000+0000", "authorIconUrl": "https://preview.redd.it/a.png",
-            "url": "https://www.reddit.com/r/BackgroundProof/comments/1wwyb1f/x/"}
-    m = apify.to_mention(apify.reddit_item(item), Platform.reddit, "c1", 0)
-    assert m.text == "Goldman Sachs background check — Pending with First Advantage"
-    assert (m.author, m.handle, m.reach) == ("r/BackgroundProof", "u/No_Pianist2387", 42)
-    assert m.url == item["url"] and m.avatar_url == item["authorIconUrl"]
-    assert m.at == 1_791_062_341_857
+    post = {"id": "1wwyb1f", "title": "Goldman Sachs background check", "selftext": "Pending with First Advantage",
+            "author": "No_Pianist2387", "subreddit": "BackgroundProof", "score": 40, "num_comments": 2, "created_utc": 1791062341.0,
+            "permalink": "/r/BackgroundProof/comments/1wwyb1f/x/", "url": "https://i.redd.it/a.png"}
+    comment = {"id": "pdrsxfz", "body": "I have worked for Goldman Sachs", "author": "throwaway", "subreddit": "returnToIndia",
+               "score": 3, "created_utc": 1791103285.0, "permalink": "/r/returnToIndia/comments/1ww4p5n/x/pdrsxfz/"}
+    noise = [{**comment, "id": "gone", "body": "[removed]"}, {**comment, "id": "other", "body": "Goldmans are fish"}]
+    calls = []
+
+    def handler(request):
+        calls.append((request.url.path, request.url.params["q"]))
+        data = [post] if "submission" in request.url.path else [comment, *noise]
+        return httpx.Response(200, json={"data": data})
+
+    items = reddit.fetch({"name": "Goldman Sachs"}, ["Goldman Sachs"], client=httpx.Client(transport=httpx.MockTransport(handler)), pause_s=0)
+    assert calls == [("/reddit/search/submission/", "Goldman Sachs"), ("/reddit/search/comment/", "Goldman Sachs")]
+    p, c = items
+    assert (p["external_id"], p["text"], p["author"], p["handle"], p["reach"]) == (
+        "t3_1wwyb1f", "Goldman Sachs background check — Pending with First Advantage", "r/BackgroundProof", "u/No_Pianist2387", 42)
+    assert p["url"] == "https://www.reddit.com/r/BackgroundProof/comments/1wwyb1f/x/" and p["media_urls"] == ["https://i.redd.it/a.png"]
+    assert p["published_at"].startswith("2026-10-03T21:19:01")
+    assert (c["external_id"], c["reach"], c["media_urls"]) == ("t1_pdrsxfz", 3, [])
+
+    limited = httpx.Client(transport=httpx.MockTransport(lambda r: httpx.Response(429) if "comment" in r.url.path else handler(r)))
+    assert [i["external_id"] for i in reddit.fetch({"name": "Goldman Sachs"}, ["Goldman Sachs"], client=limited, pause_s=0)] == ["t3_1wwyb1f"]
 
 
 def test_bluesky_post_maps_and_filters():

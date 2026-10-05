@@ -1,4 +1,4 @@
-"""Social posts (X, Facebook, Reddit) through Apify, routed into the shared analysis + ingestion pipeline.
+"""Social posts (X and Facebook through Apify; Bluesky and Reddit from free APIs), routed into the shared analysis + ingestion pipeline.
 
 Runs are slow (30-300 s, plus one LLM call per new post) and cost Apify credits, so they run in the background,
 one at a time per organization and platform, and only when someone calls POST /feed/sources/{platform}/sync.
@@ -12,15 +12,16 @@ from app.db import get_db
 from app.schemas.common import Platform
 from app.schemas.companies import CompanyDraft
 from app.schemas.feed import Mention
-from app.services import bluesky, news, relevance
+from app.services import bluesky, news, reddit, relevance
 from app.services.ingest import analyse_and_insert
 from app.services.timeutil import from_ms
 from app.sources import apify
 
 log = logging.getLogger(__name__)
 
-PLATFORMS = (Platform.x, Platform.facebook, Platform.reddit)  # Apify
-BACKGROUND = (*PLATFORMS, Platform.news, Platform.bluesky)  # everything that runs as a background job
+PLATFORMS = (Platform.x, Platform.facebook)  # Apify
+FREE = {Platform.bluesky: bluesky.fetch, Platform.reddit: reddit.fetch}  # no key, no cost
+BACKGROUND = (*PLATFORMS, *FREE, Platform.news)  # everything that runs as a background job
 
 _running: set[tuple[str, str]] = set()
 _lock = threading.Lock()
@@ -53,7 +54,6 @@ def to_item(m: Mention) -> dict:
 LIMITS = {  # read at call time so tests and env changes apply
     Platform.x: lambda: settings.apify_limit_x,
     Platform.facebook: lambda: settings.apify_limit_facebook,
-    Platform.reddit: lambda: settings.apify_limit_reddit,
 }
 
 
@@ -74,11 +74,11 @@ def fetch(company: dict, platform: Platform) -> list[dict]:
 def sync_company(company: dict, platform: Platform) -> int:
     if platform == Platform.news:
         return news.sync_company(company)
-    if platform == Platform.bluesky:
+    if platform in FREE:
         try:
-            return len(analyse_and_insert(company, bluesky.fetch(company, news.queries_for(company))))
+            return len(analyse_and_insert(company, FREE[platform](company, news.queries_for(company))))
         except Exception:
-            log.exception("bluesky sync failed for %s", company["id"])
+            log.exception("%s sync failed for %s", platform.value, company["id"])
             return 0
     if not settings.apify_token:
         return 0

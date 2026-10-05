@@ -1,4 +1,4 @@
-// Ported 1:1 from frontend/src/index.css (TEST_DESIGN.md §3.6). Keep the two in sync.
+// Ported 1:1 from frontend/web/src/index.css (DESIGN.md). Keep the two in sync.
 import { createContext, useContext } from 'react'
 
 export type Theme = 'graphite' | 'navy' | 'laurel' | 'light'

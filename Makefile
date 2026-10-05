@@ -9,7 +9,7 @@ help: ## Show available commands
 
 setup: ## Create .env from the example if it does not exist
 	@test -f .env || cp .env.example .env
-	@test -f frontend/.env.local || cp frontend/.env.example frontend/.env.local
+	@test -f frontend/web/.env.local || cp frontend/web/.env.example frontend/web/.env.local
 	@echo "Created local env files if needed. Fill in the Supabase settings before running make up."
 
 

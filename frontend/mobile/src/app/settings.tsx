@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native'
 import { T } from '../components/ui'
 import { radius, THEMES, useTheme, type Theme } from '../lib/theme'
 
-// Same swatches as THEME_META in frontend/src/pages/AppShell.tsx
+// Same swatches as THEME_META in frontend/web/src/pages/AppShell.tsx
 const THEME_META: Record<Theme, { label: string; swatch: [string, string] }> = {
   graphite: { label: 'Graphite', swatch: ['#202020', '#737373'] },
   navy: { label: 'Navy', swatch: ['#111827', '#64748b'] },

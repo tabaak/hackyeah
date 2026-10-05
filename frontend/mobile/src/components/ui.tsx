@@ -1,4 +1,4 @@
-// Native counterparts of frontend/src/lib/ui.tsx: same variants, tones and sizes.
+// Native counterparts of frontend/web/src/lib/ui.tsx: same variants, tones and sizes.
 import { Warning } from 'phosphor-react-native'
 import type { ReactNode } from 'react'
 import { Image, Pressable, StyleSheet, Text, View, type PressableProps, type StyleProp, type TextProps, type ViewStyle } from 'react-native'

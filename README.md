@@ -66,9 +66,9 @@ Every external service has a fallback. Without an LLM, Palladion falls back to h
 ## Architecture
 
 ```
- News (Serper, RSS) ─┐
- X · Facebook · Reddit (Apify) ─┼─► scheduler ─► ingest ─► relevance + dedup ─► injection check
- Bluesky ────────────┘                                              │
+ News (Serper, RSS) ──────────┐
+ X · Facebook (Apify) ────────┼─► scheduler ─► ingest ─► relevance + dedup ─► injection check
+ Bluesky · Reddit (PullPush) ─┘                                     │
                                                                     ▼
  Uploaded docs ─► extract ─► chunk ─► embed (pgvector) ─► retrieval ─► severity + verdict
                                                                     │
@@ -95,13 +95,13 @@ Requirements: Docker Desktop with Compose v2, Make, and a Supabase project (Goog
 ```sh
 make setup   # create .env from the example
 # .env:                SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (server-side only)
-# frontend/.env.local: VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_API_URL=http://localhost:8000/api/v1
+# frontend/web/.env.local: VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_API_URL=http://localhost:8000/api/v1
 make up      # build and start API + web app
 ```
 
 Open <http://localhost:5173>. The API is at <http://localhost:8000> and the interactive docs are at <http://localhost:8000/docs>.
 
-Optional keys in `.env` turn on more of the pipeline: `OPENAI_*` / `LOCAL_LLM_*` (models), `EMBEDDING_*` (vector search), `SERPER_API_KEY` (news), `APIFY_TOKEN` (X, Facebook, Reddit). `SUPABASE_JWT_SECRET` is needed only for projects that still use legacy HS256 tokens. To reach a model running on the host from Docker, use `http://host.docker.internal:<port>/v1`.
+Optional keys in `.env` turn on more of the pipeline: `OPENAI_*` / `LOCAL_LLM_*` (models), `EMBEDDING_*` (vector search), `SERPER_API_KEY` (news), `APIFY_TOKEN` (X, Facebook); Bluesky and Reddit need no key. `SUPABASE_JWT_SECRET` is needed only for projects that still use legacy HS256 tokens. To reach a model running on the host from Docker, use `http://host.docker.internal:<port>/v1`.
 
 ### Cloud or fully local LLM
 
@@ -125,7 +125,7 @@ make test    # backend tests
 scripts/test-all.sh   # every check in the repo
 ```
 
-Per-app details are in [`backend/README.md`](backend/README.md), [`frontend/README.md`](frontend/README.md) and [`mobile/README.md`](mobile/README.md). The UI/UX specification is in [`DESIGN.md`](DESIGN.md).
+Per-app details are in [`backend/README.md`](backend/README.md), [`frontend/web/README.md`](frontend/web/README.md) and [`frontend/mobile/README.md`](frontend/mobile/README.md). The UI/UX specification is in [`DESIGN.md`](DESIGN.md).
 
 
 ## License

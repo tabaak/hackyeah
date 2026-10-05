@@ -168,11 +168,11 @@ def test_analyse_all_switch(llm_calls, monkeypatch):
 def test_per_platform_limits(monkeypatch):
     seen = {}
     monkeypatch.setattr(apify, "search_posts", lambda draft, cid, queries, **kw: seen.setdefault(kw["platforms"][0], kw["limit"]) and [])
-    for name, value in (("apify_limit_x", 111), ("apify_limit_facebook", 22), ("apify_limit_reddit", 33)):
+    for name, value in (("apify_limit_x", 111), ("apify_limit_facebook", 22)):
         monkeypatch.setattr(social.settings, name, value)
     for p in social.PLATFORMS:
         social.fetch(COMPANY, p)
-    assert seen == {Platform.x: 111, Platform.facebook: 22, Platform.reddit: 33}
+    assert seen == {Platform.x: 111, Platform.facebook: 22}
 
 
 def test_x_item_gets_avatar_and_images():

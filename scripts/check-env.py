@@ -15,7 +15,7 @@ def read_env(path: Path) -> dict[str, str]:
 
 requirements = {
     ".env": ("SUPABASE_URL",),
-    "frontend/.env.local": ("VITE_SUPABASE_URL", "VITE_SUPABASE_PUBLISHABLE_KEY"),
+    "frontend/web/.env.local": ("VITE_SUPABASE_URL", "VITE_SUPABASE_PUBLISHABLE_KEY"),
 }
 missing = []
 for filename, keys in requirements.items():

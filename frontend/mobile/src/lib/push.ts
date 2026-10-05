@@ -26,7 +26,7 @@ export async function registerForPush(): Promise<void> {
 
   const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId
   if (!projectId) {
-    console.warn('Push disabled: no EAS project id. Run `npx eas-cli init` in mobile/.')
+    console.warn('Push disabled: no EAS project id. Run `npx eas-cli init` in frontend/mobile/.')
     return
   }
   const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId })
