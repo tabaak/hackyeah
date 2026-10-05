@@ -1,15 +1,8 @@
 """Writing mentions: dedup on (company_id, platform, external_id), analysis, notifications."""
-import logging
-
-from postgrest.exceptions import APIError
-
 from app.db import get_db
 from app.services import analysis, retrieval
 from app.services.notifications import notify_high_mentions
 
-
-log = logging.getLogger(__name__)
-MEDIA_COLUMNS = ("avatar_url", "media_urls")  # added by migration 20261003210000_mention_media.sql
 LOOKUP_CHUNK = 20  # external ids per "already stored?" query: they travel in the URL, and article links are long
 INSERT_CHUNK = 100  # rows per upsert request
 FLUSH_EVERY = 10  # analysed rows saved at a time, so a long run fills the feed as it goes
@@ -32,14 +25,7 @@ def insert_mentions(company: dict, rows: list[dict]) -> list[dict]:
         r["organization_id"] = company["organization_id"]
     inserted: list[dict] = []
     for i in range(0, len(rows), INSERT_CHUNK):
-        chunk = rows[i:i + INSERT_CHUNK]
-        try:
-            inserted += _upsert(chunk)
-        except APIError as e:
-            if not any(c in str(e) for c in MEDIA_COLUMNS):
-                raise
-            log.warning("mentions has no avatar_url/media_urls columns yet: run the media migration. Saving without them.")
-            inserted += _upsert([{k: v for k, v in r.items() if k not in MEDIA_COLUMNS} for r in chunk])
+        inserted += _upsert(rows[i:i + INSERT_CHUNK])
     notify_high_mentions(company["organization_id"], inserted)
     return inserted
 

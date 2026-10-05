@@ -6,7 +6,7 @@ import pytest
 
 from app.deps import get_current_user
 from app.main import app
-from app.routers import feed
+from app.routers import companies as companies_router, feed
 from app.schemas.auth import CurrentUser
 from app.services import link_import as li
 from tests.conftest import API, ORG_ID
@@ -184,6 +184,7 @@ def importing(client, monkeypatch):
     def setup(companies=(COMPANY,), mentions=(ROW,), result=("news", "https://www.reuters.com/a", True), error=None):
         db = FakeDB(list(companies), list(mentions))
         monkeypatch.setattr(feed, "get_db", lambda: db)
+        monkeypatch.setattr(companies_router, "get_db", lambda: db)
 
         def import_link(company, url):
             if error:

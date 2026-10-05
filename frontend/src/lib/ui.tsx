@@ -1,4 +1,5 @@
 import { ChatsCircle, CheckCircle, GitDiff, Question, Warning, X as XIcon } from '@phosphor-icons/react'
+import logoFigure from '../assets/logo-figure.png'
 import blueskyIcon from '../assets/platforms/bluesky.svg'
 import facebookIcon from '../assets/platforms/facebook.svg'
 import newsIcon from '../assets/platforms/news.svg'
@@ -7,7 +8,7 @@ import xIcon from '../assets/platforms/x.svg'
 import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useOutletContext } from 'react-router-dom'
-import { PLATFORM_LABEL, VERDICT_LABEL, type Classification, type Platform, type Severity, type Verdict } from './mock'
+import { PLATFORM_LABEL, VERDICT_LABEL, type Classification, type Platform, type Severity, type Verdict } from './domain'
 
 // Renders page-level actions into the title row of AppShell
 export function PageActions({ children }: { children: ReactNode }) {
@@ -16,6 +17,12 @@ export function PageActions({ children }: { children: ReactNode }) {
 }
 
 export const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ')
+
+export const PRODUCT_NAME = 'Palladion'
+
+export function LogoMark({ className = 'h-8' }: { className?: string }) {
+  return <img src={logoFigure} alt="" className={cx('w-auto', className)} />
+}
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
 const VARIANT: Record<Variant, string> = {

@@ -12,6 +12,3 @@ export async function uploadCompanyLogo(companyId: string, file: File, token: st
   const result = await api<{ logoUrl: string }>(`/companies/${companyId}/logo`, { method: 'PUT', body: form }, token)
   return result.logoUrl
 }
-
-// A failed attachment must not make the creation wizard submit a second company.
-export class CompanyCreatedError extends Error {}

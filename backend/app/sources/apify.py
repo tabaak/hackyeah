@@ -10,6 +10,7 @@ Raw dataset items are printed so you can see the real field names.
 """
 import hashlib
 import json
+import logging
 import sys
 import time
 from datetime import datetime, timezone
@@ -21,6 +22,7 @@ from app.schemas.common import MentionStatus, Platform, Severity, Verdict
 from app.schemas.companies import CompanyDraft
 from app.schemas.feed import Mention
 
+log = logging.getLogger(__name__)
 APIFY_URL = "https://api.apify.com/v2/acts/{actor}/run-sync-get-dataset-items"
 
 ACTORS = {
@@ -189,13 +191,13 @@ def search_posts(
     max_age_days: int = 90,
     client: httpx.Client | None = None,
 ) -> list[Mention]:
-    """Posts from the last `max_age_days` days (search results can be old). A failing platform is skipped (stderr), not fatal."""
+    """Posts from the last `max_age_days` days (search results can be old). A failing platform is skipped (logged), not fatal."""
     now_ms, seen, out = int(time.time() * 1000), set(), []
     for platform in platforms:
         try:
             items = [i for inp in INPUTS[platform](company, queries, limit) for i in run_actor(platform, inp, client=client)]
         except (ApifyError, httpx.HTTPError) as e:
-            print(f"[apify] {platform.value} skipped: {e}", file=sys.stderr)
+            log.warning("Apify %s skipped: %s", platform.value, e)
             continue
         for item in items:
             m = to_mention(reddit_item(item) if platform == Platform.reddit else item, platform, company_id, now_ms)

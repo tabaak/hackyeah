@@ -7,7 +7,7 @@ from app.deps import get_current_user
 from app.main import app
 from app.schemas.auth import CurrentUser
 from app.schemas.common import Platform
-from app.services import social
+from app.services import relevance, social
 from app.sources import apify
 from tests.conftest import API, ORG_ID
 
@@ -38,13 +38,13 @@ def clean_slots(monkeypatch):
     ("(Goldman)", True),
 ])
 def test_mentions_company(text, expected):
-    assert social.mentions_company(text, COMPANY) is expected
+    assert relevance.mentions_company(text, COMPANY) is expected
 
 
 def test_regex_metacharacters_in_names_are_escaped():
-    assert social.mentions_company("Johnson & Johnson (J&J) recall", {"name": "Johnson & Johnson", "aliases": ["J&J"]})
-    assert not social.mentions_company("anything", {"name": "A.B", "aliases": []}) and social.mentions_company("A.B news", {"name": "A.B", "aliases": []})
-    assert not social.mentions_company("AxB news", {"name": "A.B", "aliases": []})
+    assert relevance.mentions_company("Johnson & Johnson (J&J) recall", {"name": "Johnson & Johnson", "aliases": ["J&J"]})
+    assert not relevance.mentions_company("anything", {"name": "A.B", "aliases": []}) and relevance.mentions_company("A.B news", {"name": "A.B", "aliases": []})
+    assert not relevance.mentions_company("AxB news", {"name": "A.B", "aliases": []})
 
 
 # --- mapping and fetch ------------------------------------------------------------------------------

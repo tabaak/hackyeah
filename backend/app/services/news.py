@@ -1,9 +1,7 @@
 """Google News via Serper (platform = news)."""
 import logging
-import re
 import time
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
 
 import httpx
@@ -12,27 +10,11 @@ from app.config import settings
 from app.db import get_db
 from app.services import relevance, rss
 from app.services.ingest import analyse_and_insert
-from app.services.timeutil import iso, now, to_ms
+from app.services.timeutil import from_ms, now, to_ms
+from app.sources import serper
 
 log = logging.getLogger(__name__)
 
-COUNTRY_GL = {"Poland": "pl", "Germany": "de", "Ukraine": "ua", "Lithuania": "lt", "Czechia": "cz",
-              "United Kingdom": "uk", "United States": "us"}
-UNITS = {"min": "minutes", "minute": "minutes", "hour": "hours", "day": "days", "week": "weeks"}
-
-
-def parse_date(value: str | None) -> str:
-    """Serper gives '3 hours ago' or 'Jan 5, 2026'; unknown formats count as now."""
-    if value:
-        m = re.match(r"(\d+)\s+(min|minute|hour|day|week)s?\s+ago", value.strip(), re.I)
-        if m:
-            return iso(now() - timedelta(**{UNITS[m.group(2).lower()]: int(m.group(1))}))
-        for fmt in ("%b %d, %Y", "%d %b %Y", "%Y-%m-%d"):
-            try:
-                return iso(datetime.strptime(value.strip(), fmt).replace(tzinfo=timezone.utc))
-            except ValueError:
-                pass
-    return iso(now())
 
 
 def queries_for(company: dict) -> list[str]:
@@ -41,10 +23,6 @@ def queries_for(company: dict) -> list[str]:
     name = company["name"].strip()
     alias = next((a.strip() for a in company.get("aliases") or [] if a.strip() and a.strip().lower() != name.lower()), None)
     return [name, *([alias] if alias else [])]
-
-
-def query_for(company: dict) -> str:
-    return queries_for(company)[0]
 
 
 RSS_PAUSE_S = 1.5  # between Google News requests: a burst (the 60-day history run) gets the IP blocked
@@ -60,9 +38,9 @@ def _serper_items(company: dict, window: str, pages: int) -> tuple[list[dict], s
     for q in queries_for(company):
         for page in range(1, max(1, pages) + 1):
             body = {"q": q, "num": 10, "tbs": f"qdr:{window}", "page": page}
-            if gl := COUNTRY_GL.get(company.get("country", "")):
+            if gl := serper.COUNTRY_GL.get(company.get("country", "")):
                 body["gl"] = gl
-            r = httpx.post("https://google.serper.dev/news", headers={"X-API-KEY": settings.serper_api_key}, json=body, timeout=20)
+            r = httpx.post(serper.SERPER_NEWS_URL, headers={"X-API-KEY": settings.serper_api_key}, json=body, timeout=20)
             r.raise_for_status()
             articles = r.json().get("news", [])
             for n in articles:
@@ -77,7 +55,7 @@ def _serper_items(company: dict, window: str, pages: int) -> tuple[list[dict], s
                     "author": n.get("source") or "",
                     "handle": urlparse(n["link"]).netloc,
                     "text": " — ".join(x for x in (n.get("title"), n.get("snippet")) if x),
-                    "published_at": parse_date(n.get("date")),
+                    "published_at": from_ms(serper.parse_date(n.get("date"), to_ms(now()))),
                     "reach": 0,  # Serper has no audience data
                     "avatar_url": None,
                     "media_urls": [n["imageUrl"]] if n.get("imageUrl") else [],

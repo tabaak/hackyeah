@@ -1,5 +1,4 @@
-"""Demo data: sample mentions for a new company (DEMO_SEED) and an optional live trickle (DEMO_LIVE_INTERVAL_SECONDS).
-Mirrors the frontend mock so the UI looks the same with the real API."""
+"""Demo data: sample mentions for a new company (DEMO_SEED) and an optional live trickle (DEMO_LIVE_INTERVAL_SECONDS)."""
 import asyncio
 import logging
 import random

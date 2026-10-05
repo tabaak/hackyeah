@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react'
 import { useStore } from '../lib/store'
-import { Button, cx } from '../lib/ui'
-import { LogoMark, PRODUCT_NAME } from '../pages/Login'
+import { Button, cx, LogoMark, PRODUCT_NAME } from '../lib/ui'
 
 const delay = (ms: number) => ({ ['--loader-delay' as string]: `${ms}ms` })
 

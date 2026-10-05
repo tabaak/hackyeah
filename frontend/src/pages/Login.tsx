@@ -1,10 +1,7 @@
 import { useState } from 'react'
-import logoFigure from '../assets/logo-figure.png'
-import { REEL_POSTS, PLATFORM_LABEL } from '../lib/mock'
+import { REEL_POSTS, PLATFORM_LABEL } from '../lib/domain'
 import { useStore } from '../lib/store'
-import { cx, PlatformIcon } from '../lib/ui'
-
-export const PRODUCT_NAME = 'Palladion'
+import { cx, LogoMark, PlatformIcon, PRODUCT_NAME } from '../lib/ui'
 
 function PostCard({ p }: { p: (typeof REEL_POSTS)[number] }) {
   return (
@@ -26,10 +23,6 @@ function PostCard({ p }: { p: (typeof REEL_POSTS)[number] }) {
       <p className="text-fg-2">{p.text}</p>
     </div>
   )
-}
-
-export function LogoMark({ className = 'h-8' }: { className?: string }) {
-  return <img src={logoFigure} alt="" className={cx('w-auto', className)} />
 }
 
 function Logo() {

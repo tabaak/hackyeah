@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 
 def now() -> datetime:
@@ -22,7 +22,3 @@ def from_ms(ms: int) -> str:
 
 def iso(dt: datetime) -> str:
     return dt.astimezone(timezone.utc).isoformat()
-
-
-def ago(**kw) -> str:
-    return iso(now() - timedelta(**kw))

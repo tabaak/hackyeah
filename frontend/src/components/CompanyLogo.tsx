@@ -1,6 +1,6 @@
 import { PencilSimple } from '@phosphor-icons/react'
 import { useRef, useState } from 'react'
-import type { Company } from '../lib/mock'
+import type { Company } from '../lib/domain'
 import { companyLogoError } from '../lib/companyLogo'
 import { useStore } from '../lib/store'
 import { Button, Dialog } from '../lib/ui'

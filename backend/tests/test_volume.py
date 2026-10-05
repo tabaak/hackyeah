@@ -205,11 +205,11 @@ def test_mapper_exposes_avatar_and_images():
     assert mappers.mention({k: v for k, v in row.items() if k not in ("avatar_url", "media_urls")}).images == []  # rows from before the migration
 
 
-# --- ingest tolerates a database without the media columns --------------------------------------------
+# --- ingest keeps media and surfaces database errors ---------------------------------------------------
 
 class FakeTable:
-    def __init__(self, fail_on_media):
-        self.fail_on_media, self.calls = fail_on_media, []
+    def __init__(self):
+        self.calls = []
 
     def table(self, name):
         return self
@@ -220,21 +220,11 @@ class FakeTable:
         return self
 
     def execute(self):
-        if self.fail_on_media and any("avatar_url" in r for r in self.rows):
-            raise APIError({"message": "Could not find the 'avatar_url' column of 'mentions' in the schema cache", "code": "PGRST204"})
         return SimpleNamespace(data=self.rows)
 
 
-def test_insert_falls_back_without_media_columns(monkeypatch):
-    db = FakeTable(fail_on_media=True)
-    monkeypatch.setattr(ingest, "get_db", lambda: db)
-    monkeypatch.setattr(ingest, "notify_high_mentions", lambda *a: None)
-    out = ingest.insert_mentions(COMPANY, [{"external_id": "a", "text": "t", "avatar_url": "u", "media_urls": ["i"]}])
-    assert out == [{"external_id": "a", "text": "t", "company_id": "c1", "organization_id": ORG_ID}] and len(db.calls) == 2
-
-
 def test_insert_keeps_media_when_columns_exist(monkeypatch):
-    db = FakeTable(fail_on_media=False)
+    db = FakeTable()
     monkeypatch.setattr(ingest, "get_db", lambda: db)
     monkeypatch.setattr(ingest, "notify_high_mentions", lambda *a: None)
     out = ingest.insert_mentions(COMPANY, [{"external_id": "a", "text": "t", "avatar_url": "u", "media_urls": ["i"]}])
@@ -246,7 +236,7 @@ def test_other_database_errors_are_not_swallowed(monkeypatch):
         def execute(self):
             raise APIError({"message": "boom", "code": "XX000"})
 
-    monkeypatch.setattr(ingest, "get_db", lambda: Broken(False))
+    monkeypatch.setattr(ingest, "get_db", lambda: Broken())
     with pytest.raises(APIError):
         ingest.insert_mentions(COMPANY, [{"external_id": "a", "text": "t"}])
 

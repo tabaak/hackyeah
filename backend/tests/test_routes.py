@@ -10,7 +10,7 @@ from app.main import app
 from app.routers import analytics, companies, documents, feed, notifications, response, sources
 from tests.conftest import API, REPO
 
-ENDPOINTS_MD = (REPO / "Endpoints.md").read_text()
+ENDPOINTS_MD = (REPO / "docs/Endpoints.md").read_text()
 
 
 def api_routes():

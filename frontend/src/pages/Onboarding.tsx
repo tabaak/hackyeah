@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { CompanyWizard } from '../components/CompanySetup'
 import { useStore } from '../lib/store'
-import { DEMO_COMPANY_PROFILE } from '../lib/mock'
-import { Button } from '../lib/ui'
-import { LogoMark, PRODUCT_NAME } from './Login'
+import { DEMO_COMPANY_PROFILE } from '../lib/domain'
+import { Button, LogoMark, PRODUCT_NAME } from '../lib/ui'
 
 export default function Onboarding() {
   const { addCompany, signOut } = useStore()

@@ -1,4 +1,4 @@
-// Shared types and static reference data. Live data (companies, mentions, notifications, analytics) comes from the API.
+// Domain types and static reference data. Live data (companies, mentions, notifications, analytics) comes from the API.
 
 export type Severity = 'high' | 'medium' | 'low'
 export type Classification = 'public' | 'internal' | 'confidential' | 'restricted'
@@ -30,6 +30,12 @@ export interface Company {
 }
 
 export type CompanyDraft = Omit<Company, 'id' | 'documents' | 'createdAt' | 'logoUrl'>
+
+// A file chosen in DocsUpload, not uploaded yet
+export type PendingDoc = Pick<Doc, 'id' | 'name' | 'size' | 'classification'> & { file: File }
+
+// A failed attachment must not make the creation wizard submit a second company.
+export class CompanyCreatedError extends Error {}
 
 export const DEMO_COMPANY_PROFILE: CompanyDraft = {
   name: 'Goldman Sachs',
@@ -89,8 +95,6 @@ export const VERDICT_LABEL: Record<Verdict, string> = {
   insufficient_evidence: 'Insufficient evidence',
   opinion: 'Opinion / assessment',
 }
-
-export const uid = () => Math.random().toString(36).slice(2, 10)
 
 export type Range = '24h' | '7d' | '30d'
 export const RANGES: Record<Range, { label: string; ms: number }> = {

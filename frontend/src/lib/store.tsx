@@ -1,8 +1,7 @@
 import { createContext, use, useEffect, useRef, useState, type ReactNode } from 'react'
-import type { CompanyDraft, PendingDoc } from '../components/CompanySetup'
 import { api, ApiError, supabase } from './api'
-import { CompanyCreatedError, companyLogoError, uploadCompanyLogo } from './companyLogo'
-import { PLATFORM_LABEL, type Company, type Doc, type Post, type PostStatus, type Severity } from './mock'
+import { companyLogoError, uploadCompanyLogo } from './companyLogo'
+import { CompanyCreatedError, PLATFORM_LABEL, type Company, type CompanyDraft, type Doc, type PendingDoc, type Post, type PostStatus, type Severity } from './domain'
 
 export type User = { name: string; email: string; role: 'analyst' | 'compliance' }
 
@@ -240,6 +239,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
     } catch { /* keep what is shown; the next poll retries */ }
   }
+  // The signed-in session at call time; `current()` turns false once the user signs out or switches account.
+  const session = (action: string) => {
+    const owner = account.current
+    const revision = sessionRevision.current
+    const token = accessToken.current
+    if (!owner || !token) throw new Error(`Please sign in before ${action}.`)
+    return { token, current: () => owner === account.current && revision === sessionRevision.current }
+  }
+  const SESSION_CHANGED = 'Your session changed. Sign in again to reload your companies.'
+
   const refreshRef = useRef(refreshFeed)
   useEffect(() => { refreshRef.current = refreshFeed })
 
@@ -277,65 +286,50 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     companies,
     addCompany: async (draft, docs, logo = null) => {
-      const owner = account.current
-      const revision = sessionRevision.current
-      const token = accessToken.current
-      if (!owner || !user || !token) throw new Error('Please sign in before creating a company.')
+      const { token, current } = session('creating a company')
       const validationError = logo && companyLogoError(logo)
       if (validationError) throw new Error(validationError)
       const c = await api<Company>('/companies', { method: 'POST', body: JSON.stringify(draft) }, token)
-      if (owner !== account.current || revision !== sessionRevision.current) throw new Error('Your session changed. Sign in again to reload your companies.')
+      if (!current()) throw new Error(SESSION_CHANGED)
       const uploadErrors: string[] = []
       await Promise.all([
         logo ? uploadCompanyLogo(c.id, logo, token).then(url => { c.logoUrl = url }).catch((e: Error) => { uploadErrors.push(`Logo: ${e.message}. Click the company avatar to try again.`) }) : undefined,
         docs.length ? uploadDocs(c.id, docs, token).then(d => { c.documents = d }).catch((e: Error) => { uploadErrors.push(`Documents: ${e.message}. Use Add on the company card to try again.`) }) : undefined,
       ])
-      if (owner !== account.current || revision !== sessionRevision.current) throw new Error('Your session changed. Sign in again to reload your companies.')
+      if (!current()) throw new Error(SESSION_CHANGED)
       setCompanies(cs => [...cs, c])
       void refreshFeed() // news for the new company arrive in the background; the poll picks up the rest
       // The company exists now; retrying the wizard would create a duplicate, so point to the card instead.
       if (uploadErrors.length) throw new CompanyCreatedError(uploadErrors.join(' '))
     },
     updateCompany: async (companyId, draft) => {
-      const owner = account.current
-      const revision = sessionRevision.current
-      const token = accessToken.current
-      if (!owner || !token) throw new Error('Please sign in before editing a company.')
+      const { token, current } = session('editing a company')
       const updated = await api<Company>(`/companies/${companyId}`, { method: 'PUT', body: JSON.stringify(draft) }, token)
-      if (owner !== account.current || revision !== sessionRevision.current) throw new Error('Your session changed. Sign in again to reload your companies.')
+      if (!current()) throw new Error(SESSION_CHANGED)
       const { name, website, aliases, sector, country, people, topics } = updated
       setCompanies(cs => cs.map(c => c.id === companyId ? { ...c, name, website, aliases, sector, country, people, topics } : c))
     },
     uploadDocuments: async (companyId, docs) => {
-      const owner = account.current
-      const revision = sessionRevision.current
-      const token = accessToken.current
-      if (!owner || !token) throw new Error('Please sign in before uploading documents.')
+      const { token, current } = session('uploading documents')
       const added = await uploadDocs(companyId, docs, token)
-      if (owner !== account.current || revision !== sessionRevision.current) return
+      if (!current()) return
       setCompanies(cs => cs.map(c => (c.id === companyId ? { ...c, documents: [...c.documents, ...added] } : c)))
     },
     deleteDocument: async (companyId, documentId) => {
-      const owner = account.current
-      const revision = sessionRevision.current
-      const token = accessToken.current
-      if (!owner || !token) throw new Error('Please sign in before deleting documents.')
+      const { token, current } = session('deleting documents')
       await api(`/documents/${documentId}`, { method: 'DELETE' }, token)
-      if (owner !== account.current || revision !== sessionRevision.current) return
+      if (!current()) return
       setCompanies(cs => cs.map(c => (c.id === companyId ? { ...c, documents: c.documents.filter(d => d.id !== documentId) } : c)))
     },
     setCompanyLogo: async (companyId, file) => {
-      const owner = account.current
-      const revision = sessionRevision.current
-      const token = accessToken.current
-      if (!owner || !token) throw new Error('Please sign in before changing a company logo.')
+      const { token, current } = session('changing a company logo')
       let logoUrl: string | null = null
       if (file) {
         logoUrl = await uploadCompanyLogo(companyId, file, token)
       } else {
         await api(`/companies/${companyId}/logo`, { method: 'DELETE' }, token)
       }
-      if (owner !== account.current || revision !== sessionRevision.current) return
+      if (!current()) return
       setCompanies(cs => cs.map(c => c.id === companyId ? { ...c, logoUrl } : c))
     },
     posts,
@@ -374,12 +368,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       void api(`/notifications/${id}/read`, { method: 'PATCH' }).catch(() => {})
     },
     markAllNotificationsRead: async () => {
-      const owner = account.current
-      const revision = sessionRevision.current
-      const token = accessToken.current
-      if (!owner || !token) throw new Error('Please sign in before marking notifications as seen.')
+      const { token, current } = session('marking notifications as seen')
       await api<void>('/notifications/mark-all-read', { method: 'POST' }, token)
-      if (owner !== account.current || revision !== sessionRevision.current) return
+      if (!current()) return
       notificationRevision.current++
       setNotifications(n => ({ items: n.items.map(item => ({ ...item, read: true })), openCount: 0 }))
       void refreshFeed()

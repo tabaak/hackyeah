@@ -1,10 +1,10 @@
 import { FileText, Globe, Sparkle, Trash } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CompanyForm, CompanyWizard, DocsUpload, type PendingDoc } from '../components/CompanySetup'
+import { CompanyForm, CompanyWizard, DocsUpload } from '../components/CompanySetup'
 import CompanyLogo from '../components/CompanyLogo'
 import { api } from '../lib/api'
-import type { Classification, Company, CompanyDraft, Doc } from '../lib/mock'
+import type { Classification, Company, CompanyDraft, Doc, PendingDoc } from '../lib/domain'
 import { useStore } from '../lib/store'
 import { Badge, Button, ClassBadge, cx, Dialog, PageActions } from '../lib/ui'
 

@@ -5,7 +5,7 @@ import { AddByLink } from '../components/AddByLink'
 import { CounterPost } from '../components/CounterPost'
 import { PostRow } from '../components/PostRow'
 import { api } from '../lib/api'
-import { PLATFORM_LABEL, type Platform, type Post } from '../lib/mock'
+import { PLATFORM_LABEL, type Platform, type Post } from '../lib/domain'
 import { useStore } from '../lib/store'
 import { Badge, Button, compact, cx, Dialog, PageActions, PlatformIcon, timeAgo } from '../lib/ui'
 

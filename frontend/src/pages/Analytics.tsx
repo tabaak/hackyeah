@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react'
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../lib/api'
-import { PLATFORM_LABEL, RANGES, type Range, VERDICT_LABEL, type Platform, type Severity, type Verdict } from '../lib/mock'
+import { PLATFORM_LABEL, RANGES, type Range, VERDICT_LABEL, type Platform, type Severity, type Verdict } from '../lib/domain'
 import { useStore } from '../lib/store'
 import { compact, cx, PageActions, PlatformIcon, VerdictBadge } from '../lib/ui'
 
 // Severity is a status scale (validated with dataviz/validate_palette.js); low stays neutral on purpose.
+const CHART_VARS = { grid: 'var(--border)', axis: 'var(--text-muted)', surface: 'var(--surface)' }
 const SEV = {
-  light: { low: '#6b7fa8', medium: '#d97706', high: '#b91c1c', grid: 'var(--border)', axis: 'var(--text-muted)', surface: 'var(--surface)' },
-  dark: { low: '#7083ad', medium: '#e0a106', high: '#ef4444', grid: 'var(--border)', axis: 'var(--text-muted)', surface: 'var(--surface)' },
+  light: { low: '#6b7fa8', medium: '#d97706', high: '#b91c1c', ...CHART_VARS },
+  dark: { low: '#7083ad', medium: '#e0a106', high: '#ef4444', ...CHART_VARS },
 }
 const SEVS: Severity[] = ['high', 'medium', 'low']
 const SEV_LABEL: Record<Severity, string> = { high: 'High', medium: 'Medium', low: 'Low' }
@@ -94,9 +95,6 @@ export default function Analytics() {
   const per = range === '24h' ? 'hourly' : 'daily'
   const tickEvery = range === '30d' ? 4 : range === '7d' ? 0 : 3
   const total = series.reduce((s, h) => s + h.low + h.medium + h.high, 0)
-  const openHigh = summary.openHigh
-  const responded = summary.responded
-  const coordinated = summary.clusters
 
   const byPlatform = (Object.keys(PLATFORM_LABEL) as Platform[])
     .map(p => { const r = data.reach.find(x => x.platform === p); return { p, n: r?.mentions ?? 0, reach: r?.reach ?? 0 } })
@@ -108,7 +106,6 @@ export default function Analytics() {
   const mix = SEVS.map(k => ({ k, n: series.reduce((s, h) => s + h[k], 0) }))
   const highShare = series.map(h => ({ label: h.label, share: Math.round((h.high / Math.max(1, h.low + h.medium + h.high)) * 100) }))
   const totalReach = byPlatform.reduce((s, x) => s + x.reach, 0)
-  const injections = summary.injectionsBlocked
 
   const heat = byPlatform.map(x => ({ p: x.p, cells: SEVS.map(k => posts.filter(y => y.platform === x.p && y.severity === k).length) }))
   const maxHeat = Math.max(1, ...heat.flatMap(r => r.cells))
@@ -117,19 +114,19 @@ export default function Analytics() {
   const maxCompany = Math.max(1, ...byCompany.map(x => x.n))
 
   const statuses = [
-    { label: 'Awaiting review', n: Math.max(0, summary.total - responded - summary.dismissed), color: c.low },
-    { label: 'Responded', n: responded, color: 'var(--accent)' },
+    { label: 'Awaiting review', n: Math.max(0, summary.total - summary.responded - summary.dismissed), color: c.low },
+    { label: 'Responded', n: summary.responded, color: 'var(--accent)' },
     { label: 'Dismissed', n: summary.dismissed, color: 'var(--border)' },
   ]
   const statusTotal = Math.max(1, summary.total)
 
   const metrics = [
     { label: `Mentions in ${rangeLabel}`, value: compact(total) },
-    { label: 'Open high priority', value: openHigh, to: '/app/feed?severity=high' },
-    { label: 'Coordinated clusters', value: coordinated },
-    { label: 'Responses approved', value: responded },
+    { label: 'Open high priority', value: summary.openHigh, to: '/app/feed?severity=high' },
+    { label: 'Coordinated clusters', value: summary.clusters },
+    { label: 'Responses approved', value: summary.responded },
     { label: 'Tracked reach', value: compact(totalReach) },
-    { label: 'Injections blocked', value: injections },
+    { label: 'Injections blocked', value: summary.injectionsBlocked },
     { label: 'Median time to draft', value: '4 min' },
   ]
 

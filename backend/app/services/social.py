@@ -21,7 +21,6 @@ log = logging.getLogger(__name__)
 
 PLATFORMS = (Platform.x, Platform.facebook, Platform.reddit)  # Apify
 BACKGROUND = (*PLATFORMS, Platform.news, Platform.bluesky)  # everything that runs as a background job
-mentions_company = relevance.mentions_company
 
 _running: set[tuple[str, str]] = set()
 _lock = threading.Lock()
@@ -67,7 +66,7 @@ def fetch(company: dict, platform: Platform) -> list[dict]:
         draft, company["id"], news.queries_for(company), platforms=(platform,),
         limit=LIMITS[platform](), max_age_days=settings.apify_max_age_days,
     )
-    relevant = [m for m in posts if mentions_company(m.text, company)]
+    relevant = [m for m in posts if relevance.mentions_company(m.text, company)]
     log.info("Apify %s for %s: %d posts, %d name the company", platform.value, company["name"], len(posts), len(relevant))
     return [to_item(m) for m in relevant]
 

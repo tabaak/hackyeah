@@ -7,11 +7,12 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Light tokens from TEST_DESIGN.md §3.6; neutral graphite surfaces in dark mode. */
+/* Light tokens from DESIGN.md; neutral graphite surfaces in dark mode. Sidebar tokens are shared by every theme. */
 :root {
   --motion-fast: 160ms;
   --motion-enter: 220ms;
   --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
   --canvas: #f7f9fa;
   --surface: #ffffff;
   --surface-subtle: #f1f5f9;
@@ -49,9 +50,6 @@
   --surface-subtle: #292929;
   --sidebar: #111111;
   --sidebar-active: #292929;
-  --sidebar-text: #f5f5f5;
-  --sidebar-muted: #a3a3a3;
-  --sidebar-accent: #d6a76f;
   --text: #f5f5f5;
   --text-secondary: #d4d4d4;
   --text-muted: #a3a3a3;
@@ -92,7 +90,7 @@
   --neutral-text: #cbd5e1;
 }
 
-/* Laurel: deep green-black with the brand's bronze accent */
+/* Laurel: deep green-black; keeps graphite's bronze accent */
 .dark[data-theme="laurel"] {
   --canvas: #0b1a16;
   --surface: #11241e;
@@ -101,17 +99,12 @@
   --sidebar-active: #183129;
   --sidebar-text: #eef3f0;
   --sidebar-muted: #8fb0a4;
-  --sidebar-accent: #d6a76f;
   --text: #eef3f0;
   --text-secondary: #c6dbd3;
   --text-muted: #8fb0a4;
   --border: #21403a;
   --control-border: #5a8075;
-  --accent: #d1a374;
-  --accent-hover: #e2bd92;
-  --accent-foreground: #2a1a0b;
   --selected: #123a31;
-  --ready-text: #e2bd92;
   --ready-bg: #0b2b24;
   --neutral-text: #c6dbd3;
 }
@@ -225,7 +218,7 @@ body {
 /* Custom chevron: the native one sits flush against the right edge */
 select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  background-image: var(--chevron);
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   padding-right: 2.5rem;
@@ -248,7 +241,7 @@ select {
     content: "";
     width: 16px;
     height: 16px;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") center no-repeat;
+    background: var(--chevron) center no-repeat;
     transition: rotate var(--motion-enter) var(--motion-ease);
   }
   select:open::picker-icon {
@@ -324,7 +317,7 @@ dialog::backdrop {
   to { opacity: 1; transform: none; }
 }
 
-@keyframes backdrop-enter {
+@keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
@@ -335,7 +328,7 @@ dialog[open] {
 }
 
 dialog[open]::backdrop {
-  animation: backdrop-enter var(--motion-enter) var(--motion-ease);
+  animation: fade-in var(--motion-enter) var(--motion-ease);
 }
 
 /* Login: vertical post "reels" */
@@ -364,11 +357,7 @@ dialog[open]::backdrop {
 
 /* Session loading skeleton. Opacity only on the wrapper (a transform or filter would break the
    fixed sidebar), delayed so fast loads never flash it. */
-@keyframes skeleton-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.skeleton-in { animation: skeleton-in 300ms var(--motion-ease) 150ms both; }
+.skeleton-in { animation: fade-in 300ms var(--motion-ease) 150ms both; }
 
 /* The highlight is fixed to the viewport, so one sweep crosses every bone in sync
    instead of each block shimmering on its own */

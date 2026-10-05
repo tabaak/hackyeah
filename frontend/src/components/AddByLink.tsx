@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { api } from '../lib/api'
-import type { Post } from '../lib/mock'
+import type { Post } from '../lib/domain'
 import { useStore } from '../lib/store'
 import { Button, cx, Dialog, Field, inputCls, SeverityBadge, VerdictBadge } from '../lib/ui'
 

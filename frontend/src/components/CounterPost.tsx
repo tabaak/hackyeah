@@ -1,7 +1,7 @@
 import { Sparkle } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
-import { PLATFORM_LABEL, sourceUrl, VERDICT_LABEL, type Classification, type Post, type Verdict } from '../lib/mock'
+import { PLATFORM_LABEL, sourceUrl, VERDICT_LABEL, type Classification, type Post, type Verdict } from '../lib/domain'
 import { useStore } from '../lib/store'
 import { Button, cx, Field, inputCls, PlatformIcon, timeAgo } from '../lib/ui'
 

@@ -8,17 +8,16 @@ const CHUNK_CHARS = 1500 // the endpoint takes the text in the URL: keep request
 export interface Translation { text: string; from: string } // `from` = detected ISO language code
 
 const cache = new Map<string, Translation>()
-const languageName = (code: string) => {
+export const languageName = (code: string) => {
   try { return new Intl.DisplayNames(['en'], { type: 'language' }).of(code) ?? code } catch { return code }
 }
-export { languageName }
 
 export function googleTranslateUrl(text: string) {
   return `https://translate.google.com/?sl=auto&tl=en&op=translate&text=${encodeURIComponent(text.slice(0, 4000))}`
 }
 
 // Split on paragraph, then sentence, then hard-cut boundaries so no chunk is over CHUNK_CHARS.
-export function chunk(text: string, max = CHUNK_CHARS): string[] {
+function chunk(text: string, max = CHUNK_CHARS): string[] {
   const out: string[] = []
   let cur = ''
   const push = (piece: string) => {

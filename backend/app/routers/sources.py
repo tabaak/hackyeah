@@ -1,16 +1,16 @@
 """8. Sources and ingestion (internal, no UI). All sources write to the single `mentions` table."""
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 
-from app.config import settings
 from app.db import get_db
 from app.deps import get_current_user
 from app.schemas.auth import CurrentUser
 from app.schemas.common import Platform, SourceStatus, SyncRequested
-from app.services import social
+from app.services import scheduler, social
 from app.services.timeutil import to_ms
 
 router = APIRouter(prefix="/feed/sources", tags=["sources"])
 NOT_CONFIGURED = "No connector configured for this platform"
+MISSING_CREDENTIALS = {Platform.news: "SERPER_API_KEY is not set and NEWS_RSS is off"} | dict.fromkeys(social.PLATFORMS, "APIFY_TOKEN is not set")
 
 
 # Declared before /{platform}/... so "facebook" is matched here.
@@ -26,10 +26,8 @@ def sync(platform: Platform, background: BackgroundTasks, user: CurrentUser = De
     reddit (Apify) take minutes (one LLM call per risky item) and cost credits, so they run in the background:
     `added` is 0, watch the feed and `status`; 409 while a run of the same platform is in progress."""
     if platform in social.BACKGROUND:
-        if platform == Platform.news and not (settings.serper_api_key or settings.news_rss):
-            raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "SERPER_API_KEY is not set and NEWS_RSS is off")
-        if platform in social.PLATFORMS and not settings.apify_token:
-            raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "APIFY_TOKEN is not set")
+        if not scheduler.has_credentials(platform):
+            raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, MISSING_CREDENTIALS[platform])
         if not social.try_start(user.organization_id, platform):
             raise HTTPException(status.HTTP_409_CONFLICT, f"A {platform.value} sync is already running")
         background.add_task(social.sync_org, user.organization_id, platform)
@@ -46,12 +44,7 @@ def source_status(platform: Platform, user: CurrentUser = Depends(get_current_us
         .order("ingested_at", desc=True).limit(1).execute().data
     )
     last = to_ms(rows[0]["ingested_at"]) if rows else None
-    if platform == Platform.news:
-        ok = bool(settings.serper_api_key or settings.news_rss)
-        return SourceStatus(healthy=ok, last_sync_at=last, detail=None if ok else "SERPER_API_KEY is not set and NEWS_RSS is off")
-    if platform == Platform.bluesky:
-        return SourceStatus(healthy=True, last_sync_at=last, detail=None)
-    if platform in social.PLATFORMS:
-        ok = bool(settings.apify_token)
-        return SourceStatus(healthy=ok, last_sync_at=last, detail=None if ok else "APIFY_TOKEN is not set")
-    return SourceStatus(healthy=False, last_sync_at=last, detail=NOT_CONFIGURED)
+    if platform not in social.BACKGROUND:
+        return SourceStatus(healthy=False, last_sync_at=last, detail=NOT_CONFIGURED)
+    ok = scheduler.has_credentials(platform)
+    return SourceStatus(healthy=ok, last_sync_at=last, detail=None if ok else MISSING_CREDENTIALS[platform])

@@ -1,6 +1,6 @@
 import { Archive, ArrowSquareOut, Lightning, Translate, UsersThree } from '@phosphor-icons/react'
 import { useEffect, useRef, useState } from 'react'
-import { sourceUrl, type Post } from '../lib/mock'
+import { sourceUrl, type Post } from '../lib/domain'
 import { googleTranslateUrl, languageName, useTranslation, type TranslationState } from '../lib/translate'
 import { Badge, Button, compact, cx, PlatformIcon, SeverityBadge, timeAgo, VerdictBadge } from '../lib/ui'
 

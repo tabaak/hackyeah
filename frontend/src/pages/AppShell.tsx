@@ -1,10 +1,9 @@
 import { Bell, Broadcast, Buildings, ChartLine, Palette, SignOut } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { PLATFORM_LABEL } from '../lib/mock'
+import { PLATFORM_LABEL } from '../lib/domain'
 import { THEMES, useStore, type Theme } from '../lib/store'
-import { Button, cx, timeAgo } from '../lib/ui'
-import { LogoMark, PRODUCT_NAME } from './Login'
+import { Button, cx, LogoMark, PRODUCT_NAME, timeAgo } from '../lib/ui'
 
 const TABS = [
   { to: '/app/feed', label: 'Live feed', icon: Broadcast },

@@ -1,15 +1,10 @@
 import { FileText, Trash } from '@phosphor-icons/react'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { COUNTRIES, SECTORS, uid, type Classification, type CompanyDraft, type Doc } from '../lib/mock'
+import { COUNTRIES, CompanyCreatedError, SECTORS, type Classification, type CompanyDraft, type PendingDoc } from '../lib/domain'
 import { Button, cx, Field, inputCls } from '../lib/ui'
-import { CompanyCreatedError } from '../lib/companyLogo'
 import CompanyLogoPicker from './CompanyLogoPicker'
 
 const split = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean)
-
-export type { CompanyDraft } from '../lib/mock'
-// A file chosen in DocsUpload, not uploaded yet
-export type PendingDoc = Pick<Doc, 'id' | 'name' | 'size' | 'classification'> & { file: File }
 
 export function CompanyForm({ onSubmit, submitLabel, aside, initial, logo = null, onLogoChange }: { onSubmit: (c: CompanyDraft) => void; submitLabel: string; aside?: ReactNode; initial?: CompanyDraft; logo?: { file: File; preview: string } | null; onLogoChange?: (file: File | null) => void }) {
   const [sector, setSector] = useState(initial?.sector ?? 'Banking')
@@ -106,7 +101,7 @@ export function DocsUpload({ docs, onChange }: { docs: PendingDoc[]; onChange: (
     const tooBig = list.filter(f => f.size > MAX_BYTES)
     const ok = list.filter(f => f.size <= MAX_BYTES).slice(0, MAX_FILES - docs.length)
     setError(tooBig.length ? `${tooBig.map(f => f.name).join(', ')}: larger than 5 MB` : list.length > ok.length ? `Up to ${MAX_FILES} documents` : '')
-    onChange([...docs, ...ok.map(f => ({ id: uid(), name: f.name, size: f.size, classification: 'internal' as const, file: f }))])
+    onChange([...docs, ...ok.map(f => ({ id: crypto.randomUUID(), name: f.name, size: f.size, classification: 'internal' as const, file: f }))])
   }
 
   return (
